@@ -1,10 +1,10 @@
 <?php
-$langs_arr=['rus','eng'];
-foreach($langs_arr as $lang){
-	$input_file='index.'.$lang.'.php';
+//$langs_arr=['ru','en'];
+//foreach($langs_arr as $lang){
+	$input_file='index.template.php';
 	if(file_exists($input_file)){
 		$main=file_get_contents($input_file);
-		print '<hr><div><b>Lang: '.$lang.'</b></div>';
+		//print '<hr><div><b>Lang: '.$lang.'</b></div>';
 		print '<div>+'.$input_file.' ('.(round(filesize($input_file)/1024,2)).' Kb)</div>';
 		preg_match_all('~<\?(.*)\?>~iUs',$main,$stack);
 		foreach($stack[0] as $k=>$v){
@@ -104,12 +104,16 @@ foreach($langs_arr as $lang){
 
 		$main=preg_replace('~<a class="menu-el color-red" data-href="/market/">(.*)</a>~','',$main);
 		$main=str_replace('portable-version-card ','portable-version-card hidden ',$main);
-		$main=preg_replace('~<div class="select-lang captions">(.*)</div>~','',$main);
+		//$main=preg_replace('~<div class="select-lang captions">(.*)</div>~','',$main);
 
 		$main=str_replace('var standalone=false;','var standalone=true;',$main);
-		$output_file='my-viz-plus'.('-'.$lang).'.html';
+
+		//remove external services js
+		$main=preg_replace('~<script src="/(.*)" type="text/javascript"></script>~iUs','',$main);
+
+		$output_file='wallet-viz-world-portable'/*.('-'.$lang)*/.'.html';
 		file_put_contents($output_file,$main);
 		print '<div>'.$output_file.' ('.(round(filesize($output_file)/1024,2)).' Kb)</div>';
 	}
-}
+//}
 exit;

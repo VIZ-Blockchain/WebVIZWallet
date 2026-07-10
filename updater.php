@@ -36,6 +36,7 @@ while(!$end){
 	}
 }
 if($counter){
+	//print_r($sql_arr);
 	foreach($sql_arr as $sql){
 		$db->sql($sql);
 	}
@@ -77,6 +78,7 @@ while(!$end){
 	}
 }
 if($counter){
+	//print_r($sql_arr);
 	foreach($sql_arr as $sql){
 		$db->sql($sql);
 	}
@@ -118,6 +120,7 @@ while(!$end){
 	}
 }
 if($counter){
+	//print_r($sql_arr);
 	foreach($sql_arr as $sql){
 		$db->sql($sql);
 	}

@@ -1,6 +1,7 @@
 <?php
-error_reporting(0);
+error_reporting(255);
 include('autoloader.php');
+
 $action=$_GET['action'];
 function show_price_in_tokens($tokens,$ticker=false){
 	$true_tokens=floatval($tokens);
@@ -38,6 +39,7 @@ if('get_short_accounts_on_sale'==$action){
 	$order='`account` ASC';
 	$result=array();
 	$sql='SELECT * FROM `accounts_on_sale`'.$query.' ORDER BY '.$order.' LIMIT '.$perpage.' OFFSET '.$offset;//`level` ASC, `length` ASC,
+	//$result[]=['account'=>$sql];
 	$q=$db->sql($sql);
 	while($m=$db->row($q)){
 		$result[]=['account'=>$m['account'],'price'=>($m['price']/1000)];
@@ -83,6 +85,7 @@ if('get_accounts_on_sale'==$action){
 	}
 	$result=array();
 	$sql='SELECT * FROM `accounts_on_sale`'.$query.' ORDER BY '.$order.' LIMIT '.$perpage.' OFFSET '.$offset;//`level` ASC, `length` ASC,
+	//$result[]=['account'=>$sql];
 	$q=$db->sql($sql);
 	while($m=$db->row($q)){
 		$result[]=['account'=>$m['account'],'price'=>($m['price']/1000)];
@@ -128,6 +131,7 @@ if('get_subaccounts_on_sale'==$action){
 	}
 	$result=array();
 	$sql='SELECT * FROM `subaccounts_on_sale`'.$query.' ORDER BY '.$order.' LIMIT '.$perpage.' OFFSET '.$offset;//`level` ASC, `length` ASC,
+	//$result[]=['account'=>$sql];
 	$q=$db->sql($sql);
 	while($m=$db->row($q)){
 		$result[]=['account'=>$m['account'],'price'=>($m['price']/1000)];
@@ -200,10 +204,12 @@ if('get_paid_subscriptions'==$action){
 	}
 	$result=array();
 	$sql='SELECT * FROM `paid_subscriptions`'.$query.' ORDER BY '.$order.' LIMIT '.$perpage.' OFFSET '.$offset;//`level` ASC, `length` ASC,
+	//$result[]=['account'=>$sql];
 	$q=$db->sql($sql);
 	while($m=$db->row($q)){
 		$result[]=['account'=>$m['creator'],'descr'=>$m['url'],'period'=>$m['period'],'levels'=>$m['levels'],'amount'=>($m['amount']/1000),'sub_count'=>$m['sub_count'],'sub_amount'=>$m['sub_amount']];
 	}
 	print json_encode($result);
 }
+
 exit;

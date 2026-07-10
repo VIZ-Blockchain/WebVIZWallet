@@ -1,5 +1,6 @@
 <?php
-$langs_arr=['rus'];
+/*
+$langs_arr=['rus','eng'];
 $default_lang='rus';
 $lang=$default_lang;
 if(isset($_GET['lang'])){
@@ -16,14 +17,18 @@ if(isset($_COOKIE['lang'])){
 if(!in_array($lang,$langs_arr)){
 	$lang=$default_lang;
 }
-$filename='myvizplus-'.$lang.'.html';
-$output_filename='myvizplus-'.$lang.'.html';
+*/
+//$filename='my-viz-plus-'.$lang.'.html';
+//$output_filename='myvizplus-'.$lang.'.html';//'portable-my-viz-plus-'.$lang.'.html';
+$filename='wallet-viz-world-portable.html';
+$output_filename='wallet-viz-world-portable.html';//'portable-my-viz-plus-'.$lang.'.html';
 if(file_exists($filename)){
 	header("Cache-Control: public");
 	header("Content-Description: File Transfer");
-	header("Content-Disposition: attachment; filename=".$output_filename);
-	header("Content-Type: text/html");
-	header("Content-Transfer-Encoding: binary");
+	header('Content-Transfer-Encoding: binary');
+	header('Content-Type: application/octet-stream');
+	header('Content-Disposition: attachment; filename="'.$output_filename.'"');
+	//header('Content-Type: text/html');
 	readfile($filename);
 }
 else{
