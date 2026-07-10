@@ -1,52 +1,54 @@
-# Локализация
+**English** | [Русский](ru/localization.md)
 
-Кошелёк поддерживает три языка: русский (`ru`), английский (`en`) и китайский
-(`zh`). Язык по умолчанию — `en`.
+# Localization
 
-## Файлы
+The wallet supports three languages: Russian (`ru`), English (`en`) and Chinese
+(`zh`). The default language is `en`.
 
-| Файл | Язык | Глобальная переменная |
-|------|------|-----------------------|
-| [ltmp_ru.js](../ltmp_ru.js) | Русский | `ltmp_ru_arr` |
+## Files
+
+| File | Language | Global variable |
+|------|----------|-----------------|
+| [ltmp_ru.js](../ltmp_ru.js) | Russian | `ltmp_ru_arr` |
 | [ltmp_en.js](../ltmp_en.js) | English | `ltmp_en_arr` |
 | [ltmp_zh.js](../ltmp_zh.js) | 中文 | `ltmp_zh_arr` |
 
-Каждый файл — это объект `var ltmp_<lang>_arr = { ключ: \`HTML-шаблон\`, ... }`.
-Значения — шаблонные строки (template literals) с HTML-разметкой представлений.
-Все три файла подключаются в [index.template.php](../index.template.php).
+Each file is an object `var ltmp_<lang>_arr = { key: \`HTML template\`, ... }`. The
+values are template literals with the HTML markup of the views. All three files are
+loaded in [index.template.php](../index.template.php).
 
-Верхнеуровневые ключи (по 13 в каждом файле) должны **совпадать** во всех языках —
-это шаблоны представлений (`preset_view_index`, `menu_preset` и т.д.) и словари
-подписей. Внутри шаблонов встречаются вложенные подключения через маркеры,
-которые app.js разворачивает функцией `ltmp()`.
+The top-level keys (13 in each file) must **match** across all languages — they are
+the view templates (`preset_view_index`, `menu_preset`, etc.) and caption
+dictionaries. Inside the templates there are nested includes via markers that
+app.js expands with the `ltmp()` function.
 
-## Как выбирается язык
+## How the language is chosen
 
-Логика — в [app.js](../app.js) (около строк 142–177):
+The logic is in [app.js](../app.js) (around lines 142–177):
 
-1. `langs_arr` сопоставляет коды локали браузера (`ru-RU`, `zh-CN`, `en-GB`, …) с
-   поддерживаемыми языками (`ru`/`en`/`zh`).
-2. `available_langs` — список языков для переключателя в интерфейсе
+1. `langs_arr` maps browser locale codes (`ru-RU`, `zh-CN`, `en-GB`, …) to the
+   supported languages (`ru`/`en`/`zh`).
+2. `available_langs` is the list of languages for the in-app switcher
    (`English`, `Русский`, `中文`).
-3. Если в `localStorage` есть сохранённый выбор `lang` — берётся он; иначе язык
-   подбирается по `navigator.languages`; иначе — `default_lang = 'en'`.
-4. Активный словарь: `ltmp_arr = window['ltmp_' + selected_lang + '_arr']`.
+3. If `localStorage` has a saved `lang` choice — it is used; otherwise the language
+   is picked from `navigator.languages`; otherwise — `default_lang = 'en'`.
+4. Active dictionary: `ltmp_arr = window['ltmp_' + selected_lang + '_arr']`.
 
-Выбранный язык сохраняется в `localStorage['lang']`.
+The chosen language is saved in `localStorage['lang']`.
 
-## Как добавить новый язык
+## How to add a new language
 
-1. Скопируйте `ltmp_en.js` в `ltmp_<code>.js`, переименуйте переменную в
-   `ltmp_<code>_arr` и переведите значения (ключи и структуру не менять).
-2. Подключите файл в [index.template.php](../index.template.php) рядом с
-   остальными `ltmp_*.js`.
-3. В [app.js](../app.js) добавьте код(ы) локали в `langs_arr` и запись в
+1. Copy `ltmp_en.js` to `ltmp_<code>.js`, rename the variable to
+   `ltmp_<code>_arr` and translate the values (do not change the keys or structure).
+2. Load the file in [index.template.php](../index.template.php) next to the other
+   `ltmp_*.js`.
+3. In [app.js](../app.js) add the locale code(s) to `langs_arr` and an entry to
    `available_langs`.
 
-## Проверка полноты перевода
+## Checking translation completeness
 
-Быстрая проверка, что нет непереведённых строк (в англ./кит. не осталось
-кириллицы) и что набор ключей совпадает во всех языках:
+A quick check that there are no untranslated strings (no Cyrillic left in the
+English/Chinese files) and that the key sets match across languages:
 
 ```bash
 python - <<'PY'

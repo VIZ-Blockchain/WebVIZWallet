@@ -1,64 +1,66 @@
-# Установка и развёртывание
+**English** | [Русский](ru/setup.md)
 
-## Требования
+# Installation and deployment
 
-- PHP 7.3+ (проверено на 8.3/8.4) с расширениями `mysqli`, `gmp`/`bcmath`
-  (для `class/viz_keys.php`);
+## Requirements
+
+- PHP 7.3+ (tested on 8.3/8.4) with the `mysqli` and `gmp`/`bcmath` extensions
+  (used by `class/viz_keys.php`);
 - MySQL / MariaDB;
-- nginx (или другой веб-сервер) с проксированием всех запросов на `index.php`;
-- доступ к публичной JSON-RPC ноде VIZ.
+- nginx (or another web server) proxying all requests to `index.php`;
+- access to a public VIZ JSON-RPC node.
 
-> Минимальный вариант: если серверные витрины (аккаунты на продаже, платные
-> подписки) не нужны, БД и cron можно не поднимать — кошелёк работает и без них.
+> Minimal option: if the server-side marketplaces (accounts for sale, paid
+> subscriptions) are not needed, the DB and cron can be skipped — the wallet
+> works without them.
 
-## Шаги
+## Steps
 
-1. **Скопировать код** в корень сайта (пример развёрнут в корне домена
-   `https://wallet.viz.world/`).
+1. **Copy the code** into the site root (the live example is served from the
+   domain root `https://wallet.viz.world/`).
 
-2. **Создать конфигурацию.** Скопируйте пример и заполните значения:
+2. **Create the configuration.** Copy the example and fill in the values:
 
    ```bash
    cp config.example.php config.php
    ```
 
-   `config.php` игнорируется git (см. [.gitignore](../.gitignore)) и **не должен
-   попадать в репозиторий** — там пароль админа и доступ к БД. Параметры:
+   `config.php` is git-ignored (see [.gitignore](../.gitignore)) and **must not**
+   end up in the repository — it holds the admin password and DB access. Keys:
 
-   | Ключ | Описание |
-   |------|----------|
-   | `$users_arr` | Логины/пароли для входа в `admin.php`. |
-   | `server_timezone` | Часовой пояс сервера. |
-   | `db_host` / `db_login` / `db_password` / `db_base` | Доступ к MySQL. |
-   | `jsonrpc_node` | URL JSON-RPC ноды VIZ. |
+   | Key | Description |
+   |-----|-------------|
+   | `$users_arr` | Logins/passwords for `admin.php`. |
+   | `server_timezone` | Server time zone. |
+   | `db_host` / `db_login` / `db_password` / `db_base` | MySQL access. |
+   | `jsonrpc_node` | VIZ JSON-RPC node URL. |
 
-3. **Создать таблицы БД** (только если нужны витрины):
+3. **Create the DB tables** (only if the marketplaces are needed):
 
    ```bash
    mysql -u <login> -p <database> < tables.sql
    ```
 
-4. **Настроить nginx.** Возьмите за основу [nginx.example.conf](../nginx.example.conf):
-   все запросы, не соответствующие файлу/директории, переписываются на
-   `index.php`, `*.php` обрабатываются через php-fpm.
+4. **Configure nginx.** Use [nginx.example.conf](../nginx.example.conf) as a base:
+   any request that does not match a file/directory is rewritten to `index.php`,
+   and `*.php` is handled via php-fpm.
 
-5. **Настроить cron** для обновления витрин (только если нужны витрины):
+5. **Set up cron** to refresh the marketplaces (only if needed):
 
    ```cron
    */10 * * * * php /var/www/wallet.viz.world/updater.php > /dev/null 2>&1
    ```
 
-   Периодичность — на ваше усмотрение (например, раз в 10 минут).
+   The interval is up to you (e.g. every 10 minutes).
 
-6. **Проверить админку.** Откройте `/admin.php`, войдите под логином/паролем из
-   `$users_arr`, убедитесь, что видны разделы витрин.
+6. **Check the admin panel.** Open `/admin.php`, log in with a login/password from
+   `$users_arr`, and make sure the marketplace sections are visible.
 
-## Безопасность
+## Security
 
-- Никогда не коммитьте `config.php` и приватные ключи. `.gitignore` уже
-  защищает `config.php`, `*.wif`, `*.key`, `*.pem`.
-- Пароль админа в `config.php` хранится в открытом виде — используйте отдельный
-  сильный пароль и ограничьте доступ к `admin.php` на уровне сервера при
-  необходимости.
-- В репозитории **не должно быть** инструментов вроде Adminer и т.п.: они дают
-  прямой доступ к БД.
+- Never commit `config.php` or private keys. `.gitignore` already protects
+  `config.php`, `*.wif`, `*.key`, `*.pem`.
+- The admin password in `config.php` is stored in plain text — use a separate
+  strong password and restrict access to `admin.php` at the server level if needed.
+- The repository **must not** contain tools like Adminer and the like: they give
+  direct access to the DB.

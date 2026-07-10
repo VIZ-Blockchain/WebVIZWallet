@@ -1,71 +1,74 @@
+**English** | [Русский](README-ru.md)
+
 # wallet.VIZ.world
 
-Открытый код веб-кошелька для блокчейна [VIZ](https://viz.world/) — лёгкое
-клиент-приложение для управления аккаунтами, активами и DAO. Рабочий пример
-развёрнут в корне домена: **<https://wallet.viz.world/>**
+Open source of a web wallet for the [VIZ](https://viz.world/) blockchain — a
+lightweight client-side app for managing accounts, assets and the DAO. The live
+instance is served from the domain root: **<https://wallet.viz.world/>**
 
-Автономная (standalone) версия — один самодостаточный HTML-файл — автоматически
-собирается и публикуется в GitHub Pages при каждом релизе:
-**<https://viz-blockchain.github.io/WebVIZWallet/>** (см. [docs/build.md](docs/build.md)).
+A standalone version — a single self-contained HTML file — is built and published
+to GitHub Pages automatically on every release:
+**<https://viz-blockchain.github.io/WebVIZWallet/>** (see [docs/build.md](docs/build.md)).
 
-Все криптографические операции (подпись транзакций приватными ключами)
-выполняются в браузере пользователя. Ключи хранятся только в `localStorage` и не
-передаются на сервер. Серверная (PHP) часть необязательна и отвечает лишь за
-вспомогательные функции.
+All cryptographic operations (signing transactions with private keys) run in the
+user's browser. Keys are stored only in `localStorage` and are never sent to the
+server. The server-side (PHP) part is optional and only provides auxiliary
+features.
 
-## Документация
+## Documentation
 
-Подробное описание — в каталоге [docs/](docs/):
+Full description is in [docs/](docs/):
 
-- [Архитектура](docs/architecture.md) — устройство, разделение клиент/сервер, карта файлов.
-- [Установка и развёртывание](docs/setup.md) — nginx, PHP, MySQL, конфигурация.
-- [PHP-бэкенд](docs/backend.md) — роутинг, поиск/сортировка витрин, админка, cron, схема БД.
-- [Клиент](docs/frontend.md) — приложение, представления, иконки, шрифты.
-- [Локализация](docs/localization.md) — система `ltmp_*` (ru/en/zh).
-- [Сборка](docs/build.md) — автономная версия и публикация в GitHub Pages.
+- [Architecture](docs/architecture.md) — design, client/server split, file map.
+- [Setup & deployment](docs/setup.md) — nginx, PHP, MySQL, configuration.
+- [PHP backend](docs/backend.md) — routing, marketplace search/sort, admin, cron, DB schema.
+- [Frontend](docs/frontend.md) — the app, views, icons, fonts.
+- [Localization](docs/localization.md) — the `ltmp_*` system (ru/en/zh).
+- [Build](docs/build.md) — standalone version and GitHub Pages publishing.
 
-## Быстрый старт
+## Quick start
 
 ```bash
-cp config.example.php config.php   # заполнить доступы (в git не попадает)
-mysql -u <login> -p <db> < tables.sql   # только если нужны витрины
-# настроить nginx по nginx.example.conf
+cp config.example.php config.php   # fill in credentials (git-ignored)
+mysql -u <login> -p <db> < tables.sql   # only if you need the marketplaces
+# configure nginx from nginx.example.conf
 ```
 
-Минимальный вариант: если серверные витрины (аккаунты на продаже, платные
-подписки) не нужны — БД и cron можно не поднимать, кошелёк работает и без них.
+Minimal setup: if the server-side marketplaces (accounts for sale, paid
+subscriptions) are not needed, you can skip the DB and cron — the wallet works
+without them.
 
-## Структура
+## Structure
 
-### Серверные скрипты (PHP)
-- `config.example.php` — шаблон конфигурации (доступ в админку, БД, адрес ноды JSON-RPC); скопировать в `config.php`;
-- `autoloader.php` — бутстрап бэкенда (конфиг, БД, классы VIZ);
-- `index.php` — роутер: разбор URL, редиректы, подключение шаблона `index.template.php`;
-- `updater.php` — cron: обновляет витрины из ноды VIZ в MySQL;
-- `ajax.php` — API поиска и сортировки по витринам;
-- `admin.php` — админка: вход и скрытие/показ записей витрин;
-- `minify.php` — собирает автономную версию сайта в один HTML-файл;
-- `portable.php` — отдаёт автономную версию на скачивание.
+### Server-side scripts (PHP)
+- `config.example.php` — configuration template (admin access, DB, JSON-RPC node URL); copy to `config.php`;
+- `autoloader.php` — backend bootstrap (config, DB, VIZ classes);
+- `index.php` — router: URL parsing, redirects, includes the `index.template.php` template;
+- `updater.php` — cron: refreshes the marketplaces from a VIZ node into MySQL;
+- `ajax.php` — search & sort API over the marketplaces;
+- `admin.php` — admin panel: login and hiding/showing marketplace records;
+- `minify.php` — builds the standalone version of the site into a single HTML file;
+- `portable.php` — serves the standalone version as a download.
 
-### Клиент
-- `app.js`, `app.css` — приложение и стили;
-- `ltmp_ru.js`, `ltmp_en.js`, `ltmp_zh.js` — шаблоны представлений с локализацией;
-- `icons/` — SVG-иконки интерфейса; `profile/` — иконки соцсетей; `fonts/` — веб-шрифты.
+### Client
+- `app.js`, `app.css` — the application and styles;
+- `ltmp_ru.js`, `ltmp_en.js`, `ltmp_zh.js` — view templates with localization;
+- `icons/` — UI SVG icons; `profile/` — social icons; `fonts/` — web fonts.
 
-### Сопутствующие файлы
-- `tables.sql` — SQL для создания таблиц витрин;
-- `nginx.example.conf` — пример настройки nginx (перенаправление `/path/` на `index.php`);
-- `.github/workflows/pages.yml` — CI: сборка автономной версии и публикация в GitHub Pages;
-- `class/` — классы: БД, JSON-RPC клиент VIZ, работа с ключами.
+### Related files
+- `tables.sql` — SQL to create the marketplace tables;
+- `nginx.example.conf` — example nginx configuration (rewrites `/path/` to `index.php`);
+- `.github/workflows/pages.yml` — CI: builds the standalone version and publishes it to GitHub Pages;
+- `class/` — classes: DB, VIZ JSON-RPC client, key handling.
 
-## Зависимости
+## Dependencies
 
 - MySQL, nginx, PHP;
-- JSON-RPC нода VIZ;
+- a VIZ JSON-RPC node;
 - [viz-js-lib](https://www.npmjs.com/package/viz-js-lib) (`viz.min.js`);
 - [jQuery](https://jquery.com/) 3.7.1;
 - [progressbar.js](https://kimmobrunfeldt.github.io/progressbar.js/) 1.1.0.
 
-## Лицензия
+## License
 
-См. [LICENSE](LICENSE).
+See [LICENSE](LICENSE).

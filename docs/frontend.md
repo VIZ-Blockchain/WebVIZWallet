@@ -1,12 +1,15 @@
-# Клиентское приложение
+**English** | [Русский](ru/frontend.md)
 
-## Структура
+# Client application
 
-Вся логика — в [app.js](../app.js) (jQuery + [viz-js-lib](../viz.min.js)). Стили —
-в [app.css](../app.css). HTML-оболочку отдаёт [index.template.php](../index.template.php).
+## Structure
 
-Оболочка содержит «слоты» представлений (views), которые app.js показывает по
-одному в зависимости от маршрута:
+All the logic is in [app.js](../app.js) (jQuery + [viz-js-lib](../viz.min.js)).
+Styles are in [app.css](../app.css). The HTML shell is served by
+[index.template.php](../index.template.php).
+
+The shell contains view "slots" that app.js shows one at a time depending on the
+route:
 
 ```html
 <div class="view view-index"></div>
@@ -18,37 +21,37 @@
 ...
 ```
 
-Навигация построена на History API (`change_state`/`pushState`). В обычном режиме
-используются нормальные URL; в автономной (standalone) сборке — hash-роутинг
-(`window.location.hash`), см. [build.md](build.md).
+Navigation is built on the History API (`change_state`/`pushState`). In the normal
+mode regular URLs are used; in the standalone build — hash routing
+(`window.location.hash`), see [build.md](build.md).
 
-## Работа с VIZ
+## Working with VIZ
 
-Приватные ключи вводятся при подключении аккаунта и хранятся в `localStorage`
-браузера — на сервер они не передаются. Все операции идут через глобальный объект
-`viz` из viz-js-lib: `viz.api.*` (чтение), `viz.broadcast.*` (транзакции),
-`viz.auth.*` (ключи), `viz.memo.*` (шифрование заметок). Нода выбирается
-пользователем и может переключаться (есть уведомление «нода недоступна»).
+Private keys are entered when connecting an account and stored in the browser's
+`localStorage` — they are not sent to the server. All operations go through the
+global `viz` object from viz-js-lib: `viz.api.*` (reads), `viz.broadcast.*`
+(transactions), `viz.auth.*` (keys), `viz.memo.*` (memo encryption). The node is
+chosen by the user and can be switched (there is a "node unavailable" notice).
 
-## Иконки
+## Icons
 
-- [icons/](../icons/) — SVG-иконки интерфейса (меню, логотип, кнопки). Ссылки
-  абсолютные от корня: `/icons/имя.svg`. Так как сайт размещается в корне домена
-  (`https://wallet.viz.world/`), пути резолвятся напрямую.
-- [profile/](../profile/) — иконки соцсетей, подставляются в карточки профилей
-  аккаунтов динамически из JS.
+- [icons/](../icons/) — UI SVG icons (menu, logo, buttons). Paths are absolute
+  from the root: `/icons/name.svg`. Since the site is served from the domain root
+  (`https://wallet.viz.world/`), the paths resolve directly.
+- [profile/](../profile/) — social icons, injected into account profile cards
+  dynamically from JS.
 
-Иконки инлайнятся в автономную сборку как base64 (см. [minify.php](../minify.php)).
+Icons are inlined into the standalone build as base64 (see [minify.php](../minify.php)).
 
-## Шрифты
+## Fonts
 
-Все веб-шрифты собраны в [fonts/](../fonts/). В текущем оформлении CSS использует
-системные/веб-безопасные семейства (`Roboto`, `Arial`, `IBM Plex Serif`), поэтому
-файлы шрифтов в `fonts/` (scada, Arial) сейчас **не подключаются** через
-`@font-face`. Они оставлены на случай возврата к фирменному начертанию; при
-необходимости их следует подключить в `app.css`, иначе — можно удалить.
+All web fonts live in [fonts/](../fonts/). The current design uses
+system/web-safe families (`Roboto`, `Arial`, `IBM Plex Serif`), so the font files
+in `fonts/` (scada, Arial) are currently **not** loaded via `@font-face`. They are
+kept in case the branded typeface is restored; if needed they should be hooked up
+in `app.css`, otherwise they can be removed.
 
-## Локализация
+## Localization
 
-Тексты вынесены в шаблоны `ltmp_ru.js` / `ltmp_en.js` / `ltmp_zh.js`. Подробнее —
-[localization.md](localization.md).
+Texts are extracted into the `ltmp_ru.js` / `ltmp_en.js` / `ltmp_zh.js` templates.
+See [localization.md](localization.md).

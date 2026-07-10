@@ -1,29 +1,32 @@
-# Документация wallet.VIZ.world
+**English** | [Русский](ru/README.md)
 
-Открытый код веб-кошелька для блокчейна [VIZ](https://viz.world/). Это лёгкое
-клиент-приложение: все криптографические операции (подпись транзакций приватными
-ключами) выполняются в браузере пользователя, ключи не покидают устройство.
+# wallet.VIZ.world documentation
 
-Рабочий пример развёрнут в корне домена: **<https://wallet.viz.world/>**
+Open source of a web wallet for the [VIZ](https://viz.world/) blockchain. It is a
+lightweight client-side app: all cryptographic operations (signing transactions
+with private keys) run in the user's browser, keys never leave the device.
 
-## Содержание
+The live instance is served from the domain root: **<https://wallet.viz.world/>**
 
-- [architecture.md](architecture.md) — общая архитектура, разделение клиент/сервер, карта файлов.
-- [setup.md](setup.md) — установка и развёртывание (nginx, PHP, MySQL, конфигурация).
-- [backend.md](backend.md) — PHP-бэкенд: роутинг, поиск/сортировка, админка, cron-обновление, схема БД.
-- [frontend.md](frontend.md) — клиентское приложение: шаблон, представления (views), иконки, шрифты.
-- [localization.md](localization.md) — система локализации `ltmp_*` (ru/en/zh).
-- [build.md](build.md) — сборка автономной (standalone) версии и публикация в GitHub Pages.
+## Contents
 
-## Кратко о технологиях
+- [architecture.md](architecture.md) — overall architecture, client/server split, file map.
+- [setup.md](setup.md) — installation and deployment (nginx, PHP, MySQL, configuration).
+- [backend.md](backend.md) — PHP backend: routing, search/sort, admin, cron refresh, DB schema.
+- [frontend.md](frontend.md) — client app: template, views, icons, fonts.
+- [localization.md](localization.md) — the `ltmp_*` localization system (ru/en/zh).
+- [build.md](build.md) — building the standalone version and publishing to GitHub Pages.
 
-| Слой | Технологии |
-|------|-----------|
-| Клиент | HTML/CSS, [jQuery](https://jquery.com/), [viz-js-lib](https://www.npmjs.com/package/viz-js-lib), [progressbar.js](https://kimmobrunfeldt.github.io/progressbar.js/) |
-| Сервер | PHP (роутинг, поиск, админка, cron), MySQL, nginx |
-| Блокчейн | JSON-RPC нода VIZ |
+## Technologies at a glance
 
-Важно: серверная часть **необязательна** для работы кошелька. Подпись и отправка
-транзакций идут напрямую с браузера на ноду VIZ. PHP используется только для
-вспомогательных функций — витрины аккаунтов/подписок на продажу с поиском и
-сортировкой (см. [backend.md](backend.md)) и для сборки автономной версии.
+| Layer | Technologies |
+|-------|--------------|
+| Client | HTML/CSS, [jQuery](https://jquery.com/), [viz-js-lib](https://www.npmjs.com/package/viz-js-lib), [progressbar.js](https://kimmobrunfeldt.github.io/progressbar.js/) |
+| Server | PHP (routing, search, admin, cron), MySQL, nginx |
+| Blockchain | VIZ JSON-RPC node |
+
+Important: the server side is **optional** for the wallet to work. Signing and
+broadcasting transactions happen directly from the browser to a VIZ node. PHP is
+used only for auxiliary features — the marketplaces of accounts/subscriptions for
+sale with search and sorting (see [backend.md](backend.md)) and for building the
+standalone version.
