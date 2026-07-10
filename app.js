@@ -2974,6 +2974,26 @@ function view_assets(path,params,title){
 					},100);
 					load_history($('.page-award .history'),false,true);
 				}
+				if('fixed-award'==path[2]){
+					clearTimeout(update_dgp_timer);
+					update_dgp_timer=setTimeout(function(){
+						update_dgp(true);
+						$('.page-fixed-award input[name=fixed-award-account]').val('');
+						$('.page-fixed-award input[name=fixed-award-amount]').val('');
+						$('.page-fixed-award input[name=fixed-award-memo]').val('');
+						$('.page-fixed-award input[name=fixed-award-account]').focus();
+						if(typeof params.to !== "undefined"){
+							$('.page-fixed-award input[name=fixed-award-account]').val(params.to);
+						}
+						if(typeof params.amount !== "undefined"){
+							$('.page-fixed-award input[name=fixed-award-amount]').val(params.amount);
+						}
+						if(typeof params.memo !== "undefined"){
+							$('.page-fixed-award input[name=fixed-award-memo]').val(params.memo);
+						}
+					},100);
+					load_history($('.page-fixed-award .history'),false,true);
+				}
 				if('checks'==path[2]){
 					/*
 					$('.page-checks .icon-check[rel=create]').css('display','none');
@@ -4329,6 +4349,130 @@ function award(account,energy,memo,encode,el){
 			page.find('.award-error').html(ltmp_arr.default_recipient_error);
 
 			page.find('.award-action').removeAttr('disabled');
+			page.find('.submit-button-ring').css('display','none');
+		}
+	});
+}
+function fixed_award(account,amount,max_energy,memo,encode,el){
+	let page=$(el).closest('.page');
+	page.find('.fixed-award-action').attr('disabled','disabled');
+	page.find('.icon-check').css('display','none');
+	page.find('.submit-button-ring').css('display','inline-block');
+
+	page.find('.fixed-award-error').html('');
+	page.find('.fixed-award-success').html('');
+
+	page.find('input[name=fixed-award-account]').val(account);
+	page.find('input[name=fixed-award-account]').removeClass('red');
+	if((''==account) || (!(/^([a-z0-9\-\.]*)$/).test(account))){
+		page.find('input[name=fixed-award-account]').addClass('red');
+		page.find('input[name=fixed-award-account]').focus();
+		page.find('.fixed-award-error').html(ltmp_arr.default_recipient_error);
+
+		page.find('.fixed-award-action').removeAttr('disabled');
+		page.find('.submit-button-ring').css('display','none');
+		return;
+	}
+
+	// reward_amount — фиксированная сумма в VIZ (TOKEN_SYMBOL, >0)
+	amount=fast_str_replace(',','.',amount);
+	let reward=parseFloat(amount);
+	page.find('input[name=fixed-award-amount]').removeClass('red');
+	if(isNaN(reward) || (reward<=0)){
+		page.find('input[name=fixed-award-amount]').addClass('red');
+		page.find('input[name=fixed-award-amount]').focus();
+		page.find('.fixed-award-error').html(ltmp_arr.default_operation_error);
+
+		page.find('.fixed-award-action').removeAttr('disabled');
+		page.find('.submit-button-ring').css('display','none');
+		return;
+	}
+	let reward_amount=reward.toFixed(3)+' VIZ';
+
+	// max_energy — потолок энергии (%*100, 0..10000); пусто = 100%
+	max_energy=fast_str_replace(',','.',max_energy);
+	if(''==max_energy){max_energy='100';}
+	let max_energy_int=Math.floor(parseFloat(max_energy).toFixed(2)*100);
+	if(isNaN(max_energy_int) || (max_energy_int<0)){max_energy_int=0;}
+	if(max_energy_int>10000){max_energy_int=10000;}
+
+	viz.api.getAccounts([account],function(err,response){
+		if(typeof response[0] !== 'undefined'){
+			let recipient_memo=response[0].memo_key;
+			if(encode){
+				page.find('input[name=memo-key]').removeClass('red');
+				let encoded_memo=false;
+				let memo_key_input=page.find('input[name=memo-key]').val().trim();
+				if(''!=memo_key_input){
+					try{
+						encoded_memo=viz.memo.encode(memo_key_input,recipient_memo,'#'+memo);
+					}
+					catch(e){
+						page.find('input[name=memo-key]').addClass('red');
+						page.find('input[name=memo-key]').focus();
+
+						page.find('.fixed-award-error').html(ltmp_arr.default_incorrect_private_key_try_again);
+						page.find('.fixed-award-action').removeAttr('disabled');
+						page.find('.submit-button-ring').css('display','none');
+						return;
+					}
+				}
+				else{
+					page.find('input[name=memo-key]').addClass('red');
+					page.find('input[name=memo-key]').focus();
+
+					page.find('.fixed-award-error').html(ltmp_arr.default_type_memo_key);
+					page.find('.fixed-award-action').removeAttr('disabled');
+					page.find('.submit-button-ring').css('display','none');
+					return;
+				}
+				if(false!==encoded_memo){
+					users[current_user].memo_key=memo_key_input;
+					save_session();
+					memo=encoded_memo;
+				}
+				else{
+					page.find('.fixed-award-error').html(ltmp_arr.default_memo_encode_error);
+					page.find('.fixed-award-action').removeAttr('disabled');
+					page.find('.submit-button-ring').css('display','none');
+					return;
+				}
+			}
+			let beneficiaries_list=[];
+			viz.broadcast.fixedAward(users[current_user].active_key,current_user,account,reward_amount,max_energy_int,0,memo,beneficiaries_list,function(err,result){
+				if(!err){
+					page.find('.fixed-award-success').html(ltmp(ltmp_arr.fixed_award_info_success,{account:account,amount:reward.toFixed(3)}));
+
+					page.find('.fixed-award-action').removeAttr('disabled');
+					page.find('.submit-button-ring').css('display','none');
+					page.find('.icon-check').css('display','inline-block');
+
+					page.find('input[name=fixed-award-amount]').val('');
+					page.find('input[name=fixed-award-memo]').val('');
+					page.find('input[name=encode-memo]').prop('checked',false);
+					page.find('input[name=memo-key]').val('');
+					page.find('.memo-key-optional').css('display','none');
+
+					update_balances($('.page-fixed-award .account-balance'));
+
+					setTimeout(load_history,3000,page.find('.history'));
+				}
+				else{
+					page.find('.fixed-award-error').html(ltmp_arr.default_operation_error);
+
+					page.find('.fixed-award-action').removeAttr('disabled');
+					page.find('.submit-button-ring').css('display','none');
+
+					console.log(err);
+				}
+			});
+		}
+		else{
+			page.find('input[name=fixed-award-account]').addClass('red');
+			page.find('input[name=fixed-award-account]').focus();
+			page.find('.fixed-award-error').html(ltmp_arr.default_recipient_error);
+
+			page.find('.fixed-award-action').removeAttr('disabled');
 			page.find('.submit-button-ring').css('display','none');
 		}
 	});
@@ -6424,6 +6568,14 @@ function app_mouse(e){
 		let memo=$('.page-award input[name=award-memo]').val().trim();
 		let encode=$('.page-award input[name=encode-memo]').prop('checked');
 		award(account,energy,memo,encode,target);
+	}
+	if($(target).hasClass('fixed-award-action')){
+		let account=$('.page-fixed-award input[name=fixed-award-account]').val().toLowerCase().trim();
+		let amount=$('.page-fixed-award input[name=fixed-award-amount]').val().trim();
+		let max_energy=$('.page-fixed-award input[name=fixed-award-max-energy]').val().trim();
+		let memo=$('.page-fixed-award input[name=fixed-award-memo]').val().trim();
+		let encode=$('.page-fixed-award input[name=encode-memo]').prop('checked');
+		fixed_award(account,amount,max_energy,memo,encode,target);
 	}
 	if($(target).hasClass('fund-create-request-action')){
 		let descr=$('.page-fund-create-request input[name=fund-create-request-descr]').val().trim();

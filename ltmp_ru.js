@@ -480,6 +480,7 @@ var ltmp_ru_arr={
 						<div class="energy-radial"><div class="energy-percentage captions"><span class="value" rel="energy">&hellip;</span><span class="symbol">%</span></div></div>
 						<div class="wide-buttons captions">
 							<a class="wide-button color-green" data-href="/assets/award/">Награды</a>
+							<a class="wide-button color-green" data-href="/assets/fixed-award/">Фикс. награда</a>
 						</div>
 					</div>
 					<div class="column column-3 shadow grid">
@@ -904,6 +905,74 @@ var ltmp_ru_arr={
 						<h3>История награждений <span class="loading">%%default_loading%%</span></h3>
 					</div>
 					<div class="table-data history" data-operations="award,receive_award" data-lower-bound="" data-upper-bound="">
+					</div>
+					<div class="table-footer">
+						<a class="inline-button history-load-more-action">%%default_loading_more%%</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="page page-fixed-award" data-title="Фиксированная награда">
+			<div class="card">
+				<h3>Фиксированная награда</h3>
+				<div class="account-balance captions">
+					<div>Энергия: <span rel="energy">&hellip;</span>%</div>
+					<div>Капитал: <span rel="effective_shares">&hellip;</span> viz</div>
+				</div>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Получатель:</span>
+						<input type="text" name="fixed-award-account" class="simple-rounded">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Сумма награды:</span>
+						<input type="text" name="fixed-award-amount" class="simple-rounded" placeholder="0.000 VIZ">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Макс. энергия:</span>
+						<input type="text" name="fixed-award-max-energy" class="simple-rounded" placeholder="100.00%">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Заметка:</span>
+						<input type="text" name="fixed-award-memo" class="simple-rounded" placeholder="">
+					</label>
+				</p>
+				<p>
+					<label class="check color-red">Зашифровать заметку<input type="checkbox" name="encode-memo"><span class="mark"></span></label>
+				</p>
+				<p class="memo-key-optional">
+					<label class="input-descr">
+						<span class="input-caption">Ключ заметок:</span>
+						<input type="text" name="memo-key" class="simple-rounded" placeholder="5K...">
+					</label>
+				</p>
+				<p class="red fixed-award-error"></p>
+				<p class="green fixed-award-success"></p>
+				<p>
+					<input class="fixed-award-action green-button captions" type="button" value="Наградить">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-green icon-check"></span>
+				</p>
+				<div class="addon captions">
+					<h3>Подсказка</h3>
+					<p>Фиксированная награда выплачивает получателю точную сумму в VIZ из вашего социального капитала.</p>
+					<p>Макс. энергия ограничивает, сколько энергии вы согласны потратить на покрытие награды.</p>
+				</div>
+
+				<p><hr><a data-href="/assets/">%%default_return_link%%</a></p>
+
+				<div class="table-view captions">
+					<div class="table-header">
+						<h3>История фикс. наград <span class="loading">%%default_loading%%</span></h3>
+					</div>
+					<div class="table-data history" data-operations="fixed_award" data-lower-bound="" data-upper-bound="">
 					</div>
 					<div class="table-footer">
 						<a class="inline-button history-load-more-action">%%default_loading_more%%</a>
@@ -2185,6 +2254,7 @@ var ltmp_ru_arr={
 	default_out_of:' из ',
 	default_until:' до ',
 	award_info_success:'Награждение {account} успешно выполнено, затрачено {energy}% энергии',
+	fixed_award_info_success:'Фиксированная награда {amount} VIZ для {account} успешно выполнена',
 	default_check_amount:'Проверьте сумму',
 	default_operation_error:'Ошибка при подтверждении операции',
 	default_recipient_error:'Проверьте аккаунт получателя',

@@ -481,6 +481,7 @@ var ltmp_zh_arr = {
 						<div class="energy-radial"><div class="energy-percentage captions"><span class="value" rel="energy">&hellip;</span><span class="symbol">%</span></div></div>
 						<div class="wide-buttons captions">
 							<a class="wide-button color-green" data-href="/assets/award/">奖励</a>
+							<a class="wide-button color-green" data-href="/assets/fixed-award/">固定奖励</a>
 						</div>
 					</div>
 					<div class="column column-3 shadow grid">
@@ -905,6 +906,74 @@ var ltmp_zh_arr = {
 						<h3>奖励历史 <span class="loading">%%default_loading%%</span></h3>
 					</div>
 					<div class="table-data history" data-operations="award,receive_award" data-lower-bound="" data-upper-bound="">
+					</div>
+					<div class="table-footer">
+						<a class="inline-button history-load-more-action">%%default_loading_more%%</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="page page-fixed-award" data-title="固定奖励">
+			<div class="card">
+				<h3>固定奖励</h3>
+				<div class="account-balance captions">
+					<div>能量：<span rel="energy">&hellip;</span>%</div>
+					<div>资本：<span rel="effective_shares">&hellip;</span> viz</div>
+				</div>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">接收者：</span>
+						<input type="text" name="fixed-award-account" class="simple-rounded">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">奖励金额：</span>
+						<input type="text" name="fixed-award-amount" class="simple-rounded" placeholder="0.000 VIZ">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">最大能量：</span>
+						<input type="text" name="fixed-award-max-energy" class="simple-rounded" placeholder="100.00%">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">附言：</span>
+						<input type="text" name="fixed-award-memo" class="simple-rounded" placeholder="">
+					</label>
+				</p>
+				<p>
+					<label class="check color-red">加密附言<input type="checkbox" name="encode-memo"><span class="mark"></span></label>
+				</p>
+				<p class="memo-key-optional">
+					<label class="input-descr">
+						<span class="input-caption">备注密钥：</span>
+						<input type="text" name="memo-key" class="simple-rounded" placeholder="5K...">
+					</label>
+				</p>
+				<p class="red fixed-award-error"></p>
+				<p class="green fixed-award-success"></p>
+				<p>
+					<input class="fixed-award-action green-button captions" type="button" value="固定奖励">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-green icon-check"></span>
+				</p>
+				<div class="addon captions">
+					<h3>提示</h3>
+					<p>固定奖励从您的社会资本中向接收者支付确定金额的 VIZ。</p>
+					<p>最大能量限制您愿意花费多少能量来支付此奖励。</p>
+				</div>
+
+				<p><hr><a data-href="/assets/">%%default_return_link%%</a></p>
+
+				<div class="table-view captions">
+					<div class="table-header">
+						<h3>固定奖励历史 <span class="loading">%%default_loading%%</span></h3>
+					</div>
+					<div class="table-data history" data-operations="fixed_award" data-lower-bound="" data-upper-bound="">
 					</div>
 					<div class="table-footer">
 						<a class="inline-button history-load-more-action">%%default_loading_more%%</a>
@@ -2183,6 +2252,7 @@ var ltmp_zh_arr = {
 	default_out_of:' 共 ',
 	default_until:' 直到 ',
 	award_info_success:'奖励 {account} 成功完成，消耗了 {energy}% 能量',
+	fixed_award_info_success:'成功向 {account} 发放固定奖励 {amount} VIZ',
 	default_check_amount:'请检查金额',
 	default_operation_error:'操作确认错误',
 	default_recipient_error:'请检查接收者账户',
