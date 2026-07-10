@@ -6,101 +6,184 @@ class viz_jsonrpc_web{
 	public $result_arr=array();
 	public $post_num=1;
 	public $header_arr=array();
+	public $last_url='';
+	public $increase_post_num=true;
+	public $return_only_result=true;
 	function set_header($name,$value){
 		$this->header_arr[$name]=$value;
 		if(''==$value){
 			unset($this->header_arr[$name]);
 		}
 	}
+	//synced with VIZ-Blockchain/viz-php-lib class/VIZ/JsonRPC.php (server read-only)
 	private $api=array(
-		//https://github.com/VIZ-World/viz-world/blob/master/plugins/account_by_key/account_by_key_plugin.cpp
+		//account_by_key
+		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/account_by_key/account_by_key_plugin.cpp
 		'get_key_references'=>'account_by_key',
 
-		//https://github.com/VIZ-World/viz-world/blob/master/plugins/account_history/plugin.cpp
+		//account_history
+		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/account_history/plugin.cpp
 		'get_account_history'=>'account_history',
 
-		//https://github.com/VIZ-World/viz-world/blob/master/plugins/auth_util/plugin.cpp
-		'check_authority_signature'=>'auth_util',
-
-		//https://github.com/VIZ-World/viz-world/blob/master/plugins/block_info/plugin.cpp
-		'get_block_info'=>'block_info',
-		'get_blocks_with_info'=>'block_info',
-
-		//https://github.com/VIZ-World/viz-world/blob/master/plugins/operation_history/plugin.cpp
-		'get_ops_in_block'=>'operation_history',
-		'get_transaction'=>'operation_history',
-
-		//https://github.com/VIZ-World/viz-world/blob/master/plugins/witness_api/plugin.cpp
-		/* Witnesses */
-		'get_current_median_history_price'=>'witness_api',
-		'get_witness_schedule'=>'witness_api',
-		'get_witnesses'=>'witness_api',
-		'get_witness_by_account'=>'witness_api',
-		'get_witnesses_by_vote'=>'witness_api',
-		'get_witnesses_by_counted_vote'=>'witness_api',
-		'get_witness_count'=>'witness_api',
-		'lookup_witness_accounts'=>'witness_api',
-		'get_active_witnesses'=>'witness_api',
-
-		//https://github.com/VIZ-World/viz-world/blob/master/plugins/database_api/api.cpp
-		/* Blocks and transactions */
-		'get_block_header'=>'database_api',
-		'get_block'=>'database_api',
-		'set_block_applied_callback'=>'database_api',
-		'get_config'=>'database_api',
-		'get_dynamic_global_properties'=>'database_api',
-		'get_chain_properties'=>'database_api',
-		'get_hardfork_version'=>'database_api',
-		'get_next_scheduled_hardfork'=>'database_api',
-		'get_accounts_on_sale'=>'database_api',
-		'get_subaccounts_on_sale'=>'database_api',
-		/* Accounts */
-		'get_accounts'=>'database_api',
-		'lookup_account_names'=>'database_api',
-		'lookup_accounts'=>'database_api',
-		'get_account_count'=>'database_api',
-		'get_owner_history'=>'database_api',
-		'get_recovery_request'=>'database_api',
-		'get_escrow'=>'database_api',
-		'get_withdraw_routes'=>'database_api',
-		'get_account_bandwidth'=>'database_api',
-		/* Authority / validation */
-		'get_transaction_hex'=>'database_api',
-		'get_required_signatures'=>'database_api',
-		'get_potential_signatures'=>'database_api',
-		'verify_authority'=>'database_api',
-		'verify_account_authority'=>'database_api',
-
-		/* Committee */
+		//committee_api
+		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/committee_api/committee_api.cpp
 		'get_committee_request'=>'committee_api',
 		'get_committee_request_votes'=>'committee_api',
 		'get_committee_requests_list'=>'committee_api',
-		/* Invites */
-		'get_invites_list'=>'invite_api',
+
+		//custom_protocol_api
+		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/custom_protocol_api/custom_protocol_api.cpp
+		'get_account'=>'custom_protocol_api',
+
+		//database_api
+		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/database_api/api.cpp
+		/* Blocks and transactions */
+		'get_block'=>'database_api',
+		'get_block_header'=>'database_api',
+		'get_irreversible_block'=>'database_api',
+		'get_irreversible_block_header'=>'database_api',
+		'set_block_applied_callback'=>'database_api',
+		'get_chain_properties'=>'database_api',
+		'get_config'=>'database_api',
+		'get_database_info'=>'database_api',
+		'get_dynamic_global_properties'=>'database_api',
+		'get_hardfork_version'=>'database_api',
+		'get_next_scheduled_hardfork'=>'database_api',
+		/* Accounts */
+		'get_account_count'=>'database_api',
+		'get_accounts'=>'database_api',
+		'get_accounts_on_sale'=>'database_api',
+		'get_accounts_on_auction'=>'database_api',
+		'get_escrow'=>'database_api',
+		'get_expiring_vesting_delegations'=>'database_api',
+		'get_master_history'=>'database_api',
+		'get_recovery_request'=>'database_api',
+		'get_subaccounts_on_sale'=>'database_api',
+		'get_vesting_delegations'=>'database_api',
+		'get_withdraw_routes'=>'database_api',
+		'lookup_account_names'=>'database_api',
+		'lookup_accounts'=>'database_api',
+		/* Authority / validation */
+		'get_potential_signatures'=>'database_api',
+		'get_proposed_transactions'=>'database_api',
+		'get_required_signatures'=>'database_api',
+		'get_transaction_hex'=>'database_api',
+		'verify_account_authority'=>'database_api',
+		'verify_authority'=>'database_api',
+
+		//invite_api
+		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/invite_api/invite_api.cpp
 		'get_invite_by_id'=>'invite_api',
 		'get_invite_by_key'=>'invite_api',
+		'get_invites_list'=>'invite_api',
 
-		//https://github.com/VIZ-World/viz-world/blob/master/plugins/raw_block/plugin.cpp
+		//network_broadcast_api
+		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/network_broadcast_api/network_broadcast_api.cpp
+		'broadcast_block'=>'network_broadcast_api',
+		'broadcast_transaction'=>'network_broadcast_api',
+		'broadcast_transaction_synchronous'=>'network_broadcast_api',
+		'broadcast_transaction_with_callback'=>'network_broadcast_api',
+
+		//operation_history
+		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/operation_history/plugin.cpp
+		'get_ops_in_block'=>'operation_history',
+		'get_transaction'=>'operation_history',
+
+		//paid_subscription_api
+		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/paid_subscription_api/paid_subscription_api.cpp
+		'get_active_paid_subscriptions'=>'paid_subscription_api',
+		'get_inactive_paid_subscriptions'=>'paid_subscription_api',
+		'get_paid_subscription_options'=>'paid_subscription_api',
+		'get_paid_subscription_status'=>'paid_subscription_api',
+		'get_paid_subscriptions'=>'paid_subscription_api',
+
+		//validator_api (renamed from witness_api)
+		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/witness_api/plugin.cpp
+		'get_active_validators'=>'validator_api',
+		'get_active_witnesses'=>'validator_api',
+		'get_validator_by_account'=>'validator_api',
+		'get_witness_by_account'=>'validator_api',
+		'get_validator_count'=>'validator_api',
+		'get_witness_count'=>'validator_api',
+		'get_validator_schedule'=>'validator_api',
+		'get_witness_schedule'=>'validator_api',
+		'get_validators'=>'validator_api',
+		'get_witnesses'=>'validator_api',
+		'get_validators_by_counted_vote'=>'validator_api',
+		'get_witnesses_by_counted_vote'=>'validator_api',
+		'get_validators_by_vote'=>'validator_api',
+		'get_witnesses_by_vote'=>'validator_api',
+		'lookup_validator_accounts'=>'validator_api',
+		'lookup_witness_accounts'=>'validator_api',
+
+		//prediction_market_api (On1x, HF14) — all PM read methods, limit<=1000, pagination
+		/* Markets */
+		'get_market'=>'prediction_market_api',
+		'list_markets'=>'prediction_market_api',
+		'list_markets_by_oracle'=>'prediction_market_api',
+		'list_markets_awaiting_resolution'=>'prediction_market_api',
+		'list_markets_by_creator'=>'prediction_market_api',
+		'get_market_outcomes'=>'prediction_market_api',
+		'get_market_weight_sums'=>'prediction_market_api',
+		'get_market_bets'=>'prediction_market_api',
+		'get_account_positions'=>'prediction_market_api',
+		'get_market_liquidity'=>'prediction_market_api',
+		'get_market_full'=>'prediction_market_api',
+		/* Leverage */
+		'get_account_leverage_positions'=>'prediction_market_api',
+		'get_market_leverage_positions'=>'prediction_market_api',
+		'get_creator_ban'=>'prediction_market_api',
+		'get_leverage_quote'=>'prediction_market_api',
+		'get_leverage_close_preview'=>'prediction_market_api',
+		'get_leverage_convert_preview'=>'prediction_market_api',
+		/* Oracles */
+		'get_oracle'=>'prediction_market_api',
+		'list_oracles'=>'prediction_market_api',
+		/* Disputes */
+		'get_dispute'=>'prediction_market_api',
+		'get_dispute_votes'=>'prediction_market_api',
+		/* Lazy pool & chain properties */
+		'get_lazy_pool'=>'prediction_market_api',
+		'get_lazy_deposit'=>'prediction_market_api',
+		'get_lazy_allocations'=>'prediction_market_api',
+		'get_market_lazy_allocation'=>'prediction_market_api',
+		'get_pm_chain_properties'=>'prediction_market_api',
+		/* Metadata & charts */
+		'get_market_meta'=>'prediction_market_api',
+		'list_markets_by_category'=>'prediction_market_api',
+		'get_market_categories'=>'prediction_market_api',
+		'get_market_kline'=>'prediction_market_api',
+
+		//block_info
+		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/block_info/block_info_plugin.cpp
+		'get_block_info'=>'block_info',
+		'get_blocks_with_info'=>'block_info',
+
+		//raw_block
+		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/raw_block/plugin.cpp
 		'get_raw_block'=>'raw_block',
 
+		//auth_util
+		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/auth_util/plugin.cpp
+		'check_authority_signature'=>'auth_util',
+
+		//private_message_plugin (kept for legacy WebVIZWallet features)
 		//https://github.com/VIZ-World/viz-world/blob/master/plugins/private_message/private_message_plugin.cpp
 		'get_inbox'=>'private_message_plugin',
 		'get_outbox'=>'private_message_plugin',
-
-		//https://github.com/VIZ-World/viz-world/blob/master/plugins/network_broadcast_api/network_broadcast_api.cpp
-		'broadcast_transaction'=>'network_broadcast_api',
-		'broadcast_transaction_synchronous'=>'network_broadcast_api',
-		'broadcast_block'=>'network_broadcast_api',
-		'broadcast_transaction_with_callback'=>'network_broadcast_api',
-
-		//https://github.com/VIZ-Blockchain/viz-cpp-node/blob/master/plugins/paid_subscription_api/paid_subscription_api.cpp
-		'get_paid_subscriptions'=>'paid_subscription_api',
-		'get_paid_subscription_options'=>'paid_subscription_api',
-		'get_paid_subscription_status'=>'paid_subscription_api',
-		'get_active_paid_subscriptions'=>'paid_subscription_api',
-		'get_inactive_paid_subscriptions'=>'paid_subscription_api',
 	);
-	function viz_jsonrpc_web($endpoint='',$debug=false){
+	// Method name aliases for validator_api: new name -> old name (for older nodes)
+	static $validator_method_aliases=array(
+		'get_active_validators'=>'get_active_witnesses',
+		'get_validator_by_account'=>'get_witness_by_account',
+		'get_validator_count'=>'get_witness_count',
+		'get_validator_schedule'=>'get_witness_schedule',
+		'get_validators'=>'get_witnesses',
+		'get_validators_by_counted_vote'=>'get_witnesses_by_counted_vote',
+		'get_validators_by_vote'=>'get_witnesses_by_vote',
+		'lookup_validator_accounts'=>'lookup_witness_accounts',
+	);
+	function __construct($endpoint='',$debug=false){
 		$this->endpoint=$endpoint;
 		$this->debug=$debug;
 		$this->request_arr=array();
@@ -225,12 +308,21 @@ class viz_jsonrpc_web{
 		if(false!==strpos($headers,'Content-Encoding: gzip')){$clear_r=gzdecode($clear_r);}
 		return array($headers,$clear_r);
 	}
-	function raw_method($method,$params){
-		$return='{"id":'.$this->post_num.',"jsonrpc":"2.0","method":"call","params":["'.$this->api[$method].'","'.$method.'",['.$params.']]}';
-		$this->post_num++;
+	function raw_method($method,$params,$plugin=null){
+		if(!isset($this->api[$method])){
+			return false;
+		}
+		$api_plugin=$plugin!==null?$plugin:$this->api[$method];
+		$return='{"id":'.$this->post_num.',"jsonrpc":"2.0","method":"call","params":["'.$api_plugin.'","'.$method.'",['.$params.']]}';
+		if($this->increase_post_num){
+			$this->post_num++;
+		}
 		return $return;
 	}
-	function build_method($method,$params){
+	function build_method($method,$params,$plugin=null){
+		if(!isset($this->api[$method])){
+			return false;
+		}
 		$params_arr=array();
 		$params_str='';
 		if(count($params)>0){
@@ -267,8 +359,11 @@ class viz_jsonrpc_web{
 			}
 			$params_str=implode(',',$params_arr);
 		}
-		$return='{"id":'.$this->post_num.',"jsonrpc":"2.0","method":"call","params":["'.$this->api[$method].'","'.$method.'",['.(($params)?$params_str:'').']]}';
-		$this->post_num++;
+		$api_plugin=$plugin!==null?$plugin:$this->api[$method];
+		$return='{"id":'.$this->post_num.',"jsonrpc":"2.0","method":"call","params":["'.$api_plugin.'","'.$method.'",['.(($params)?$params_str:'').']]}';
+		if($this->increase_post_num){
+			$this->post_num++;
+		}
 		return $return;
 	}
 	function execute_method($method,$params=array(),$debug=false){
@@ -278,7 +373,10 @@ class viz_jsonrpc_web{
 		else{
 			$jsonrpc_query=$this->build_method($method,$params);
 		}
-		$result=$this->get_url($this->endpoint,$jsonrpc_query,$debug);
+		if(false===$jsonrpc_query){//not an actual api method
+			return false;
+		}
+		$result=$this->get_url($this->endpoint,$jsonrpc_query,$debug||$this->debug);
 		if(false!==$result){
 			list($header,$result)=$this->parse_web_result($result);
 			if($debug||$this->debug){
@@ -291,12 +389,41 @@ class viz_jsonrpc_web{
 			if(isset($result_arr['result'])){
 				return $result_arr['result'];
 			}
-			else{
-				return false;
+			//no result: for validator_api try witness_api fallback (older nodes)
+			if($this->api[$method]==='validator_api'){
+				return $this->execute_witness_fallback($method,$params,$debug);
 			}
-		}
-		else{
 			return false;
 		}
+		else{
+			//socket error / timeout: for validator_api try witness_api fallback
+			if(isset($this->api[$method]) && $this->api[$method]==='validator_api'){
+				return $this->execute_witness_fallback($method,$params,$debug);
+			}
+			return false;
+		}
+	}
+	function execute_witness_fallback($method,$params=array(),$debug=false){
+		//resolve old method name for nodes that only know witness_* methods
+		$fallback_method=isset(self::$validator_method_aliases[$method])?self::$validator_method_aliases[$method]:$method;
+		if(!is_array($params)){
+			$jsonrpc_query=$this->raw_method($fallback_method,$params,'witness_api');
+		}
+		else{
+			$jsonrpc_query=$this->build_method($fallback_method,$params,'witness_api');
+		}
+		if(false===$jsonrpc_query){
+			return false;
+		}
+		$result=$this->get_url($this->endpoint,$jsonrpc_query,$debug||$this->debug);
+		if(false!==$result){
+			list($header,$result)=$this->parse_web_result($result);
+			$result_arr=json_decode($result,true);
+			if(isset($result_arr['result'])){
+				return $result_arr['result'];
+			}
+			return false;
+		}
+		return false;
 	}
 }
