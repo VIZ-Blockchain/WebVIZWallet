@@ -1,4 +1,8 @@
 <?php
+// Гигиена ошибок на проде: логировать, но НЕ показывать в ответе (утечка путей/SQL).
+error_reporting(E_ALL);
+ini_set('display_errors','0');
+ini_set('log_errors','1');
 include('config.php');
 $site_root=$_SERVER['DOCUMENT_ROOT'];
 putenv('TZ='.$config['server_timezone']);

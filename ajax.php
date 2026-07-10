@@ -1,6 +1,5 @@
 <?php
-error_reporting(255);
-include('autoloader.php');
+include('autoloader.php');   // error-hygiene (display_errors off) задаётся в autoloader
 
 $action=$_GET['action'];
 function show_price_in_tokens($tokens,$ticker=false){
