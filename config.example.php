@@ -15,4 +15,4 @@ $config['db_password']='password';
 $config['db_base']='database';
 
 // Публичная JSON-RPC нода VIZ для запросов к блокчейну.
-$config['jsonrpc_node']='https://vizrpc.lexa.host/';
+$config['jsonrpc_node']='https://api.viz.world/';
