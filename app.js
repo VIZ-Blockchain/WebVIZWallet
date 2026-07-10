@@ -129,7 +129,10 @@ function select_lang(lang){
 			dom_bindings(function(){
 				if(standalone){
 					parse_standalone_fullpath();
-					change_state(standalone_path+encodeURIComponent(standalone_search),{},false);
+					// standalone_search уже содержит literal "?..." из хэша — передаём как есть.
+					// encodeURIComponent здесь ломал "?" → change_state не парсил параметры, путь
+					// вида /login/%3Fback%3D... не матчил view → серый экран (баг смены языка на /login/?back=).
+					change_state(standalone_path+standalone_search,{},false);
 				}
 				else{
 					change_state(document.location.pathname+document.location.search,{},false);
