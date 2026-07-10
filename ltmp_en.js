@@ -1,15 +1,12 @@
 var ltmp_en_arr={
 	menu_preset:`
-		<a class="menu-el color-blue" data-href="/accounts/">Accounts</a>
-		<a class="menu-el color-green" data-href="/assets/">Assets</a>
-		<a class="menu-el color-orange" data-href="/dao/">DAO</a>
-		<a class="menu-el color-red" data-href="/market/">Market</a>`,
+	<a class="menu-el color-green" data-href="/assets/">Assets</a>
+	<a class="menu-el color-orange" data-href="/dao/">DAO</a>
+	<a class="menu-el color-red" data-href="/market/">Market</a>
+	<a class="menu-el color-blue" data-href="/settings/" title="Settings"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M2.213 14.06a9.945 9.945 0 0 1 0-4.12c1.11.13 2.08-.237 2.396-1.001.317-.765-.108-1.71-.986-2.403a9.945 9.945 0 0 1 2.913-2.913c.692.877 1.638 1.303 2.403.986.765-.317 1.132-1.286 1.001-2.396a9.945 9.945 0 0 1 4.12 0c-.13 1.11.237 2.08 1.001 2.396.765.317 1.71-.108 2.403-.986a9.945 9.945 0 0 1 2.913 2.913c-.877.692-1.303 1.638-.986 2.403.317.765 1.286 1.132 2.396 1.001a9.945 9.945 0 0 1 0 4.12c-1.11-.13-2.08.237-2.396 1.001-.317.765.108 1.71.986 2.403a9.945 9.945 0 0 1-2.913 2.913c-.692-.877-1.638-1.303-2.403-.986-.765.317-1.132 1.286-1.001 2.396a9.945 9.945 0 0 1-4.12 0c.13-1.11-.237-2.08-1.001-2.396-.765-.317-1.71.108-2.403.986a9.945 9.945 0 0 1-2.913-2.913c.877-.692 1.303-1.638.986-2.403-.317-.765-1.286-1.132-2.396-1.001zM4 12.21c1.1.305 2.007 1.002 2.457 2.086.449 1.085.3 2.22-.262 3.212.096.102.195.201.297.297.993-.562 2.127-.71 3.212-.262 1.084.45 1.781 1.357 2.086 2.457.14.004.28.004.42 0 .305-1.1 1.002-2.007 2.086-2.457 1.085-.449 2.22-.3 3.212.262.102-.096.201-.195.297-.297-.562-.993-.71-2.127-.262-3.212.45-1.084 1.357-1.781 2.457-2.086.004-.14.004-.28 0-.42-1.1-.305-2.007-1.002-2.457-2.086-.449-1.085-.3-2.22.262-3.212a7.935 7.935 0 0 0-.297-.297c-.993.562-2.127.71-3.212.262C13.212 6.007 12.515 5.1 12.21 4a7.935 7.935 0 0 0-.42 0c-.305 1.1-1.002 2.007-2.086 2.457-1.085.449-2.22.3-3.212-.262-.102.096-.201.195-.297.297.562.993.71 2.127.262 3.212C6.007 10.788 5.1 11.485 4 11.79c-.004.14-.004.28 0 .42zM12 15a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-2a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg></a>
+`,
 	preset_view_index:`
-		<div class="card portable-version-card small-borders text-right grey">
-				Available standalone version of the site. <a class="grey" data-href="/portable/">More details&hellip;</a>
-		</div>
 		<div class="card">
-			<h3>Your accounts</h3>
 			<div class="login">
 				<p>No accounts.</p>
 				<input type="hidden" name="back" value="">
@@ -40,25 +37,32 @@ var ltmp_en_arr={
 				<div class="sessions"></div>
 			</div>
 			<div>
-				<a class="nodes-config-action">Configure node connection (not neccessary)</a>
+				<a class="nodes-config-action">Select node (not neccessary)</a>
 			</div>
 			<div class="nodes-config hidden">
 				<hr>
-				<h3>Node connection</h3>
+				<h3>Select node</h3>
 				<div class="nodes"></div>
 			</div>
-		</div>`,
+		</div>
+		<div class="card portable-version-card small-borders text-right grey">
+				Available standalone version of the site. <a class="grey" data-href="/portable/">More details&hellip;</a>
+		</div>
+		`,
 	select_lang:`<div class="select-lang captions">{items}</div>`,
 	select_lang_item:`<a class="select-lang-action" data-lang="{lang}">{caption}</a>`,
 	preset_view_portable:`
-		<div class="card">
-			<h3>Standalone version</h3>
-			<p>Standalone version my.VIZ.plus allows you to work with VIZ accounts without connecting to the site. Even if the sub-site <a href="https://my.viz.plus">https://my.viz.plus</a> is blocked, hacked, or for other reasons temporarily or permanently suspended, you will not notice it: the local version is in no way connected with our server</p>
-			<p>To use the standalone version, download (e.g. to the Desktop so you don't lose it) the single file myvizplus.html, containing everything you need, and open it in any browser. It will work just like the web version of the site. The only difference: in the local version for technical reasons there is no Market section, it is only available on the website.</p>
-			<p>If your level of paranoia is off the charts, we suggest connecting a standalone version to your own VIZ blockchain node: you can do this on the start page without entering your username and key.</p>
-			<p>Standalone version my.viz.plus - a reliable, convenient and secure solution for VIZ account management. We recommend that you use this option so you don't depend on the availability and security of the site.</p>
-			<p><a href="/portable.php" target="_blank" class="inline-button no-margin captions">Download myvizplus.html</a></p>
-		</div>`,
+	<div class="card">
+		<h3>Standalone version</h3>
+		<p>Standalone version wallet.VIZ.world allows you to work with VIZ accounts without connecting to the site. Even if the sub-site <a href="https://wallet.viz.world">https://wallet.viz.world</a> is blocked, hacked, or for other reasons temporarily or permanently suspended, you will not notice it: the local version is in no way connected with our server</p>
+		<p>To use the standalone version, download (e.g. to the Desktop so you don't lose it) the single file wallet-viz-world-portable.html, containing everything you need, and open it in any browser. It will work just like the web version of the site. The only difference: in the local version for technical reasons there is no Market section, it is only available on the website.</p>
+		<p>If your level of paranoia is off the charts, we suggest connecting a standalone version to your own VIZ blockchain node: you can do this on the start page without entering your username and key.</p>
+		<p><a href="/portable.php" target="_blank" class="inline-button no-margin captions">Download wallet-viz-world-portable.html</a></p>
+	</div>
+	<div class="card">
+
+	</div>
+	`,
 	preset_view_portable_title:`Standalone version`,
 
 	preset_view_login:`
@@ -124,139 +128,28 @@ var ltmp_en_arr={
 			</div>
 		</div>`,
 
-	preset_view_accounts:`
+	preset_view_settings:`
 		<div class="page page-index">
 			<div class="card transparent">
 				<h3 class="adaptive-show-block">Accounts</h3>
 				<div class="columns-view">
 					<div class="column column-2 shadow grid">
-						<h4 class="center captions">Create</h4>
-						<!--<div class="icon icon-wide icon-150px icon-color-blue icon-add-account"></div>-->
+						<h4 class="center captions">Profile</h4>
+						<!--<div class="icon icon-wide icon-150px icon-color-blue icon-config-account"></div>-->
 						<div class="wide-buttons captions">
-							<a class="wide-button" data-href="/accounts/create-account/">Account</a>
-							<a class="wide-button" data-href="/accounts/create-subaccount/">Subaccount</a>
+							<a class="wide-button" data-href="/settings/profile/">Change profile</a>
+
 						</div>
 					</div>
 					<div class="column column-2 shadow grid">
-						<h4 class="center captions">Manage</h4>
+						<h4 class="center captions">Access</h4>
 						<!--<div class="icon icon-wide icon-150px icon-color-blue icon-config-account"></div>-->
 						<div class="wide-buttons captions">
-							<a class="wide-button" data-href="/accounts/reset-access/">Reset keys</a>
-							<a class="wide-button" data-href="/accounts/manage-access/">Access scheme</a>
-							<a class="wide-button" data-href="/accounts/manage-profile/">Change profile</a>
-
+							<a class="wide-button" data-href="/settings/reset-access/">Reset keys</a>
+							<a class="wide-button" data-href="/settings/access/">Manage access</a>
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
-		<div class="page page-create-account" data-title="Create an account">
-			<div class="card">
-				<h3>Create an account</h3>
-				<div class="account-balance captions">
-					<div>Balance: <span rel="token">&hellip;</span> viz</div>
-					<div>Capital: <span rel="shares">&hellip;</span> viz</div>
-				</div>
-				<p>
-					<label class="input-descr">
-						<span class="input-caption">New account name:</span>
-						<input type="text" name="create-account-login" class="simple-rounded">
-					</label>
-				</p>
-				<p>
-					<label class="input-descr">
-						<span class="input-caption">Transfer from the balance:</span>
-						<input type="text" name="create-account-token-amount" class="simple-rounded" placeholder="1.00 viz" value="1.00 viz">
-					</label>
-				</p>
-				<p>
-					<label class="input-descr">
-						<span class="input-caption">Delegate capital:</span>
-						<input type="text" name="create-account-shares-amount" class="simple-rounded" placeholder="10.00 viz">
-					</label>
-				</p>
-				<p class="red create-account-available"></p>
-				<p class="red create-account-error"></p>
-				<p>
-					<input class="create-account-action blue-button captions" type="button" value="Create">
-					<span class="submit-button-ring"></span>
-					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
-				</p>
-				<div class="addon captions">
-					<h3>Hint</h3>
-					<p>To create an account, you need to give him at least <span class="median-props" rel="account_creation_fee">1.00 viz</span> or delegate capital for at least <span class="median-props" rel="create_account_delegation_fee">10.00 viz</span>.</p>
-				</div>
-				<div class="account-keys hidden">
-					<h3 class="left">Congratulations!</h3>
-
-					<p>Created account: <span class="green account-login"></span></p>
-
-					<p>Keys:</p>
-
-					<p><span class="master-key captions">&hellip;</span> &mdash; master or owner key</p>
-					<p><span class="active-key captions">&hellip;</span> &mdash; active key</p>
-					<p><span class="regular-key captions">&hellip;</span> &mdash; regular key</p>
-					<p><span class="memo-key captions">&hellip;</span> &mdash; memo key</p>
-
-					<p>Save your keys right now!</p>
-				</div>
-
-				<p><hr><a data-href="/accounts/">%%default_return_link%%</a></p>
-			</div>
-		</div>
-		<div class="page page-create-subaccount" data-title="Create a subaccount">
-			<div class="card">
-				<h3>Create a subaccount</h3>
-				<div class="account-balance captions">
-					<div>Balance: <span rel="token">&hellip;</span> viz</div>
-					<div>Capital: <span rel="shares">&hellip;</span> viz</div>
-				</div>
-				<p>
-					<label class="input-descr">
-						<span class="input-caption">New subaccount:</span>
-						<input type="text" name="create-subaccount-login" class="simple-rounded">
-					</label>
-				</p>
-				<p>
-					<label class="input-descr">
-						<span class="input-caption">Transfer from the balance:</span>
-						<input type="text" name="create-subaccount-token-amount" class="simple-rounded" placeholder="1.00 viz" value="1.00 viz">
-					</label>
-				</p>
-				<p>
-					<label class="input-descr">
-						<span class="input-caption">Delegate capital:</span>
-						<input type="text" name="create-subaccount-shares-amount" class="simple-rounded" placeholder="10.00 viz">
-					</label>
-				</p>
-				<p class="red create-subaccount-available"></p>
-				<p class="red create-subaccount-error"></p>
-				<p>
-					<input class="create-subaccount-action blue-button captions" type="button" value="Create">
-					<span class="submit-button-ring"></span>
-					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
-				</p>
-				<div class="addon captions">
-					<h3>Hint</h3>
-					<p>The created subaccount will have the suffix <strong>.</strong><span class="current_user bold"></span></p>
-					<p>To create a subaccount, you must transfer to it at least <span class="median-props" rel="account_creation_fee">1.00 viz</span> or delegate capital to at least <span class="median-props" rel="create_account_delegation_fee">10.00 viz</span>.</p>
-				</div>
-				<div class="account-keys hidden">
-					<h3 class="left">Congratulations!</h3>
-
-					<p>Created account: <span class="green account-login"></span></p>
-
-					<p>Keys:</p>
-
-					<p><span class="master-key captions">&hellip;</span> &mdash; master or owner key</p>
-					<p><span class="active-key captions">&hellip;</span> &mdash; active key</p>
-					<p><span class="regular-key captions">&hellip;</span> &mdash; regular key</p>
-					<p><span class="memo-key captions">&hellip;</span> &mdash; memo key</p>
-
-					<p>Save your keys right now!</p>
-				</div>
-
-				<p><hr><a data-href="/accounts/">%%default_return_link%%</a></p>
 			</div>
 		</div>
 		<div class="page page-reset-access" data-title="Reset keys">
@@ -299,14 +192,15 @@ var ltmp_en_arr={
 					<p>Save your keys right now!</p>
 				</div>
 
-				<div class="addon captions"><h3>Hint</h3><p>If you want to set up account management for multisignature, go to the subsection <a data-href="/accounts/manage-access/">Access scheme</a>.</p></div>
+				<div class="addon captions"><h3>Hint</h3><p>If you want to set up account management for multisignature, go to the subsection <a data-href="/settings/access/">Manage access</a>.</p></div>
 
-				<p><hr><a data-href="/accounts/">%%default_return_link%%</a></p>
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
-		<div class="page page-manage-profile" data-title="Change profile">
+		<div class="page page-profile" data-title="Account profile">
 			<div class="card">
-				<h3>Change profile</h3>
+				<h3>Account profile</h3>
+				<div class="public-profile"></div>
 				<p>Fill out your profile and save it to the blockchain (no field is required).</p>
 				<p>
 					<label class="input-descr">
@@ -423,12 +317,12 @@ var ltmp_en_arr={
 
 				<div class="addon captions"><h3>Hint</h3><p>All sent data will be recorded in the blockchain and cannot be deleted, but you can edit it at any time.</p></div>
 
-				<p><hr><a data-href="/accounts/">%%default_return_link%%</a></p>
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
-		<div class="page page-manage-access" data-title="Access scheme">
+		<div class="page page-access" data-title="Account access">
 			<div class="card">
-				<h3>Access scheme</h3>
+				<h3>Account access</h3>
 				<p>Attention! This subsection is intended for advanced users.</p>
 				<p>
 					<label class="input-descr">
@@ -571,9 +465,9 @@ var ltmp_en_arr={
 					<div class="manage-access-new-keys"></div>
 				</div>
 
-				<div class="addon captions"><h3>Hint</h3><p>If you just want to reset keys for the account - go to the subsection <a data-href="/accounts/reset-access/">Reset keys</a>.</p></div>
+				<div class="addon captions"><h3>Hint</h3><p>If you just want to reset keys for the account - go to the subsection <a data-href="/settings/reset-access/">Reset keys</a>.</p></div>
 
-				<p><hr><a data-href="/accounts/">%%default_return_link%%</a></p>
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>`,
 
@@ -582,7 +476,14 @@ var ltmp_en_arr={
 			<div class="card transparent">
 				<h3 class="adaptive-show-block">Assets</h3>
 				<div class="columns-view">
-					<div class="column column-3 shadow">
+					<div class="column column-3 shadow grid">
+						<h4 class="center captions">Energy</h4>
+						<div class="energy-radial"><div class="energy-percentage captions"><span class="value" rel="energy">&hellip;</span><span class="symbol">%</span></div></div>
+						<div class="wide-buttons captions">
+							<a class="wide-button color-green" data-href="/assets/award/">Awards</a>
+						</div>
+					</div>
+					<div class="column column-3 shadow grid">
 						<h4 class="center captions">Capital</h4>
 						<div class="shares-caption captions"><span class="value">&hellip;</span><span class="symbol"> viz</span></div>
 						<div class="wide-buttons captions">
@@ -591,20 +492,12 @@ var ltmp_en_arr={
 							<a class="wide-button color-green" data-href="/assets/delegate-shares/">Delegate</a>
 						</div>
 					</div>
-					<div class="column column-3 shadow">
+					<div class="column column-3 shadow grid">
 						<h4 class="center captions">Wallet</h4>
 						<div class="tokens-caption standalone captions"><span class="value">&hellip;</span><span class="symbol"> viz</span></div>
 						<div class="wide-buttons captions">
 							<a class="wide-button color-green" data-href="/assets/transfer/">Transfer</a>
-							<!--<a class="wide-button color-green exchange-button" data-href="/assets/exchange/">Exchange</a>-->
 							<a class="wide-button color-green" data-href="/assets/checks/">Checks</a>
-						</div>
-					</div>
-					<div class="column column-3 shadow">
-						<h4 class="center captions">Energy</h4>
-						<div class="energy-radial"><div class="energy-percentage captions"><span class="value" rel="energy">&hellip;</span><span class="symbol">%</span></div></div>
-						<div class="wide-buttons captions">
-							<a class="wide-button color-green" data-href="/assets/award/">Award</a>
 						</div>
 					</div>
 				</div>
@@ -811,297 +704,13 @@ var ltmp_en_arr={
 				</div>
 			</div>
 		</div>
-		<div class="page page-booster" data-title="Booster">
-			<div class="card">
-				<h3>Booster</h3>
-				<!--
-				<div class="account-balance captions">
-					<div>Balance: <span rel="token" class="fill-stake-shares-amount-action">&hellip;</span> viz</div>
-					<div>Capital: <span rel="shares">&hellip;</span> viz</div>
-				</div>
-				-->
-				<p>Get a social capital rent in the amount of <span class="booster-valuation">&hellip;</span> viz for 25 days.</p>
-				<p>
-					<label class="input-descr">
-						<span class="input-caption">Account:</span>
-						<input type="text" name="booster-account" class="simple-rounded" placeholder="">
-					</label>
-				</p>
-				<p>
-					<label class="input-descr">
-						<span class="input-caption">Booster-code:</span>
-						<input type="text" name="booster-code" class="simple-rounded" placeholder="...">
-					</label>
-				</p>
-				<p class="red activate-booster-error"></p>
-				<p class="green activate-booster-success"></p>
-				<p>
-					<input class="activate-booster-action green-button captions" type="button" value="Confirm">
-					<span class="submit-button-ring" rel="activate-booster"></span>
-					<span class="icon icon-margin hidden icon-color-green icon-check" rel="activate-booster"></span>
-				</p>
-
-				<div class="addon captions"><h3>Hint</h3><p>Booster codes are available at partner stores: <a href="https://aabbcc.casa/booster/?account=" class="booster_set_account" target="_blank">AABBCC</a>, <a href="https://viz.media/booster-kod/" target="_blank">VIZ.Media</a>. Refresh the page before entering the code to find out the exact amount of capital you are receiving.</div>
-
-				<p><hr><a data-href="/assets/">%%default_return_link%%</a></p>
-
-				<script src="/booster.js" type="text/javascript"></script>
-			</div>
-		</div>
-		<div class="page page-exchange" data-title="Exchange Service">
-			<div class="card loading-status">
-				<h3>Exchange</h3>
-				<p class="wait-loading" style="display:block;"><span class="submit-button-ring" rel="exchange-buy" style="display:inline-block;"></span> Please wait&hellip;</p>
-				<p class="loading-error" style="display:none;">Service is temporarily unavailable, try again later.</p>
-			</div>
-			<div class="card successful-loading" style="display:none;">
-				<div class="addon captions"><h3>Attention!</h3>
-					<p>Exchange service operates in beta-mode, so its work can have failures and errors.</p>
-					<p>If something went wrong, please be patient and let us know about the problem by mail <a href="mailto:vizplus@protonmail.com">vizplus@protonmail.com</a> or via the telegram group <a href="https://t.me/vizplus" target="_blank">@vizplus</a>. Thank you for understanding!</p>
-				</div>
-				<h3>Exchange</h3>
-				<div class="account-balance captions">
-					<div>Balance: <span rel="token" class="fill-exchange-amount-action">&hellip;</span> viz</div>
-				</div>
-				<div class="table-view exchange-data captions">
-					<div class="table-header">
-						<div class="columns-view adaptive-hide-flex">
-							<div class="column-view column-3">Reserve</div>
-							<div class="column-view column-3">viz</div>
-							<div class="column-view column-flex">usdt</div>
-						</div>
-						<div class="columns-view adaptive-show-flex">
-							<!--<div class="column-view column-flex">Reserves data</div>-->
-							<div class="column-view column-3">Reserve</div>
-							<div class="column-view column-3">viz</div>
-							<div class="column-view column-flex">usdt</div>
-						</div>
-					</div>
-					<div class="table-data">
-						<div class="columns-view adaptive-hide-flex summary">
-							<div class="column-view column-3 caption-data">— accounting</div>
-							<div class="column-view column-3 viz-data">&hellip;</div>
-							<div class="column-view column-flex usdt-data">&hellip;</div>
-						</div>
-						<div class="columns-view adaptive-show-flex summary">
-							<div class="column-view column-flex caption-data" style="width:10% !important;">Accounting</div>
-							<div class="column-view column-3 viz-data" style="width:45% !important;white-space:nowrap;">&hellip;</div>
-							<div class="column-view column-3 usdt-data" style="width:35% !important;white-space:nowrap;">&hellip;</div>
-						</div>
-						<!--
-						<div class="columns-view adaptive-show-flex summary">
-							<div class="column-view column-flex">Accounting:&nbsp;<span class="viz-data" style="white-space:nowrap;">&hellip;</span>&nbsp;viz,&nbsp;<span class="usdt-data" style="white-space:nowrap;">&hellip;</span>&nbsp;usdt</div>
-						</div>
-						-->
-						<div class="columns-view adaptive-hide-flex hot">
-							<div class="column-view column-3 caption-data">— hot</div>
-							<div class="column-view column-3 viz-data">&hellip;</div>
-							<div class="column-view column-flex usdt-data">&hellip;</div>
-						</div>
-						<div class="columns-view adaptive-show-flex hot">
-							<div class="column-view column-flex caption-data" style="width:10% !important;">Hot</div>
-							<div class="column-view column-3 viz-data" style="width:45% !important;white-space:nowrap;">&hellip;</div>
-							<div class="column-view column-3 usdt-data" style="width:35% !important;white-space:nowrap;">&hellip;</div>
-						</div>
-						<!--
-						<div class="columns-view adaptive-show-flex hot">
-							<div class="column-view column-flex">Hot:&nbsp;<span class="viz-data">&hellip;</span>&nbsp;viz,&nbsp;<span class="usdt-data">&hellip;</span>&nbsp;usdt</div>
-						</div>
-						-->
-						<div class="columns-view adaptive-hide-flex cold">
-							<div class="column-view column-3 caption-data">— cold</div>
-							<div class="column-view column-3 viz-data">&hellip;</div>
-							<div class="column-view column-flex usdt-data">&hellip;</div>
-						</div>
-						<div class="columns-view adaptive-show-flex cold">
-							<div class="column-view column-flex caption-data" style="width:10% !important;">Cold</div>
-							<div class="column-view column-3 viz-data" style="width:45% !important;white-space:nowrap;">&hellip;</div>
-							<div class="column-view column-3 usdt-data" style="width:35% !important;white-space:nowrap;">&hellip;</div>
-						</div>
-						<!--
-						<div class="columns-view adaptive-show-flex cold">
-							<div class="column-view column-flex">Cold:&nbsp;<span class="viz-data">&hellip;</span>&nbsp;viz,&nbsp;<span class="usdt-data">&hellip;</span>&nbsp;usdt</div>
-						</div>
-						-->
-						<div class="columns-view adaptive-hide-flex provision">
-							<div class="column-view column-3 caption-data">Collateral</div>
-							<div class="column-view column-3 viz-data">&hellip;</div>
-							<div class="column-view column-flex usdt-data">&hellip;</div>
-						</div>
-						<div class="columns-view adaptive-show-flex provision">
-							<div class="column-view column-flex caption-data" style="width:10% !important;">%</div>
-							<div class="column-view column-3 viz-data" style="width:45% !important;white-space:nowrap;">&hellip;</div>
-							<div class="column-view column-3 usdt-data" style="width:35% !important;white-space:nowrap;">&hellip;</div>
-						</div>
-						<!--
-						<div class="columns-view adaptive-show-flex provision">
-							<div class="column-view column-flex">Collateral:&nbsp;<span class="viz-data">&hellip;</span>&nbsp;viz,&nbsp;<span class="usdt-data">&hellip;</span>&nbsp;usdt</div>
-						</div>
-						-->
-					</div>
-
-					<div class="table-header">
-						<div class="columns-view">
-							<div class="column-view column-flex minify"></div>
-						</div>
-					</div>
-					<div class="table-data">
-						<div class="columns-view adaptive-hide-flex rate">
-							<div class="column-view column-3 caption-data">Accounting rate:</div>
-							<div class="column-view column-flex ratio-data">&hellip;</div>
-						</div>
-						<div class="columns-view adaptive-show-flex rate">
-							<div class="column-view column-flex">Accounting rate:&nbsp;<span class="ratio-data">&hellip;</span></div>
-						</div>
-					</div>
-					<div class="table-footer"><em>It is not an obligation. The actual exchange rate is determined at the time of the transaction and depends on its volume.</em></div>
-				</div>
-
-				<hr><h4 class="center">Buying viz</h4>
-				<div class="table-view exchange-buy-data captions">
-					<div class="table-header">
-						<div class="columns-view">
-							<div class="column-view column-flex minify"></div>
-						</div>
-					</div>
-					<div class="table-data">
-						<div class="columns-view min-amount">
-							<div class="column-view column-3 caption-data">Minimum amount</div>
-							<div class="column-view column-flex viz-data">&hellip;</div>
-						</div>
-						<div class="columns-view max-amount">
-							<div class="column-view column-3 caption-data">Maximum amount</div>
-							<div class="column-view column-flex viz-data">&hellip;</div>
-						</div>
-						<div class="columns-view input-amount">
-							<div class="column-view column-3 caption-data" style="padding:23px 15px;">
-								<span class="adaptive-hide bold">You want to buy</span>
-								<span class="adaptive-show bold">Buy</span>
-							</div>
-							<div class="column-view column-flex viz-data" style="display:block !important;">
-								<input type="text" name="buy-tokens-amount" class="simple-rounded" placeholder="0.00 viz" style="margin:0;" type="number" step="0.01">
-								<div class="red exchange-buy-input-error"></div>
-							</div>
-						</div>
-						<div class="columns-view output-amount">
-							<div class="column-view column-3 caption-data">for the amount *</div>
-							<div class="column-view column-flex usdt-data">&hellip;</div>
-						</div>
-						<div class="columns-view rate">
-							<div class="column-view column-3 caption-data">
-								<span class="adaptive-hide">at the average price</span>
-								<span class="adaptive-show">at the price</span>
-							</div>
-							<div class="column-view column-flex ratio-data">&hellip;</div>
-						</div>
-					</div>
-					<div class="table-footer left"><em>* fee is included</em></div>
-				</div>
-				<p>Click the "Start exchange" button and get the address to transfer tokens USDT(ERC20) in the Ethereum blockchain. At this moment, your wallet will be charged with 1 <span class="eth_wallet_cost">&hellip; viz</span>.</p>
-				<p>Transfer any amount of USDT within the limits to the received address (take into account the change of the exchange rate when changing the amount and the fee).</p>
-				<p>After receiving USDT, the exchanger will send the appropriate amount of viz to your account, <b>based on the rate at the time of receipt of USDT</b>.</p>
-				<p>The address to send USDT is valid for 1 hour after the start of the exchange. Each address is unique and intended for one exchange only!</p>
-				<p class="bold">Do not send USDT to the same address repeatedly!</p>
-				<p class="red exchange-buy-error"></p>
-				<p class="green exchange-buy-success"></p>
-				<p>
-					<input class="exchange-buy-action green-button captions" type="button" value="Start exchange">
-					<span class="submit-button-ring" rel="exchange-buy"></span>
-					<span class="icon icon-margin hidden icon-color-green icon-check" rel="exchange-buy"></span>
-				</p>
-				<div class="exchange-buy-view" style="display:none;">
-					<p>
-						Address for USDT transfer:
-						<input type="text" name="exchange-income-eth-address" class="simple-rounded wide" placeholder="ETH address" disabled>
-					</p>
-					<p>
-						<input class="exchange-copy-eth-action green-button captions" type="button" value="Copy"><span class="icon icon-margin hidden icon-color-green icon-check" rel="exchange-copy-eth"></span></p>
-					<p>
-						<input class="exchange-qr-eth-action green-button captions" type="button" value="QR-code"><span class="icon icon-margin hidden icon-color-green icon-check" rel="exchange-qr-eth"></span>
-					</p>
-					<div class="qr-view"></div>
-				</div>
-				<br>
-				<p>The speed of the transaction depends almost entirely on the speed at which your USDT is arrived at our address. Choose the fee rate (gas price) in the Ethereum blockchain based on this.</p>
-
-
-				<hr><h4 class="center">Selling viz</h4>
-				<div class="table-view exchange-sell-data captions">
-					<div class="table-header">
-						<div class="columns-view">
-							<div class="column-view column-flex minify"></div>
-						</div>
-					</div>
-					<div class="table-data">
-						<div class="columns-view min-amount">
-							<div class="column-view column-3 caption-data">Minimum sale</div>
-							<div class="column-view column-flex viz-data">&hellip;</div>
-						</div>
-						<div class="columns-view max-amount">
-							<div class="column-view column-3 caption-data">Maximum sale</div>
-							<div class="column-view column-flex viz-data">&hellip;</div>
-						</div>
-						<div class="columns-view input-amount">
-							<div class="column-view column-3 caption-data" style="padding:23px 15px;">
-								<span class="adaptive-hide bold">You want to sell</span>
-								<span class="adaptive-show bold">Sell</span>
-							</div>
-							<div class="column-view column-flex viz-data" style="display:block !important;">
-								<input type="text" name="sell-tokens-amount" class="simple-rounded" placeholder="0.00 viz" style="margin:0;">
-								<div class="red exchange-sell-input-error"></div>
-							</div>
-						</div>
-						<div class="columns-view output-amount">
-							<div class="column-view column-3 caption-data">for the amount *</div>
-							<div class="column-view column-flex usdt-data">&hellip;</div>
-						</div>
-						<div class="columns-view rate">
-							<div class="column-view column-3 caption-data">
-								<span class="adaptive-hide">at the average price</span>
-								<span class="adaptive-show">at the price</span>
-							</div>
-							<div class="column-view column-flex ratio-data">&hellip;</div>
-						</div>
-						<!--
-						<div class="columns-view address">
-							<div class="column-view column-3 caption-data">Your address for receiving USDT</div>
-							<div class="column-view column-flex address-data">
-								<input type="text" name="exchange-outcome-eth-address" class="simple-rounded wide" placeholder="ETH address" style="margin:0;">
-							</div>
-						</div>
-						-->
-					</div>
-					<div class="table-footer left"><em>* fee is included</em></div>
-				</div>
-				<div class="exchange-sell-view">
-					<p>
-						Your address for receiving USDT:
-						<input type="text" name="exchange-outcome-eth-address" class="simple-rounded wide" placeholder="ETH address">
-					</p>
-				</div>
-				<p class="red exchange-sell-error"></p>
-				<p class="green exchange-sell-success"></p>
-				<p>
-					<input class="exchange-sell-action green-button captions" type="button" value="Exchange" disabled="disabled">
-					<span class="submit-button-ring" rel="exchange-sell"></span>
-					<span class="icon icon-margin hidden icon-color-green icon-check" rel="exchange-sell"></span>
-				</p>
-				<br><!--<div class="addon captions"><h3>Hint</h3></div>-->
-				<p>Enter the number of viz to sell within the limits and <b>your</b> address in the Ethereum blockchain to receive USDT(ERC20). Press the "Exchange" button.</p>
-				<p>The sale of viz is made instantaneously. The time of arrival of USDT(ERC20) tokens to your address depends on the Ethereum blockchain and is usually a few minutes.</p>
-
-				<script src="/qrcode.min.js" type="text/javascript"></script>
-				<script src="/exchange.js" type="text/javascript"></script>
-				<p><hr><a data-href="/assets/">%%default_return_link%%</a></p>
-			</div>
-		</div>
 		<div class="page page-transfer" data-title="Transfer">
 			<div class="card">
 				<h3>Transfer</h3>
 				<div class="account-balance captions">
 					<div>Balance: <span rel="token" class="fill-transfer-amount-action">&hellip;</span> viz</div>
 				</div>
-				<p>
+				<p class="transfer-templates-wrapper">
 					<label class="input-descr">
 						<span class="input-caption">Template:</span>
 						<select name="transfer-template" class="simple-rounded simple-rounded-size">
@@ -1152,8 +761,8 @@ var ltmp_en_arr={
 				</p>
 
 				<div class="addon captions"><h3>Hint</h3>
-					<p>Use templates for standard transfers to avoid mistakes that can lead to loss of funds.</p>
-					<p>When encrypted, your notes key will be saved in your browser until you turn off your account. If the account does not have a notes key, generate one in the <a data-href="/accounts/">Accounts</a> section - <a data-href="/accounts/manage-access/">Access scheme</a>.</p>
+					<p class="transfer-templates-hint">Use templates for standard transfers to avoid mistakes that can lead to loss of funds.</p>
+					<p>When encrypted, your notes key will be saved in your browser until you turn off your account. If the account does not have a memo key, generate one in the section <a data-href="/settings/access/">Manage access</a>.</p>
 				</div>
 
 				<p><hr><a data-href="/assets/">%%default_return_link%%</a></p>
@@ -1176,6 +785,7 @@ var ltmp_en_arr={
 				<div class="account-balance captions">
 					<div>Balance: <span rel="token">&hellip;</span> viz</div>
 				</div>
+				<h3>New check</h3>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Amount:</span>
@@ -1191,7 +801,15 @@ var ltmp_en_arr={
 					<span class="icon icon-margin hidden icon-color-green icon-check" rel="create"></span>
 				</p>
 				<div class="invites-create hidden"></div>
+				<div class="addon captions"><h3>Hint</h3><p>After you create a check, you will receive a code to redeem it. Be sure to keep it, because if you lose it, it cannot be redeemed.</p></div>
 				<hr>
+				<h3>Claim check</h3>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Receiver:</span>
+						<input type="text" name="invites-claim-receiver" class="simple-rounded">
+					</label>
+				</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Redeeming code:</span>
@@ -1199,24 +817,20 @@ var ltmp_en_arr={
 						<span class="input-caption text-small grey captions invites-claim-code-caption" style="display:none">(contains: <span class="invites-claim-code-balance">&hellip;</span>)</span>
 					</label>
 				</p>
+				<p><label class="radio">in balance<input type="radio" name="invites-claim-capital" value="false" checked><span class="mark"></span></label></p>
+				<p><label class="radio">in capital<input type="radio" name="invites-claim-capital" value="true"><span class="mark"></span></label></p>
 				<p class="red invites-claim-error"></p>
 				<p class="green invites-claim-success"></p>
 				<p>
-					<input class="invites-claim-action green-button captions" type="button" value="Redeem the check on the balance">
-					<input class="invites-use-action green-button captions" type="button" value="Redeem a check in capital">
+					<input class="invites-new-claim-action green-button captions" type="button" value="Confirm">
+					<!--
+						<input class="invites-claim-action green-button captions" type="button" value="Redeem the check on the balance">
+						<input class="invites-use-action green-button captions" type="button" value="Redeem a check in capital">
+					-->
 					<span class="submit-button-ring" rel="claim"></span>
 					<span class="icon icon-margin hidden icon-color-green icon-check" rel="claim"></span>
 				</p>
-				<!--
-				<p>The XCHNG service sells viz checks at close to stock exchange prices. When you click the link, you will see a data entry form. Choose a payment method and fill out the form. After payment, you will receive a check in the form of a code of letters and numbers. Enter it in the check redemption form above and choose how to redeem the check.</p>
-				<p>
-					<a style="text-decoration:none" href="https://www.digiseller.market/asp2/pay_payu.asp?id_d=2646644&curr=PYU&ai=844298" target="_blank"><input class="green-button captions" type="button" value="Buy 1000 viz"></a>
-					<a style="text-decoration:none" href="https://www.digiseller.market/asp2/pay_payu.asp?id_d=2646643&curr=PYU&ai=844298" target="_blank"><input class="green-button captions" type="button" value="Buy 500 viz"></a>
-					<a style="text-decoration:none" href="https://www.digiseller.market/asp2/pay_payu.asp?id_d=2646642&curr=PYU&ai=844298" target="_blank"><input class="green-button captions" type="button" value="Buy 200 viz"></a>
-				</p>
-
-				-->
-				<div class="addon captions"><h3>Hint</h3><p>After you create a check, you will receive a code to redeem it. Be sure to keep it, because if you lose it, it cannot be redeemed.</p></div>
+				<div class="addon captions"><h3>Hint</h3><p>Information about the check redemption on your own or another account is saved in the blockchain and becomes publicly available.</p></div>
 				<p><hr><a data-href="/assets/">%%default_return_link%%</a></p>
 
 				<div class="table-view captions">
@@ -1281,7 +895,7 @@ var ltmp_en_arr={
 					<h3>Hint</h3>
 					<p>This page displays effective social capital, which includes delegations.</p>
 					<p>The actual amount of the award may be slightly different from what is shown.</p>
-					<p>When encrypted, the memo key will be saved in the browser until you disable the account. If the account does not have a notes key, generate one in <a data-href="/accounts/">Accounts</a> - <a data-href="/accounts/manage-access/">Access scheme</a>.</p>
+					<p>When encrypted, the memo key will be saved in the browser until you disable the account. If the account does not have a memo key, generate one in <a data-href="/settings/">Settings</a> - <a data-href="/settings/access/">Manage access</a>.</p>
 				</div>
 
 				<p><hr><a data-href="/assets/">%%default_return_link%%</a></p>
@@ -1304,12 +918,13 @@ var ltmp_en_arr={
 			<div class="card transparent">
 				<h3 class="adaptive-show-block">DAO</h3>
 				<div class="columns-view">
-					<div class="column column-2 shadow">
-						<h4 class="center captions">Witnesses</h4>
+					<div class="column column-2 shadow grid">
+						<h4 class="center captions">Validators</h4>
 						<!--<div class="icon icon-wide icon-150px icon-color-orange icon-witnesses"></div>-->
 						<div class="wide-buttons captions">
-							<a class="wide-button color-orange" data-href="/dao/witnesses/">Vote</a>
+							<a class="wide-button color-orange" data-href="/dao/witnesses/">Voting</a>
 							<a class="wide-button color-orange" data-href="/dao/witness-params/">Set the parameters</a>
+							<a class="wide-button color-orange" data-href="/dao/witness-reward-sharing/">Reward sharing</a>
 						</div>
 					</div>
 					<div class="column column-2 shadow">
@@ -1323,18 +938,34 @@ var ltmp_en_arr={
 				</div>
 			</div>
 		</div>
-		<div class="page page-witnesses" data-title="Vote for witnesses">
+		<div class="page page-witnesses" data-title="Validators">
 			<div class="card">
-				<h3>Vote for witnesses</h3>
+				<h3>Validators</h3>
 				<div class="account-balance captions">
 					<div>Capital: <span rel="shares">&hellip;</span> viz</div>
 				</div>
-				<p>Place a check mark next to the witnesses of your choice. Your vote will be counted immediately.</p>
+				<p>Place a check mark next to the validators of your choice. Your vote will be counted immediately.</p>
 				<div class="addon captions">
 					<h3>Hint</h3>
-					<p>Voting for witnesses counts your own social capital without accounting for delegations.<br>
-					The weight of the vote equals social capital divided by the number of elected witnesses.</p>
+					<p>Voting for validators counts your own social capital without accounting for delegations.<br>
+					The weight of the vote equals social capital divided by the number of elected validators.</p>
 				</div>
+
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Proxy voting rights to an account:</span>
+						<input type="text" name="witness-proxy" class="simple-rounded" placeholder="">
+					</label>
+				</p>
+				<p class="red witness-proxy-error"></p>
+				<p class="green witness-proxy-success"></p>
+				<p>
+					<input class="witness-proxy-action orange-button captions" type="button" value="Confirm">
+					<span class="submit-button-ring" rel="proxy"></span>
+					<span class="icon icon-margin hidden icon-color-orange icon-check" rel="proxy"></span>
+				</p>
+				<hr>
+
 				<div class="witnesses-list"><p class="loading"><span class="submit-button-ring" style="display:inline-block"></span> %%default_loading%%</p></div>
 				<div class="inactive-witnesses-list"></div>
 
@@ -1344,10 +975,10 @@ var ltmp_en_arr={
 		<div class="page page-witness-params" data-title="Set the parameters">
 			<div class="card">
 				<h3>Set the parameters</h3>
-				<p>Declare yourself a witness and/or set voting parameters for the blockchain.</p>
+				<p>Declare yourself a validator and/or set voting parameters for the blockchain.</p>
 				<p>
 					<label class="input-descr">
-						<span class="input-caption">Link to witness statement:</span>
+						<span class="input-caption">Link to validator statement:</span>
 						<input type="text" name="witness-setup-url" class="simple-rounded" placeholder="https://">
 					</label>
 				</p>
@@ -1358,7 +989,7 @@ var ltmp_en_arr={
 						<span class="input-caption text-small grey captions witness-setup-signing-key-action">(generate: <span class="witness-setup-signing-private-key">&mdash;</span>)</span>
 					</label>
 				</p>
-				<label class="check color-red fee-checkbox">When an account is declared as a witness, it will be charged <span class="median-props" rel="witness_declaration_fee">&hellip; viz</span>.<input type="checkbox" name="witness-declaration-fee"><span class="mark"></span></label>
+				<label class="check color-red fee-checkbox">When an account is declared as a validator, it will be charged <span class="median-props" rel="witness_declaration_fee">&hellip; viz</span>.<input type="checkbox" name="witness-declaration-fee"><span class="mark"></span></label>
 				<p class="red witness-setup-error"></p>
 				<p class="green witness-setup-success"></p>
 				<p>
@@ -1368,16 +999,41 @@ var ltmp_en_arr={
 				</p>
 				<div class="addon captions">
 					<h3>Hint</h3>
-					<p>You can set the signature key to blank to temporarily or permanently disable the witness.</p>
+					<p>You can set the signature key to blank to temporarily or permanently disable the validator.</p>
 				</div>
 				<div class="witness-set-props"></div>
 
 				<p><hr><a data-href="/dao/">%%default_return_link%%</a></p>
 			</div>
 		</div>
-		<div class="page page-fund-create-request" data-title="Submit a request">
+		<div class="page page-witness-reward-sharing" data-title="Reward sharing">
 			<div class="card">
-				<h3>Submit a request</h3>
+				<h3>Reward sharing</h3>
+				<p>Set the percentage of your block reward to be distributed among your stakeholders (voters) at the end of each epoch.</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Sharing rate (0.00% &mdash; 100.00%):</span>
+						<input type="text" name="witness-reward-sharing-rate" class="simple-rounded" placeholder="0.00%">
+					</label>
+				</p>
+				<p class="red witness-reward-sharing-error"></p>
+				<p class="green witness-reward-sharing-success"></p>
+				<p>
+					<input class="witness-reward-sharing-action orange-button captions" type="button" value="Confirm">
+					<span class="submit-button-ring" rel="reward-sharing"></span>
+					<span class="icon icon-margin hidden icon-color-orange icon-check" rel="reward-sharing"></span>
+				</p>
+				<div class="addon captions">
+					<h3>Hint</h3>
+					<p>Enter a value from 0% (no sharing) to 100% (full sharing). The rewards are accumulated in TOKEN and distributed to stakeholders at the end of each epoch defined by <em>distribution_epoch_length</em>. Stakeholders receive SHARES proportional to their vote weight and time spent voting.</p>
+				</div>
+
+				<p><hr><a data-href="/dao/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-fund-create-request" data-title="Request to the Fund">
+			<div class="card">
+				<h3>Request to the Fund</h3>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">A short description of the request (no more than 200 characters):</span>
@@ -1431,12 +1087,12 @@ var ltmp_en_arr={
 				<p><hr><a data-href="/dao/">%%default_return_link%%</a></p>
 			</div>
 		</div>
-		<div class="page page-fund-requests" data-title="Review requests">
+		<div class="page page-fund-requests" data-title="New requests to the Fund">
 			<div class="card">
 				<div class="section-fund-request section">
 				</div>
 				<div class="section-fund-requests section">
-					<h3>Review requests</h3>
+					<h3>New requests to the Fund</h3>
 					<div class="account-balance captions">
 						<div>Balance of the fund: <span class="fund-balance">&hellip;</span></div>
 					</div>
@@ -1454,48 +1110,186 @@ var ltmp_en_arr={
 				</div>
 			</div>
 		</div>`,
-
-	preset_view_market:`
+	preset_view_account:`
 		<div class="page page-index">
 			<div class="card transparent">
-				<h3 class="adaptive-show-block">Market</h3>
+				<h3 class="adaptive-show-block">Account</h3>
 				<div class="columns-view">
-					<!--
-						<div class="column column-4 shadow">
-							<h4 class="center captions">Viz</h4>
-							<div class="icon icon-wide icon-100px icon-color-red icon-send-token-long"></div>
-							<div class="wide-buttons size3 captions">
-								<a class="wide-button color-red" data-href="/market/deposit/">Deposit</a>
-							</div>
-						</div>
-					-->
 					<div class="column column-3 shadow grid">
-						<h4 class="center captions">Accounts</h4>
+						<h4 class="center captions">Create</h4>
+						<!--<div class="icon icon-wide icon-150px icon-color-blue icon-add-account"></div>-->
+						<div class="wide-buttons captions">
+							<a class="wide-button" data-href="/account/create-account/">Account</a>
+							<a class="wide-button" data-href="/account/create-subaccount/">Subaccount</a>
+						</div>
+					</div>
+					<div class="column column-3 shadow grid buy-account-column">
+						<h4 class="center captions">Buy</h4>
 						<!--<div class="icon icon-wide icon-100px icon-color-red icon-buy-account"></div>-->
 						<div class="wide-buttons captions">
-							<a class="wide-button color-red" data-href="/market/buy-short-account/">Two symbols</a>
-							<a class="wide-button color-red" data-href="/market/buy-account/">Buy</a>
-							<a class="wide-button color-red" data-href="/market/sell-account/">Sell</a>
+							<a class="wide-button" data-href="/account/buy-short-account/">Two symbols</a>
+							<a class="wide-button" data-href="/account/buy-account/">Account</a>
+							<a class="wide-button" data-href="/account/buy-subaccount/">Subaccount</a>
 						</div>
 					</div>
-					<div class="column column-3 shadow grid">
-						<h4 class="center captions">Subaccounts</h4>
+					<div class="column column-3 shadow grid sell-account-column">
+						<h4 class="center captions">Sell</h4>
 						<!--<div class="icon icon-wide icon-100px icon-color-red icon-buy-subaccount"></div>-->
 						<div class="wide-buttons captions">
-							<a class="wide-button color-red" data-href="/market/buy-subaccount/">Buy</a>
-							<a class="wide-button color-red" data-href="/market/sell-subaccount/">Sell</a>
-						</div>
-					</div>
-					<div class="column column-3 shadow grid">
-						<h4 class="center captions">Subscribes</h4>
-						<!--<div class="icon icon-wide icon-100px icon-color-red icon-paid-subscription"></div>-->
-						<div class="wide-buttons captions">
-							<a class="wide-button color-red" data-href="/market/paid-subscriptions/">Search</a>
-							<a class="wide-button color-red" data-href="/market/active-paid-subscriptions/">Manage</a>
-							<a class="wide-button color-red create-edit-paid-subscribe-caption" data-href="/market/create-paid-subscribe/">Create</a>
+							<a class="wide-button" data-href="/account/sell-account/">Account</a>
+							<a class="wide-button" data-href="/account/sell-subaccount/">Subaccount</a>
 						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+		<div class="page page-create-account" data-title="Create an account">
+			<div class="card">
+				<h3>Create an account</h3>
+				<div class="account-balance captions">
+					<div>Balance: <span rel="token">&hellip;</span> viz</div>
+					<div>Available capital: <span rel="available_shares">&hellip;</span> viz</div>
+				</div>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">New account name:</span>
+						<input type="text" name="create-account-login" class="simple-rounded">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Transfer from the balance:</span>
+						<input type="text" name="create-account-token-amount" class="simple-rounded" placeholder="1.00 viz" value="1.00 viz">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Delegate capital:</span>
+						<input type="text" name="create-account-shares-amount" class="simple-rounded" placeholder="10.00 viz">
+					</label>
+				</p>
+				<p class="red create-account-available"></p>
+				<p class="red create-account-error"></p>
+				<p>
+					<input class="create-account-action blue-button captions" type="button" value="Create">
+					<span class="submit-button-ring" rel="create-account"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check" rel="create-account"></span>
+				</p>
+				<div class="addon captions">
+					<h3>Hint</h3>
+					<p>To create an account, you need to give him at least <span class="median-props" rel="account_creation_fee">1.00 viz</span> or delegate capital for at least <span class="median-props" rel="create_account_delegation_fee">10.00 viz</span>.</p>
+					<p>Information about the transfer or delegation of capital will be available on the blockchain. To create an account anonymously with an invite, use the form below.</p>
+				</div>
+				<div class="account-keys hidden">
+					<h3 class="left">Congratulations!</h3>
+
+					<p>Created account: <span class="green account-login"></span></p>
+
+					<p>Keys:</p>
+
+					<p><span class="master-key captions">&hellip;</span> &mdash; master or owner key</p>
+					<p><span class="active-key captions">&hellip;</span> &mdash; active key</p>
+					<p><span class="regular-key captions">&hellip;</span> &mdash; regular key</p>
+					<p><span class="memo-key captions">&hellip;</span> &mdash; memo key</p>
+
+					<p>Save your keys right now!</p>
+				</div>
+
+				<hr>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">New account:</span>
+						<input type="text" name="invite-create-account-login" class="simple-rounded">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Invite:</span>
+						<input type="text" name="invite-create-account-secret-key" class="simple-rounded" placeholder="5K...">
+					</label>
+				</p>
+				<p class="red invite-create-account-available"></p>
+				<p class="red invite-create-account-error"></p>
+				<p>
+					<input class="invite-create-account-action blue-button captions" type="button" value="Create">
+					<span class="submit-button-ring" rel="invite-create-account"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check" rel="invite-create-account"></span>
+				</p>
+				<div class="addon captions">
+					<h3>Hint</h3>
+					<p>To create an account anonymously, use an Invite (check) that has no connection to you. Creating an account with an invoice does not require signing the transaction with your account key.</p>
+				</div>
+				<div class="invite-account-keys hidden">
+					<h3 class="left">Congratulations!</h3>
+
+					<p>Created account: <span class="green account-login"></span></p>
+
+					<p>Keys:</p>
+
+					<p><span class="master-key captions">&hellip;</span> &mdash; master or owner key</p>
+					<p><span class="active-key captions">&hellip;</span> &mdash; active key</p>
+					<p><span class="regular-key captions">&hellip;</span> &mdash; regular key</p>
+					<p><span class="memo-key captions">&hellip;</span> &mdash; memo key</p>
+
+					<p>Save your keys right now!</p>
+				</div>
+
+				<p><hr><a data-href="/account/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-create-subaccount" data-title="Create a subaccount">
+			<div class="card">
+				<h3>Create a subaccount</h3>
+				<div class="account-balance captions">
+					<div>Balance: <span rel="token">&hellip;</span> viz</div>
+					<div>Available capital: <span rel="available_shares">&hellip;</span> viz</div>
+				</div>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">New subaccount:</span>
+						<input type="text" name="create-subaccount-login" class="simple-rounded">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Transfer from the balance:</span>
+						<input type="text" name="create-subaccount-token-amount" class="simple-rounded" placeholder="1.00 viz" value="1.00 viz">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Delegate capital:</span>
+						<input type="text" name="create-subaccount-shares-amount" class="simple-rounded" placeholder="10.00 viz">
+					</label>
+				</p>
+				<p class="red create-subaccount-available"></p>
+				<p class="red create-subaccount-error"></p>
+				<p>
+					<input class="create-subaccount-action blue-button captions" type="button" value="Create">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<div class="addon captions">
+					<h3>Hint</h3>
+					<p>The created subaccount will have the suffix <strong>.</strong><span class="current_user bold"></span></p>
+					<p>To create a subaccount, you must transfer to it at least <span class="median-props" rel="account_creation_fee">1.00 viz</span> or delegate capital to at least <span class="median-props" rel="create_account_delegation_fee">10.00 viz</span>.</p>
+				</div>
+				<div class="account-keys hidden">
+					<h3 class="left">Congratulations!</h3>
+
+					<p>Created account: <span class="green account-login"></span></p>
+
+					<p>Keys:</p>
+
+					<p><span class="master-key captions">&hellip;</span> &mdash; master or owner key</p>
+					<p><span class="active-key captions">&hellip;</span> &mdash; active key</p>
+					<p><span class="regular-key captions">&hellip;</span> &mdash; regular key</p>
+					<p><span class="memo-key captions">&hellip;</span> &mdash; memo key</p>
+
+					<p>Save your keys right now!</p>
+				</div>
+
+				<p><hr><a data-href="/account/">%%default_return_link%%</a></p>
 			</div>
 		</div>
 		<div class="page page-buy-short-account" data-title="Two symbols">
@@ -1507,7 +1301,7 @@ var ltmp_en_arr={
 				<div class="buy-short-account-confirmation section">
 					<p>
 						<label class="input-descr">
-							<span class="input-caption">Buying an account:</span>
+							<span class="input-caption">Account name:</span>
 							<input type="text" name="buy-short-account-login" class="simple-rounded" disabled>
 						</label>
 					</p>
@@ -1525,13 +1319,13 @@ var ltmp_en_arr={
 					</p>
 					<p class="red buy-short-account-error"></p>
 					<p>
-						<input class="buy-short-account-action red-button captions" type="button" value="Confirm purchase">
+						<input class="buy-short-account-action blue-button captions" type="button" value="Confirm purchase">
 						<span class="submit-button-ring"></span>
 						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 					</p>
 					<div class="addon captions">
 						<h3>Hint</h3>
-						<p>After purchase the account will have one private key for all types of operations, to separate them use <a data-href="/accounts/reset-access/">key reset</a> (you can do it an hour after purchase).</p>
+						<p>After purchase the account will have one private key for all types of operations, to separate them use <a data-href="/settings/reset-access/">key reset</a> (you can do it an hour after purchase).</p>
 					</div>
 					<div class="account-keys hidden">
 						<h3 class="left">Congratulations!</h3>
@@ -1548,7 +1342,7 @@ var ltmp_en_arr={
 						<p>Save your keys right now!</p>
 					</div>
 
-					<p><hr><a data-href="/market/buy-short-account/">%%default_return_link%%</a></p>
+					<p><hr><a data-href="/account/buy-short-account/">%%default_return_link%%</a></p>
 				</div>
 				<div class="accounts-on-sale section table-view captions">
 					<p>Funds from the sale of two-character accounts go to the VIZ DAO.</p>
@@ -1565,7 +1359,7 @@ var ltmp_en_arr={
 					<div class="table-data"></div>
 					<div class="table-footer"></div>
 
-					<p><hr><a data-href="/market/">%%default_return_link%%</a></p>
+					<p><hr><a data-href="/account/">%%default_return_link%%</a></p>
 				</div>
 			</div>
 		</div>
@@ -1578,7 +1372,7 @@ var ltmp_en_arr={
 				<div class="buy-account-confirmation section">
 					<p>
 						<label class="input-descr">
-							<span class="input-caption">Buying an account:</span>
+							<span class="input-caption">Account name:</span>
 							<input type="text" name="buy-account-login" class="simple-rounded" disabled>
 						</label>
 					</p>
@@ -1596,13 +1390,13 @@ var ltmp_en_arr={
 					</p>
 					<p class="red buy-account-error"></p>
 					<p>
-						<input class="buy-account-action red-button captions" type="button" value="Confirm purchase">
+						<input class="buy-account-action blue-button captions" type="button" value="Confirm purchase">
 						<span class="submit-button-ring"></span>
 						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 					</p>
 					<div class="addon captions">
 						<h3>Hint</h3>
-						<p>After purchase the account will have one private key for all types of operations, to separate them use <a data-href="/accounts/reset-access/">key reset</a> (you can do it an hour after purchase).</p>
+						<p>After purchase the account will have one private key for all types of operations, to separate them use <a data-href="/settings/reset-access/">key reset</a> (you can do it an hour after purchase).</p>
 					</div>
 					<div class="account-keys hidden">
 						<h3 class="left">Congratulations!</h3>
@@ -1619,7 +1413,7 @@ var ltmp_en_arr={
 						<p>Save your keys right now!</p>
 					</div>
 
-					<p><hr><a data-href="/market/buy-account/">%%default_return_link%%</a></p>
+					<p><hr><a data-href="/account/buy-account/">%%default_return_link%%</a></p>
 				</div>
 				<div class="accounts-on-sale section table-view captions">
 					<p>
@@ -1644,7 +1438,7 @@ var ltmp_en_arr={
 					<div class="table-data"></div>
 					<div class="table-footer"></div>
 
-					<p><hr><a data-href="/market/">%%default_return_link%%</a></p>
+					<p><hr><a data-href="/account/">%%default_return_link%%</a></p>
 				</div>
 			</div>
 		</div>
@@ -1657,7 +1451,7 @@ var ltmp_en_arr={
 				<div class="buy-subaccount-confirmation section">
 					<p>
 						<label class="input-descr">
-							<span class="input-caption">Buy a subaccount (with suffix <strong>.</strong><span class="account-login bold"></span>):</span>
+							<span class="input-caption">Subaccount name (with suffix <strong>.</strong><span class="account-login bold"></span>):</span>
 							<input type="text" name="buy-subaccount-login" class="simple-rounded" data-suffix="">
 						</label>
 					</p>
@@ -1675,14 +1469,14 @@ var ltmp_en_arr={
 					</p>
 					<p class="red buy-subaccount-error"></p>
 					<p>
-						<input class="buy-subaccount-action red-button captions" type="button" value="Confirm purchase">
+						<input class="buy-subaccount-action blue-button captions" type="button" value="Confirm purchase">
 						<span class="submit-button-ring"></span>
 						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 					</p>
 					<div class="addon captions">
 						<h3>Hint</h3>
 						<p>To buy a subaccount, you must immediately transfer to his capital at least <span class="median-props" rel="account_creation_fee">1 viz</span>.</p>
-						<p>After purchase the account will have one private key for all types of operations, use <a data-href="/accounts/reset-access/">the key reset</a> to separate them (you can do it in an hour after purchase).</p>
+						<p>After purchase the account will have one private key for all types of operations, use <a data-href="/settings/reset-access/">the key reset</a> to separate them (you can do it in an hour after purchase).</p>
 					</div>
 					<div class="account-keys hidden">
 						<h3 class="left">Congratulations!</h3>
@@ -1699,7 +1493,7 @@ var ltmp_en_arr={
 						<p>Save your keys right now!</p>
 					</div>
 
-					<p><hr><a data-href="/market/buy-subaccount/">%%default_return_link%%</a></p>
+					<p><hr><a data-href="/account/buy-subaccount/">%%default_return_link%%</a></p>
 				</div>
 				<div class="subaccounts-on-sale section table-view captions">
 					<p>
@@ -1724,7 +1518,7 @@ var ltmp_en_arr={
 					<div class="table-data"></div>
 					<div class="table-footer"></div>
 
-					<p><hr><a data-href="/market/">%%default_return_link%%</a></p>
+					<p><hr><a data-href="/account/">%%default_return_link%%</a></p>
 				</div>
 			</div>
 		</div>
@@ -1762,7 +1556,7 @@ var ltmp_en_arr={
 				<p class="red sell-account-error"></p>
 				<p class="green sell-account-success"></p>
 				<p>
-					<input class="sell-account-action red-button captions" type="button" value="Confirm">
+					<input class="sell-account-action blue-button captions" type="button" value="Confirm">
 					<span class="submit-button-ring"></span>
 					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 				</p>
@@ -1770,7 +1564,7 @@ var ltmp_en_arr={
 					<h3>Hint</h3>
 					<p>The account will be put up for sale 7 days after the submission. This is a necessary action against the selling of stolen accounts.</p>
 				</div>
-				<p><hr><a data-href="/market/">%%default_return_link%%</a></p>
+				<p><hr><a data-href="/account/">%%default_return_link%%</a></p>
 			</div>
 		</div>
 		<div class="page page-sell-subaccount" data-title="Sell subaccount">
@@ -1807,58 +1601,56 @@ var ltmp_en_arr={
 				<p class="red sell-subaccount-error"></p>
 				<p class="green sell-subaccount-success"></p>
 				<p>
-					<input class="sell-subaccount-action red-button captions" type="button" value="Confirm">
+					<input class="sell-subaccount-action blue-button captions" type="button" value="Confirm">
 					<span class="submit-button-ring"></span>
 					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 				</p>
 
-				<p><hr><a data-href="/market/">%%default_return_link%%</a></p>
+				<p><hr><a data-href="/account/">%%default_return_link%%</a></p>
 			</div>
 		</div>
-		<div class="page page-deposit" data-title="Recharge">
-			<div class="card">
-				<h3>Recharge</h3>
-				<div class="account-balance captions">
-					<div>Balance: <span rel="token">&hellip;</span> viz</div>
+	`,
+	preset_view_market:`
+		<div class="page page-index">
+			<div class="card transparent">
+				<h3 class="adaptive-show-block">Market</h3>
+				<div class="columns-view">
+					<!--
+						<div class="column column-4 shadow">
+							<h4 class="center captions">Viz</h4>
+							<div class="icon icon-wide icon-100px icon-color-red icon-send-token-long"></div>
+							<div class="wide-buttons size3 captions">
+								<a class="wide-button color-red" data-href="/market/deposit/">Deposit</a>
+							</div>
+						</div>
+					-->
+					<div class="column column-3 shadow grid">
+						<h4 class="center captions">Subscribes</h4>
+						<!--<div class="icon icon-wide icon-100px icon-color-red icon-paid-subscription"></div>-- >
+						<div class="wide-buttons captions">
+							<a class="wide-button color-red" data-href="/market/paid-subscriptions/">Search</a>
+							<a class="wide-button color-red" data-href="/market/active-paid-subscriptions/">Manage</a>
+							<a class="wide-button color-red create-edit-paid-subscribe-caption" data-href="/market/create-paid-subscribe/">Create</a>
+						</div>
+					</div>
+					<div class="column column-3 shadow grid buy-account-column">
+						<h4 class="center captions">Buy accounts</h4>
+						<!--<div class="icon icon-wide icon-100px icon-color-red icon-buy-account"></div>-->
+						<div class="wide-buttons captions">
+							<a class="wide-button color-red" data-href="/account/buy-short-account/">Two symbols</a>
+							<a class="wide-button color-red" data-href="/account/buy-account/">Account</a>
+							<a class="wide-button color-red" data-href="/account/buy-subaccount/">Subaccount</a>
+						</div>
+					</div>
+					<div class="column column-3 shadow grid sell-account-column">
+						<h4 class="center captions">Sell accounts</h4>
+						<!--<div class="icon icon-wide icon-100px icon-color-red icon-buy-subaccount"></div>-->
+						<div class="wide-buttons captions">
+							<a class="wide-button color-red" data-href="/account/sell-account/">Account</a>
+							<a class="wide-button color-red" data-href="/account/sell-subaccount/">Subaccount</a>
+						</div>
+					</div>
 				</div>
-				<p>
-					There are several ways to deposit VIZ's wallet:<br>
-				</p>
-				<ul class="simple">
-					<li>To transfer from another account it is enough to specify your account <span class="bold current_user"></span></li>
-					<li>To get viz from the exchange <a href="https://wallet.bitshares.org/" target="_blank">Bitshares</a> to your wallet, go to it and transfer tokens XCHNG.VIZ to <strong>xchng-viz</strong> with memo <strong>log:<span class="bold current_user"></span></strong></li>
-					<li>You can also buy viz for regular money or bitcoins:<br>
-						&mdash; <a href="https://www.digiseller.market/asp2/pay_payu.asp?id_d=2742298&amp;lang=ru-RU" target="_blank">Purchase VIZ for $2</a><br>
-						&mdash; <a href="https://www.digiseller.market/asp2/pay_payu.asp?id_d=2742300&amp;lang=ru-RU" target="_blank">Purchase VIZ for $5</a><br>
-						&mdash; <a href="https://www.digiseller.market/asp2/pay_payu.asp?id_d=2742303&amp;lang=ru-RU" target="_blank">Purchase VIZ for $10</a>
-					</li>
-				</ul>
-				<p>Enter the code you received after purchase here:</p>
-				<p>
-					<label class="input-descr">
-						<span class="input-caption">Account:</span>
-						<input type="text" name="deposit-account" class="simple-rounded" placeholder="">
-					</label>
-				</p>
-				<p>
-					<label class="input-descr">
-						<span class="input-caption">Code:</span>
-						<input type="text" name="deposit-claim-code" class="simple-rounded" placeholder="">
-					</label>
-				</p>
-				<p class="red deposit-error"></p>
-				<p class="green deposit-success"></p>
-				<p>
-					<input class="deposit-action red-button captions" type="button" value="Obtain">
-					<span class="submit-button-ring"></span>
-					<span class="icon icon-margin hidden icon-color-red icon-check"></span>
-				</p>
-				<div class="addon captions">
-					<h3>Warning</h3>
-					<p>The price of viz purchased this way is likely to be markedly worse than the exchange price because of the difficulty of selling tokens for regular money, intermediaries' commissions (and we don't like banks for that either) and other reasons.</p>
-				</div>
-
-				<p><hr><a data-href="/market/">%%default_return_link%%</a></p>
 			</div>
 		</div>
 		<div class="page page-paid-subscriptions" data-title="Overview of available subscriptions">
@@ -2044,22 +1836,23 @@ var ltmp_en_arr={
 	node_empty_error:'The node address cannot be empty',
 
 	/* Index */
-	index_account_caption:'Account',
+	index_account_caption:'',//Account
 	index_social_capital_caption:'Capital (viz)',
 	index_balance_caption:'Balance (viz)',
 	index_energy_caption:'Energy',
 	index_info_caption:'Information',
 	index_add_account_button:'Add account',
-	index_info_acc_on_sale:'account on sale',
-	index_info_subacc_on_sale:'subaccounts on sale',
-	index_info_withdraw:'capital unstaking',
+	index_new_account_button:'New account',
+	index_info_acc_on_sale:'Account on sale',
+	index_info_subacc_on_sale:'Subaccounts on sale',
+	index_info_withdraw:'Unstaking proccess is active',
 	index_info_adaptive_caption:'Information:',
 	index_selected_account:'Selected account',
 	index_login_account_caption:'Switch to account {account}',
 	index_logout_account_caption:'Logout by account {account}',
 	index_social_capital_adaptive_caption:'Capital (viz):',
 	index_balance_adaptive_caption:'Balance (viz):',
-	index_energy_adaptive_caption:'Energy (viz):',
+	index_energy_adaptive_caption:'Energy:',
 	index_selected_node:'Selected node',
 	index_remove_node:'remove',
 	index_add_node_caption:'Add a node:',
@@ -2083,9 +1876,9 @@ var ltmp_en_arr={
 	access_reset_success:'The keys have been successfully reset, be sure to save them',
 	access_loaded:'The account access scheme has been successfully updated',
 
-	/* Witnesses */
-	witness_vote_caption:'Vote for a witness {witness}',
-	witness_unvote_caption:'Withdraw a vote from a witness {witness}',
+	/* Validators */
+	witness_vote_caption:'Vote for a validator {witness}',
+	witness_unvote_caption:'Withdraw a vote from a validator {witness}',
 	witness_props_caption:'parameters',
 	witness_url_caption:'link',
 	witness_votes_weight_caption:'Weight of votes',
@@ -2094,12 +1887,15 @@ var ltmp_en_arr={
 	witness_hardfork_vote_caption:'Votes for new hardfork: ',
 	witness_hardfork_vote_starting_caption:' as of {date}',
 	witness_penalty_caption:'Penalty for skipping blocks: ',
-	witness_show_inactive_link:'Show deactivated witnesses',
+	witness_show_inactive_link:'Show deactivated validators',
 	witness_set_props_button:'Set the parameters',
 	witness_set_props_success:'Parameters are successfully set',
 	witness_set_props_error:'Error: check modified fields',
 	witness_save_signing_key:', save the signature private key: ',
-	witness_was_disabled:', witness was deactivated',
+	witness_was_disabled:', validator was deactivated',
+	witness_sharing_rate_caption:'Reward sharing: ',
+	witness_reward_sharing_success:'Sharing rate successfully set',
+	witness_reward_sharing_error:'Error: failed to set sharing rate',
 
 	/* Delegations */
 	social_capital_own_adaptive_caption:'Own:',
@@ -2142,6 +1938,7 @@ var ltmp_en_arr={
 
 	fund_show_other_requests:'Show other requests &rarr;',
 	fund_none_requests:'No requests according to these criteria were found in the last 7 days.',
+	fund_none_new_requests:'No new requests to the DAO Fund at this time.',
 	fund_cancel_request_confirmation:'Are you sure you want to cancel the request?',
 	fund_request_canceled_successfully:'You canceled the request.',
 
@@ -2163,10 +1960,10 @@ var ltmp_en_arr={
 	bsa_account_not_found:'This seller’s account was not found',
 	bsa_accounts_not_on_sale:'This subaccount is not available for purchase',
 
-	/* Witness params */
-	account_not_witness:'The account is not declared as witness',
+	/* Validator params */
+	account_not_witness:'The account is not declared as validator',
 	witness_keys_dont_match:'Private key and public key do not match',
-	witness_url_is_needed:'Fill in the witness statement link field',
+	witness_url_is_needed:'Fill in the validator statement link field',
 	witness_props_captions:{
 		account_creation_fee:'Chargeable fee when creating an account',
 		create_account_delegation_ratio:'Delegation coefficient when creating an account',
@@ -2177,22 +1974,23 @@ var ltmp_en_arr={
 		min_delegation:'Minimum number of tokens when delegating',
 		vote_accounting_min_rshares:'Minimum weight of the vote to be taken into account when awarding (reward shares)',
 		maximum_block_size:'Maximum block size in the network (in bytes)',
-		inflation_witness_percent:'Share of the emission going to the witnesses',
+		inflation_validator_percent:'Share of the emission going to the validators',
 		inflation_ratio_committee_vs_reward_fund:'Share of the remaining emission going to the DAO Fund (the rest to the Award Fund)',
 		inflation_recalc_period:'Number of blocks between recalculations of the inflation model',
 		data_operations_cost_additional_bandwidth:'Additional bandwidth surcharge for each data operation in a transaction',
-		witness_miss_penalty_percent:'Penalty to a witness for missing a block as a percentage of the total weight of votes',
-		witness_miss_penalty_duration:'Duration of the penalty to the witness for skipping the block in seconds',
+		validator_miss_penalty_percent:'Penalty to a validator for missing a block as a percentage of the total weight of votes',
+		validator_miss_penalty_duration:'Duration of the penalty to the validator for skipping the block in seconds',
 		create_invite_min_balance:'Minimum check amount',
 		committee_create_request_fee:'Fee for creating an request to the DAO Fund',
 		create_paid_subscription_fee:'Fee for creating a paid subscription',
 		account_on_sale_fee:'Fee for offering an account for sale',
 		subaccount_on_sale_fee:'Fee for offering subaccounts for sale',
-		witness_declaration_fee:'Fee for declaring an account as a witness',
+		validator_declaration_fee:'Fee for declaring an account as a validator',
 		withdraw_intervals:'Number of periods (days) of capital unstake',
+		distribution_epoch_length:'Reward distribution epoch length (in blocks)',
 	},
 
-	/* Witness props order on manage page*/
+	/* Validator props order on manage page*/
 	witness_props_order:[
 		'maximum_block_size',
 		'account_creation_fee',
@@ -2205,17 +2003,18 @@ var ltmp_en_arr={
 		'vote_accounting_min_rshares',
 		'withdraw_intervals',
 		'committee_request_approve_min_percent',
-		'inflation_witness_percent',
+		'inflation_validator_percent',
 		'inflation_ratio_committee_vs_reward_fund',
 		'inflation_recalc_period',
 		'data_operations_cost_additional_bandwidth',
-		'witness_miss_penalty_percent',
-		'witness_miss_penalty_duration',
+		'validator_miss_penalty_percent',
+		'validator_miss_penalty_duration',
 		'committee_create_request_fee',
 		'create_paid_subscription_fee',
 		'account_on_sale_fee',
 		'subaccount_on_sale_fee',
-		'witness_declaration_fee',
+		'validator_declaration_fee',
+		'distribution_epoch_length',
 		//deprecated:
 		'min_curation_percent',
 		'max_curation_percent',
@@ -2251,22 +2050,22 @@ var ltmp_en_arr={
 	/* History table */
 	history_adaptive_data:'Date:',
 	history_adaptive_item:'Entry:',
-	history_award:'Awarding <a class="view-account" href="https://info.viz.plus/accounts/{receiver}/" target="_blank">{receiver}</a> with <span class="view-percent">{energy}%</span> energy',
+	history_award:'Awarding <a class="view-account" href="https://info.viz.world/accounts/{receiver}/" target="_blank">{receiver}</a> with <span class="view-percent">{energy}%</span> energy',
 	history_award_memo:' with memo ',
-	history_receive_award:'Award received <span class="view-tokens">{shares}</span> from <a class="view-account" href="https://info.viz.plus/accounts/{initiator}/" target="_blank">{initiator}</a>',
+	history_receive_award:'Award received <span class="view-tokens">{shares}</span> from <a class="view-account" href="https://info.viz.world/accounts/{initiator}/" target="_blank">{initiator}</a>',
 	history_create_invite:'A check for <span class="view-tokens">{tokens}</span> with the verification code <span class="view-key">{key}</span>',
 	history_claim_invite_balance:'A check with a code <span class="view-key">{key}</span> is redeemed',
 	history_use_invite_balance:'A check with a code <span class="view-key">{key}</span> is redeemed',
-	history_transfer_from:'<span class="view-tokens">{tokens}</span> transfered to <a class="view-account" href="https://info.viz.plus/accounts/{to}/" target="_blank">{to}</a>',
-	history_transfer_to:'<span class="view-tokens">{tokens}</span> received from <a class="view-account" href="https://info.viz.plus/accounts/{from}/" target="_blank">{from}</a>',
+	history_transfer_from:'<span class="view-tokens">{tokens}</span> transfered to <a class="view-account" href="https://info.viz.world/accounts/{to}/" target="_blank">{to}</a>',
+	history_transfer_to:'<span class="view-tokens">{tokens}</span> received from <a class="view-account" href="https://info.viz.world/accounts/{from}/" target="_blank">{from}</a>',
 	history_transfer_memo:' with memo ',
-	history_transfer_to_vesting_from:'<span class="view-tokens">{tokens}</span> staked to social capital <a class="view-account" href="https://info.viz.plus/accounts/{to}/" target="_blank">{to}</a>',
-	history_transfer_to_vesting_to:'<span class="view-tokens">{tokens}</span> received to social capital from <a class="view-account" href="https://info.viz.plus/accounts/{from}/" target="_blank">{from}</a>',
+	history_transfer_to_vesting_from:'<span class="view-tokens">{tokens}</span> staked to social capital <a class="view-account" href="https://info.viz.world/accounts/{to}/" target="_blank">{to}</a>',
+	history_transfer_to_vesting_to:'<span class="view-tokens">{tokens}</span> received to social capital from <a class="view-account" href="https://info.viz.world/accounts/{from}/" target="_blank">{from}</a>',
 	history_withdraw_vesting_stop:'Stopping the social capital unstake',
 	history_withdraw_vesting:'Activation of unstake social capital with an amount of <span class="view-tokens">{shares}</span>',
 	history_fill_vesting_withdraw:'Received <span class="view-tokens">{tokens}</span> by social capital unstake',
-	history_fill_vesting_withdraw_from:'<a class="view-account" href="https://info.viz.plus/accounts/{to}/" target="_blank">{to}</a> account is sent <span class="view-tokens">{tokens}</span> from social capital unstaking',
-	history_fill_vesting_withdraw_to:'Received <span class="view-tokens">{tokens}</span> from social capital unstaking by account <a class="view-account" href="https://info.viz.plus/accounts/{from}/" target="_blank">{from}<a>',
+	history_fill_vesting_withdraw_from:'<a class="view-account" href="https://info.viz.world/accounts/{to}/" target="_blank">{to}</a> account is sent <span class="view-tokens">{tokens}</span> from social capital unstaking',
+	history_fill_vesting_withdraw_to:'Received <span class="view-tokens">{tokens}</span> from social capital unstaking by account <a class="view-account" href="https://info.viz.world/accounts/{from}/" target="_blank">{from}<a>',
 
 	login_active_wif_invalid:'The private active key is invalid',
 	login_memo_wif_invalid:'The private memo key is invalid',
@@ -2333,6 +2132,25 @@ var ltmp_en_arr={
 	memo_key_saved:'Key saved successfully',
 	memo_key_updated:'The key is successfully set, be sure to save it',
 
+	profile_empty_about:'No account description',
+	profile_nickname:'Nickname',
+	profile_about:'About',
+	profile_location:'Location',
+	profile_site:'Web-site',
+	profile_mail:'E-mail',
+	profile_interests:'Interests:',
+	profile_services:'Services:',
+
+	services_facebook:'Facebook',
+	services_instagram:'Instagram',
+	services_twitter:'Twitter',
+	services_vk:'VK',
+	services_telegram:'Telegram',
+	services_skype:'Skype',
+	services_viber:'Viber',
+	services_whatsapp:'WhatsApp',
+
+	account_title:'Account',
 	login_title:'Add account',
 	create_subaccount_error:'Error creating a subaccount',
 	deposit_too_much_attempts:'You made more than 5 attempts in 5 minutes, wait a while and try again',
@@ -2354,6 +2172,7 @@ var ltmp_en_arr={
 	transfer_memo_not_match_template:'The memo does not match the format of the template',
 	withdraw_success:'Unstake capital is confirmed',
 	stop_withdraw_error:'Error in the stop operation',
+	setted_witness_proxy:'The right to vote has been proxied to the account {account}',
 
 	/* Market menu */
 	create_paid_subscribe_caption:'Create',
@@ -2393,6 +2212,9 @@ var ltmp_en_arr={
 	default_type_memo_key:'Enter the private memo key to encrypt',
 	default_memo_encode_error:'Failed to encrypt memo, try again later...',
 	default_api_error:'API service not response',
+
+	node_down_notice:'The current node is not responding. Switch to a backup node:',
+	node_down_switch_btn:'Switch to {node}',
 
 	enter_memo_link:'<a data-href="/memo/?back={link}">Enter the private memo key</a> for decryption',
 	error_update_memo_link:'Invalid memo private key, try again or <a data-href="/memo/?back={link}">update key</a>',

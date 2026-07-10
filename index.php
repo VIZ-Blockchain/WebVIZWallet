@@ -1,65 +1,63 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<title>my VIZ+</title>
-	<meta name="description" content="My VIZ+ manager: wallet, services, DAO">
-	<meta property="og:description" content="My VIZ+ manager: wallet, services, DAO">
-	<meta name="twitter:description" content="My VIZ+ manager: wallet, services, DAO">
-	<meta name="viewport" content="width=device-width">
-	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-	<!--
-		<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Serif&display=swap" rel="stylesheet">
-		<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-	-->
-	<link rel="stylesheet" href="/app.css?<?=filemtime('app.css')?>">
-	<script type="text/javascript" src="/viz.min.js"></script>
-	<script type="text/javascript" src="/jquery-3.4.1.min.js"></script>
-	<script type="text/javascript" src="/progressbar.min.js"></script>
-	<script type="text/javascript" src="/ltmp_ru.js?<?=filemtime('ltmp_ru.js')?>"></script>
-	<script type="text/javascript" src="/ltmp_en.js?<?=filemtime('ltmp_en.js')?>"></script>
-	<script type="text/javascript" src="/app.js?<?=filemtime('app.js')?>"></script>
-</head>
-<body>
-<div class="header shadow unselectable">
-	<div class="horizontal-view">
-		<div class="menu-button menu-button-action"><img class="menu-button-action" src="/menu.svg"></div>
-		<div class="logo">
-			<a data-href="/" class="prefix">my.</a><a href="https://viz.plus/"><img src="/logo.svg" alt="VIZ+"></a>
-		</div>
-		<div class="user-menu">
-			<div class="login">&hellip;</div>
-			<div class="user-buttons">
-				<img class="drop-down" src="/drop-down.svg">
-				<div class="users-drop-down"></div>
-				<img class="add-account" src="/circle-plus.svg">
-				<img class="logout" src="/logout.svg">
-			</div>
-		</div>
-		<div class="menu-list captions">
-			<div class="menu-bg"></div>
-		</div>
-	</div>
-</div>
+<?php
+$path=$_SERVER['REQUEST_URI'];
+$_GET=array();
+if(false!==strpos($path,'?')){
+	$query_string=substr($path,1+strpos($path,'?'));
+	$path=substr($path,0,strpos($path,'?'));
+	$pairs=explode('&',$query_string);
+	foreach($pairs as $pair){
+		list($name,$value)=explode('=',$pair);
+		$_GET[$name]=urldecode($value);
+	}
+}
+$path_ext=false;
+if(false!==strrpos($path,'.')){
+	$path_ext=substr($path,strrpos($path,'.'));
+}
+if(!$path_ext){
+	if('/'!=substr($path,strlen($path)-1)){
+		if($query_string){
+			$query_string='?'.$query_string;
+		}
+		header('location:'.$path.'/'.$query_string);
+		exit;
+	}
+}
+$path_array=explode('/',trim($path));
 
-<div class="horizontal-view vertical-view">
-	<div class="cards-view">
-		<div class="cards-container">
-			<div class="view view-index"></div>
-			<div class="view view-portable"></div>
-			<div class="view view-login"></div>
-			<div class="view view-memo"></div>
-			<div class="view view-accounts"></div>
-			<div class="view view-assets"></div>
-			<div class="view view-dao"></div>
-			<div class="view view-market"></div>
-		</div>
-	</div>
-</div>
-<div class="go-top adaptive-show-block">&uarr;</div>
-<div class="absolute-view menu-list captions">
-	<div class="menu-bg"></div>
-</div>
-</body>
-</html>
+if('go'==$path_array[1]){
+	if($_GET['url']){
+		header('location:'.$_GET['url']);
+	}
+	else{
+		header('location:/');
+	}
+	exit;
+}
+/*
+$langs_arr=['rus','eng'];
+$default_lang='rus';
+$lang=$default_lang;
+if(isset($_GET['lang'])){
+	if(in_array($_GET['lang'],$langs_arr)){
+		setcookie('lang',$_GET['lang'],time()+31536000,'/');//1 year
+		header('location:/');
+		exit;
+	}
+}
+if(isset($_COOKIE['lang'])){
+	if(!in_array($_COOKIE['lang'],$langs_arr)){
+		setcookie('lang','',time()+31536000,'/');//clear if lang not exist
+		header('location:/');
+		exit;
+	}
+	else{
+		$lang=$_COOKIE['lang'];
+	}
+}
+if(!in_array($lang,$langs_arr)){
+	$lang=$default_lang;
+}
+include('index.'.$lang.'.php');
+*/
+include('index.template.php');
