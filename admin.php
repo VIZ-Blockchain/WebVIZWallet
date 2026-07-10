@@ -6,10 +6,10 @@ $admin=false;
 $user=array();
 $menu_addon='';
 
-if(isset($_COOKIE['my_vizplus_login'])){
-	if($_COOKIE['my_vizplus_password']==md5($users_arr[$_COOKIE['my_vizplus_login']])){
+if(isset($_COOKIE['wallet_vizworld_login'])){
+	if($_COOKIE['wallet_vizworld_password']==md5($users_arr[$_COOKIE['wallet_vizworld_login']])){
 		$admin=true;
-		$user=$_COOKIE['my_vizplus_login'];
+		$user=$_COOKIE['wallet_vizworld_login'];
 		$menu_addon='<a class="menu-el color1" href="/admin.php?action=logout">Выход</a>';
 	}
 }
@@ -115,8 +115,8 @@ if($admin){
 	}
 	else
 	if('logout'==$action){
-		@setcookie('my_vizplus_login','',time()+8*3600,'/');
-		@setcookie('my_vizplus_password','',time()+8*3600,'/');
+		@setcookie('wallet_vizworld_login','',time()+8*3600,'/');
+		@setcookie('wallet_vizworld_password','',time()+8*3600,'/');
 		header('location:/admin.php');
 		exit;
 	}
@@ -132,8 +132,8 @@ else{
 	if(isset($_POST['my_login'])){
 		if(isset($users_arr[$_POST['my_login']])){
 			if($_POST['my_password']==$users_arr[$_POST['my_login']]){
-				@setcookie('my_vizplus_login',$_POST['my_login'],time()+8*3600,'/');
-				@setcookie('my_vizplus_password',md5($_POST['my_password']),time()+8*3600,'/');
+				@setcookie('wallet_vizworld_login',$_POST['my_login'],time()+8*3600,'/');
+				@setcookie('wallet_vizworld_password',md5($_POST['my_password']),time()+8*3600,'/');
 				header('location:/admin.php');
 				exit;
 			}
@@ -163,16 +163,16 @@ print '<!DOCTYPE html>
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<title>'.$title.' — VIZ+</title>
+	<title>'.$title.' — VIZ World</title>
 	<meta name="viewport" content="width=device-width">
 	<link rel="stylesheet" href="/app.css?'.filemtime('app.css').'">
 </head>
 <body>
 <div class="header shadow unselectable">
 	<div class="horizontal-view">
-		<div class="menu-button menu-button-action"><img class="menu-button-action" src="/menu.svg"></div>
+		<div class="menu-button menu-button-action"><img class="menu-button-action" src="/icons/menu.svg"></div>
 		<div class="logo">
-			<a href="/" class="prefix">my.</a><a href="https://viz.plus/"><img src="/logo_20.png" alt="VIZ+"></a>
+		<a data-href="/" class="prefix">wallet</a><a href="https://promo.viz.world/"><img src="https://viz.world/logo-viz-simple.svg" alt="VIZ World"></a>
 		</div>
 		<div class="menu-list captions">
 			<div class="menu-bg">
