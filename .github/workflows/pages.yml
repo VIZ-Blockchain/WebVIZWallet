@@ -1,0 +1,61 @@
+name: Build standalone wallet and deploy to GitHub Pages
+
+# Собирает автономную (standalone) версию кошелька через minify.php
+# и публикует её как index.html в GitHub Pages.
+#
+# Триггеры: пуш в master, публикация релиза, ручной запуск.
+# Требуется: в настройках репозитория Settings → Pages → Source выбрать "GitHub Actions".
+
+on:
+  push:
+    branches: [master]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+# Права, необходимые для деплоя в Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Не отменять уже идущий деплой, но не запускать параллельные.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Build standalone HTML (minify.php)
+        run: php minify.php > /dev/null
+
+      - name: Prepare Pages artifact (index.html)
+        run: |
+          mkdir -p _site
+          cp wallet-viz-world-portable.html _site/index.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
