@@ -1,7 +1,8 @@
 var api_nodes=[
 	'https://api.viz.world/',
-	'https://viz.lexai.host/',
 	'https://node.viz.cx/',
+	'https://viz.lexai.top/',
+	'https://mirror.viz.world/',
 ];
 var default_api_node=api_nodes[0];
 var api_nodes_addon={'list':[]};
@@ -12,9 +13,6 @@ var invite_user='invite';
 var invite_active_key='5KcfoRuDfkhrLCxVcE9x51J6KN9aM9fpb78tLrvvFckxVV6FyFW';
 
 var standalone=false;
-if('vizplus.github.io'==document.location.hostname){
-	standalone=true;	
-}
 var standalone_fullpath='';
 var standalone_path='';
 var standalone_search='';
@@ -47,11 +45,15 @@ if(null!=localStorage.getItem('api_nodes_addon')){
 		}
 	}
 	if(typeof api_nodes_addon.default != 'undefined'){
+		if('https://viz.lexai.host/'==api_nodes_addon.default){
+			api_nodes_addon.default='https://viz.lexai.top/';
+		}
 		default_api_node=api_nodes_addon.default;
 	}
 }
 console.log('using node',default_api_node);
 viz.config.set('websocket',default_api_node);
+start_node_down_check();
 
 function select_api_node(node){
 	node=typeof node==='undefined'?api_nodes[0]:node;
@@ -60,6 +62,8 @@ function select_api_node(node){
 	console.log('using node',default_api_node);
 	viz.config.set('websocket',default_api_node);
 	save_session();
+	hide_node_down_notice();
+	start_node_down_check();
 	if(standalone){
 		parse_standalone_fullpath();
 		change_state(standalone_path+encodeURIComponent(standalone_search),{},false);
@@ -82,6 +86,8 @@ function approved_api_node(node,latency){
 	api_nodes_addon.default=default_api_node;
 	viz.config.set('websocket',default_api_node);
 	save_session();
+	hide_node_down_notice();
+	start_node_down_check();
 	if(standalone){
 		parse_standalone_fullpath();
 		change_state(standalone_path+encodeURIComponent(standalone_search),{},false);
@@ -135,15 +141,22 @@ function select_lang(lang){
 
 var langs_arr={
 	'en-US':'en',
+	'en-GB':'en',
 	'en':'en',
 	'ru-RU':'ru',
 	'ru':'ru',
+	'zh-CN':'zh',//китайский язык (упрощенное письмо), Китай
+	'zh-TW':'zh',//китайский язык (традиционное письмо), Тайвань
+	'zh-HK':'zh',//китайский язык (традиционное письмо), Гонконг
+	'zh-SG':'zh',//китайский язык (упрощенное письмо), Сингапур
+	'zh':'zh'
 };
 var available_langs={
 	'en':'English',
 	'ru':'Русский',
+	'zh':'中文',
 };
-var default_lang='ru';
+var default_lang='en';
 var selected_lang=default_lang;
 if(null!=localStorage.getItem('lang')){
 	if(typeof available_langs[localStorage.getItem('lang')] !== 'undefined'){
@@ -308,7 +321,7 @@ function pass_gen(length,to_wif){
 
 var keys=[];
 keys=viz.auth.getPrivateKeys('',pass_gen(100),['master','active','regular','memo']);
-var witness_props_captions={
+var validator_props_captions={
 	'account_creation_fee':ltmp_arr.witness_props_captions.account_creation_fee,
 	'create_account_delegation_ratio':ltmp_arr.witness_props_captions.create_account_delegation_ratio,
 	'create_account_delegation_time':ltmp_arr.witness_props_captions.create_account_delegation_time,
@@ -318,21 +331,23 @@ var witness_props_captions={
 	'min_delegation':ltmp_arr.witness_props_captions.min_delegation,
 	'vote_accounting_min_rshares':ltmp_arr.witness_props_captions.vote_accounting_min_rshares,
 	'maximum_block_size':ltmp_arr.witness_props_captions.maximum_block_size,
-	'inflation_witness_percent':ltmp_arr.witness_props_captions.inflation_witness_percent,
+	'inflation_validator_percent':ltmp_arr.witness_props_captions.inflation_witness_percent,
 	'inflation_ratio_committee_vs_reward_fund':ltmp_arr.witness_props_captions.inflation_ratio_committee_vs_reward_fund,
 	'inflation_recalc_period':ltmp_arr.witness_props_captions.inflation_recalc_period,
 	'data_operations_cost_additional_bandwidth':ltmp_arr.witness_props_captions.data_operations_cost_additional_bandwidth,
-	'witness_miss_penalty_percent':ltmp_arr.witness_props_captions.witness_miss_penalty_percent,
-	'witness_miss_penalty_duration':ltmp_arr.witness_props_captions.witness_miss_penalty_duration,
+	'validator_miss_penalty_percent':ltmp_arr.witness_props_captions.witness_miss_penalty_percent,
+	'validator_miss_penalty_duration':ltmp_arr.witness_props_captions.witness_miss_penalty_duration,
 	'create_invite_min_balance':ltmp_arr.witness_props_captions.create_invite_min_balance,
 	'committee_create_request_fee':ltmp_arr.witness_props_captions.committee_create_request_fee,
 	'create_paid_subscription_fee':ltmp_arr.witness_props_captions.create_paid_subscription_fee,
 	'account_on_sale_fee':ltmp_arr.witness_props_captions.account_on_sale_fee,
 	'subaccount_on_sale_fee':ltmp_arr.witness_props_captions.subaccount_on_sale_fee,
-	'witness_declaration_fee':ltmp_arr.witness_props_captions.witness_declaration_fee,
+	'validator_declaration_fee':ltmp_arr.witness_props_captions.witness_declaration_fee,
 	'withdraw_intervals':ltmp_arr.witness_props_captions.withdraw_intervals,
+	'distribution_epoch_length':ltmp_arr.witness_props_captions.distribution_epoch_length,
 };
-var witness_props_percent=['bandwidth_reserve_percent','committee_request_approve_min_percent','inflation_witness_percent','inflation_ratio_committee_vs_reward_fund','data_operations_cost_additional_bandwidth','witness_miss_penalty_percent'];
+var validator_props_percent=['bandwidth_reserve_percent','committee_request_approve_min_percent','inflation_validator_percent','inflation_ratio_committee_vs_reward_fund','data_operations_cost_additional_bandwidth','validator_miss_penalty_percent'];
+var validator_props_hf13_defaults={'distribution_epoch_length':28800};
 var request_status_arr={
 	'0':ltmp_arr.request_status_arr['0'],
 	'1':ltmp_arr.request_status_arr['1'],
@@ -362,6 +377,67 @@ function update_dgp(auto){
 	}
 }
 var update_chain_properties_timer=0;
+
+var node_down_check_timer=0;
+var node_down_fallback_primary='https://api.viz.world/';
+var node_down_fallback_secondary='https://mirror.viz.world/';
+function get_fallback_node(){
+	if(default_api_node==node_down_fallback_primary){
+		return node_down_fallback_secondary;
+	}
+	return node_down_fallback_primary;
+}
+function show_node_down_notice(){
+	let fallback=get_fallback_node();
+	let fallback_host=fallback.replace(/https?:\/\//,'').replace(/\/+$/,'');
+	$('.node-down-notice .node-down-text').html(ltmp_arr.node_down_notice);
+	$('.node-down-notice .switch-node-btn').html(ltmp(ltmp_arr.node_down_switch_btn,{node:fallback_host}));
+	$('.node-down-notice .switch-node-btn').attr('rel',fallback);
+	$('.node-down-notice').css('display','block');
+}
+function hide_node_down_notice(){
+	$('.node-down-notice').css('display','none');
+}
+function check_node_alive(){
+	let xhr=new XMLHttpRequest();
+	xhr.overrideMimeType('text/plain');
+	xhr.open('POST',default_api_node);
+	xhr.setRequestHeader('accept','application/json, text/plain, */*');
+	xhr.setRequestHeader('content-type','application/json');
+	xhr.timeout=5000;
+	xhr.onreadystatechange=function(){
+		if(4==xhr.readyState){
+			if(200==xhr.status){
+				try{
+					let json=JSON.parse(xhr.responseText);
+					if((typeof json.result!='undefined')&&(typeof json.result.head_block_number!='undefined')){
+						hide_node_down_notice();
+						return;
+					}
+				}
+				catch(err){
+					console.log('node health check parse error',err);
+				}
+			}
+			show_node_down_notice();
+		}
+	};
+	xhr.ontimeout=function(){
+		show_node_down_notice();
+	};
+	xhr.onerror=function(){
+		show_node_down_notice();
+	};
+	xhr.send('{"id":1,"method":"call","jsonrpc":"2.0","params":["database_api","get_dynamic_global_properties",[]]}');
+}
+function start_node_down_check(){
+	clearTimeout(node_down_check_timer);
+	check_node_alive();
+	node_down_check_timer=setTimeout(function(){
+		start_node_down_check();
+	},30000);
+}
+
 function update_chain_properties(){
 	viz.api.getChainProperties(function(err,response){
 		if(!err){
@@ -556,6 +632,43 @@ function download(filename,text) {
 	else {
 		link.click();
 	}
+}
+
+function ipfs_link(cid){
+	return 'https://cloudflare-ipfs.com/ipfs/'+cid;
+}
+function sia_link(skylink){
+	return 'https://siasky.net/'+skylink;
+}
+function safe_image(link){
+	let result='';
+	let error=false;
+	if(0==link.indexOf('https://')){
+		result=link;
+	}
+	else
+	if(0==link.indexOf('ipfs://')){
+		result=ipfs_link(link.substring(7));
+	}
+	else
+	if(0==link.indexOf('sia://')){
+		result=sia_link(link.substring(6));
+	}
+	else
+	if(0==link.indexOf('http://')){
+		error=true;//no http
+	}
+	else
+	if(0==link.indexOf('data:')){
+		error=true;//no encoded
+	}
+	else{
+		error=true;//unknown
+	}
+	if(error){
+		return false;
+	}
+	return result;
 }
 
 var users={};
@@ -860,11 +973,11 @@ function view_index(path,params,title){
 		data+=`
 		<div class="accounts-on-sale section table-view captions">
 			<div class="table-header columns-view adaptive-hide-flex">
-				<div class="column-view column-5">`+ltmp_arr.index_account_caption+`</div>
-				<div class="column-view column-5 text-right">`+ltmp_arr.index_social_capital_caption+`</div>
-				<div class="column-view column-5 text-right">`+ltmp_arr.index_balance_caption+`</div>
-				<div class="column-view column-5 text-right">`+ltmp_arr.index_energy_caption+`</div>
-				<div class="column-view column-flex">`+ltmp_arr.index_info_caption+`</div>
+				<div class="column-view column-4">`+ltmp_arr.index_account_caption+`</div>
+				<div class="column-view column-4 text-right">`+ltmp_arr.index_social_capital_caption+`</div>
+				<div class="column-view column-4 text-right">`+ltmp_arr.index_balance_caption+`</div>
+				<div class="column-view column-flex text-right">`+ltmp_arr.index_energy_caption+`</div>
+				<!--<div class="column-view column-flex">`+ltmp_arr.index_info_caption+`</div>-->
 			</div>
 			<div class="table-header columns-view adaptive-show-flex">
 				<div class="column-view column-flex"></div>
@@ -872,7 +985,10 @@ function view_index(path,params,title){
 			<div class="table-data">`
 		data+='<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>';
 		data+=`</div>
-			<div class="table-footer"> <a class="inline-button" data-href="/login/?back=/">`+ltmp_arr.index_add_account_button+`</a></div>
+			<div class="table-footer">
+				<a class="inline-button" data-href="/login/?back=/">`+ltmp_arr.index_add_account_button+`</a>
+				<a class="inline-button" data-href="/account/">`+ltmp_arr.index_new_account_button+`</a>
+			</div>
 		</div>`;
 		$('.view-index .sessions').html(data);
 		let accounts_arr=Object.keys(users);
@@ -883,6 +999,7 @@ function view_index(path,params,title){
 				for(i in response){
 					//console.log(response[i]);
 					let account=response[i];
+					let active_withdraw='';
 					let info='';
 					if(account.account_on_sale){
 						info+='<span class="account-on-sale">'+ltmp_arr.index_info_acc_on_sale+'</span> ';
@@ -891,6 +1008,7 @@ function view_index(path,params,title){
 						info+='<span class="subaccount-on-sale">'+ltmp_arr.index_info_subacc_on_sale+'</span> ';
 					}
 					if(parseInt(account.to_withdraw)>parseInt(account.withdrawn)){
+						active_withdraw='<span class="red" title="'+ltmp_arr.index_info_withdraw+'">&#9660;</span>';
 						info+='<span class="on-withdraw">'+ltmp_arr.index_info_withdraw+'</span> ';
 					}
 					if(''==info){
@@ -930,11 +1048,13 @@ function view_index(path,params,title){
 					}
 					data+=`
 					<div class="columns-view">
-						<div class="column-view column-5">${account_manage}</div>
-						<div class="column-view column-5 text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_social_capital_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">${vesting_shares}${received_vesting_shares}${delegated_vesting_shares}</span></div>
-						<div class="column-view column-5 text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_balance_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">${number_thousands(show_balance_in_tokens(account.balance))}</span></div>
-						<div class="column-view column-5 text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_energy_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">${(parseInt(new_energy)/100).toFixed(2)}%</span></div>
-						<div class="column-view column-flex">${info}</div>
+						<div class="column-view column-4">${account_manage}</div>
+						<div class="column-view column-4 text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_social_capital_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">
+						${active_withdraw}
+						${vesting_shares}${received_vesting_shares}${delegated_vesting_shares}</span></div>
+						<div class="column-view column-4 text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_balance_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">${number_thousands(show_balance_in_tokens(account.balance))}</span></div>
+						<div class="column-view column-flex text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_energy_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">${(parseInt(new_energy)/100).toFixed(2)}%</span></div>
+						<!--<div class="column-view column-flex">${info}</div>-->
 					</div>`;
 				}
 			}
@@ -1064,6 +1184,9 @@ function update_balances(el){
 				let effective_vesting_shares=vesting_shares + received_vesting_shares - delegated_vesting_shares;
 				let floor_effective_vesting_shares=Math.floor(100*effective_vesting_shares)/100;
 
+				let available_vesting_shares=vesting_shares - delegated_vesting_shares;
+				let floor_available_vesting_shares=Math.floor(100*available_vesting_shares)/100;
+
 				let last_vote_time=Date.parse(data.last_vote_time);
 				let delta_time=parseInt((new Date().getTime() - last_vote_time+(new Date().getTimezoneOffset()*60000))/1000);
 
@@ -1082,8 +1205,18 @@ function update_balances(el){
 				el.find('span[rel=effective_shares]').attr('data-raw',(effective_vesting_shares).toFixed(2));
 				el.find('span[rel=effective_shares]').html(number_thousands((effective_vesting_shares).toFixed(2)));
 
+				el.find('span[rel=available_shares]').attr('data-raw',(available_vesting_shares).toFixed(2));
+				el.find('span[rel=available_shares]').html(number_thousands((available_vesting_shares).toFixed(2)));
+
 				el.find('span[rel=energy]').attr('data-raw',new_energy);
 				el.find('span[rel=energy]').html((new_energy/100).toFixed(2));
+
+				if(''!=data.proxy){
+					$('.page-witnesses .witness-proxy-success').html(ltmp(ltmp_arr.setted_witness_proxy,{account:data.proxy}));
+				}
+				else{
+					$('.page-witnesses .witness-proxy-success').html('');
+				}
 			}
 		}
 	});
@@ -1102,7 +1235,7 @@ function load_paid_subscriptions(page){
 	$('.page-paid-subscriptions .view-paid-subscriptions .table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
 	$.ajax({
 		type:'GET',
-		url:'https://my.viz.plus/ajax.php',
+		url:'https://wallet.viz.world/ajax.php',
 		data:{'action':'get_paid_subscriptions',page,search,descr,order},
 		success:function(response_data){
 			let data='';
@@ -1162,7 +1295,7 @@ function load_paid_subscriptions(page){
 			if(''==data){
 				data+='<div class="columns-view"><div class="column-view column-1">';
 				data+=ltmp_arr.default_no_items;
-				data+=(page!=0?ltmp_arr.default_no_items_try_other_page+(''!=search?ltmp_arr.default_no_items_try_other_search:''):'')+ltmp_arr.default_no_items_try_other_end;
+				data+=(page!=0?ltmp_arr.default_no_items_try_other_page+(''!=search?ltmp_arr.default_no_items_try_other_search:'')+ltmp_arr.default_no_items_try_other_end:'');
 				data+='</div></div>';
 				let prev_page=false;
 				if(offset>=per_page){
@@ -1208,7 +1341,7 @@ function load_accounts_on_sale(page){
 	$('.page-buy-account .accounts-on-sale .table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
 	$.ajax({
 		type:'GET',
-		url:'https://my.viz.plus/ajax.php',
+		url:'https://wallet.viz.world/ajax.php',
 		data:{'action':'get_accounts_on_sale',page,search,order},
 		success:function(response_data){
 			let data='';
@@ -1224,20 +1357,20 @@ function load_accounts_on_sale(page){
 				data+='<div class="columns-view">';
 				data+='<div class="column-view column-4">'+response[i].account+'</div>';
 				//data+='<div class="column-view column-4">'+response[i].account_seller+'</div>';
-				data+='<div class="column-view column-flex"><a data-href="/market/buy-account/'+response[i].account+'/" class="inline-button red no-margin">'+show_price_in_tokens(response[i].price,true)+'</a></div>';
+				data+='<div class="column-view column-flex"><a data-href="/account/buy-account/'+response[i].account+'/" class="inline-button no-margin">'+show_price_in_tokens(response[i].price,true)+'</a></div>';
 				data+='</div>';
 			}
 			if(''==data){
 				data+='<div class="columns-view"><div class="column-view column-1">';
 				data+=ltmp_arr.default_no_items;
-				data+=(page!=0?ltmp_arr.default_no_items_try_other_page+(''!=search?ltmp_arr.default_no_items_try_other_search:''):'')+ltmp_arr.default_no_items_try_other_end;
+				data+=(page!=0?ltmp_arr.default_no_items_try_other_page+(''!=search?ltmp_arr.default_no_items_try_other_search:'')+ltmp_arr.default_no_items_try_other_end:'');
 				data+='</div></div>';
 				let prev_page=false;
 				if(offset>=per_page){
 					prev_page=true;
 				}
 				if(prev_page){
-					$('.page-buy-account .accounts-on-sale .table-footer').html((prev_page?'<a class="accounts-on-sale-page-action inline-button red" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':''));
+					$('.page-buy-account .accounts-on-sale .table-footer').html((prev_page?'<a class="accounts-on-sale-page-action inline-button" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':''));
 				}
 				else{
 					$('.page-buy-account .accounts-on-sale .table-footer').html('');
@@ -1253,9 +1386,9 @@ function load_accounts_on_sale(page){
 					next_page=true;
 				}
 				$('.page-buy-account .accounts-on-sale .table-footer').html(
-					(prev_page?'<a class="accounts-on-sale-page-action inline-button red" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':'')+
+					(prev_page?'<a class="accounts-on-sale-page-action inline-button" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':'')+
 					ltmp_arr.default_list_items_counter+': '+(offset+1)+'-'+(offset+response.length)+
-					(next_page?' <a class="accounts-on-sale-page-action inline-button red" data-page="'+(2+page)+'">'+ltmp_arr.default_next_page+'</a>':'')
+					(next_page?' <a class="accounts-on-sale-page-action inline-button" data-page="'+(2+page)+'">'+ltmp_arr.default_next_page+'</a>':'')
 				);
 			}
 			$('.page-buy-account .accounts-on-sale .table-data').attr('data-page',page);
@@ -1275,7 +1408,7 @@ function load_short_accounts_on_sale(page){
 	$('.page-buy-short-account .accounts-on-sale .table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
 	$.ajax({
 		type:'GET',
-		url:'https://my.viz.plus/ajax.php',
+		url:'https://wallet.viz.world/ajax.php',
 		data:{'action':'get_short_accounts_on_sale',page,search},
 		success:function(response_data){
 			let data='';
@@ -1291,20 +1424,20 @@ function load_short_accounts_on_sale(page){
 				data+='<div class="columns-view">';
 				data+='<div class="column-view column-4">'+response[i].account+'</div>';
 				//data+='<div class="column-view column-4">'+response[i].account_seller+'</div>';
-				data+='<div class="column-view column-flex"><a data-href="/market/buy-short-account/'+response[i].account+'/" class="inline-button red no-margin">'+show_price_in_tokens(response[i].price,true)+'</a></div>';
+				data+='<div class="column-view column-flex"><a data-href="/account/buy-short-account/'+response[i].account+'/" class="inline-button no-margin">'+show_price_in_tokens(response[i].price,true)+'</a></div>';
 				data+='</div>';
 			}
 			if(''==data){
 				data+='<div class="columns-view"><div class="column-view column-1">';
 				data+=ltmp_arr.default_no_items;
-				data+=(page!=0?ltmp_arr.default_no_items_try_other_page+(''!=search?ltmp_arr.default_no_items_try_other_search:''):'')+ltmp_arr.default_no_items_try_other_end;
+				data+=(page!=0?ltmp_arr.default_no_items_try_other_page+(''!=search?ltmp_arr.default_no_items_try_other_search:'')+ltmp_arr.default_no_items_try_other_end:'');
 				data+='</div></div>';
 				let prev_page=false;
 				if(offset>=per_page){
 					prev_page=true;
 				}
 				if(prev_page){
-					$('.page-buy-short-account .accounts-on-sale .table-footer').html((prev_page?'<a class="short-accounts-on-sale-page-action inline-button red" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':''));
+					$('.page-buy-short-account .accounts-on-sale .table-footer').html((prev_page?'<a class="short-accounts-on-sale-page-action inline-button" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':''));
 				}
 				else{
 					$('.page-buy-short-account .accounts-on-sale .table-footer').html('');
@@ -1320,9 +1453,9 @@ function load_short_accounts_on_sale(page){
 					next_page=true;
 				}
 				$('.page-buy-short-account .accounts-on-sale .table-footer').html(
-					(prev_page?'<a class="short-accounts-on-sale-page-action inline-button red" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':'')+
+					(prev_page?'<a class="short-accounts-on-sale-page-action inline-button" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':'')+
 					ltmp_arr.default_list_items_counter+': '+(offset+1)+'-'+(offset+response.length)+
-					(next_page?' <a class="short-accounts-on-sale-page-action inline-button red" data-page="'+(2+page)+'">'+ltmp_arr.default_next_page+'</a>':'')
+					(next_page?' <a class="short-accounts-on-sale-page-action inline-button" data-page="'+(2+page)+'">'+ltmp_arr.default_next_page+'</a>':'')
 				);
 			}
 			$('.page-buy-short-account .accounts-on-sale .table-data').attr('data-page',page);
@@ -1343,7 +1476,7 @@ function load_subaccounts_on_sale(page){
 	$('.page-buy-subaccount .subaccounts-on-sale .table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
 	$.ajax({
 		type:'GET',
-		url:'https://my.viz.plus/ajax.php',
+		url:'https://wallet.viz.world/ajax.php',
 		data:{'action':'get_subaccounts_on_sale',page,search,order},
 		success:function(response_data){
 			let data='';
@@ -1359,20 +1492,20 @@ function load_subaccounts_on_sale(page){
 				data+='<div class="columns-view">';
 				data+='<div class="column-view column-4">'+response[i].account+'</div>';
 				//data+='<div class="column-view column-4">'+response[i].account_seller+'</div>';
-				data+='<div class="column-view column-flex"><a data-href="/market/buy-subaccount/'+response[i].account+'/" class="inline-button red no-margin">'+show_price_in_tokens(response[i].price,true)+'</a></div>';
+				data+='<div class="column-view column-flex"><a data-href="/account/buy-subaccount/'+response[i].account+'/" class="inline-button no-margin">'+show_price_in_tokens(response[i].price,true)+'</a></div>';
 				data+='</div>';
 			}
 			if(''==data){
 				data+='<div class="columns-view"><div class="column-view column-1">';
 				data+=ltmp_arr.default_no_items
-				data+=(page!=0?ltmp_arr.default_no_items_try_other_page+(''!=search?ltmp_arr.default_no_items_try_other_search:''):'')+ltmp_arr.default_no_items_try_other_end;
+				data+=(page!=0?ltmp_arr.default_no_items_try_other_page+(''!=search?ltmp_arr.default_no_items_try_other_search:'')+ltmp_arr.default_no_items_try_other_end:'');
 				data+='</div></div>';
 				let prev_page=false;
 				if(offset>=per_page){
 					prev_page=true;
 				}
 				if(prev_page){
-					$('.page-buy-subaccount .subaccounts-on-sale .table-footer').html((prev_page?'<a class="subaccounts-on-sale-page-action inline-button red" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':''));
+					$('.page-buy-subaccount .subaccounts-on-sale .table-footer').html((prev_page?'<a class="subaccounts-on-sale-page-action inline-button" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':''));
 				}
 				else{
 					$('.page-buy-subaccount .subaccounts-on-sale .table-footer').html('');
@@ -1388,9 +1521,9 @@ function load_subaccounts_on_sale(page){
 					next_page=true;
 				}
 				$('.page-buy-subaccount .subaccounts-on-sale .table-footer').html(
-					(prev_page?'<a class="subaccounts-on-sale-page-action inline-button red" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':'')+
+					(prev_page?'<a class="subaccounts-on-sale-page-action inline-button" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':'')+
 					ltmp_arr.default_list_items_counter+': '+(offset+1)+'-'+(offset+response.length)+
-					(next_page?' <a class="subaccounts-on-sale-page-action inline-button red" data-page="'+(2+page)+'">'+ltmp_arr.default_next_page+'</a>':'')
+					(next_page?' <a class="subaccounts-on-sale-page-action inline-button" data-page="'+(2+page)+'">'+ltmp_arr.default_next_page+'</a>':'')
 				);
 			}
 			$('.page-buy-subaccount .subaccounts-on-sale .table-data').attr('data-page',page);
@@ -1473,6 +1606,7 @@ function view_market(path,params,title){
 
 					update_balances($('.view-'+path[1]+' .page-'+path[2]+' .account-balance'));
 				}
+
 				if('paid-subscriptions'==path[2]){
 					if(''!=path[3]){
 						$('.page-paid-subscriptions .section').css('display','none');
@@ -1811,6 +1945,135 @@ function view_market(path,params,title){
 						}
 					});
 				}
+				return true;
+			}
+		}
+		if(0<$('.view-'+path[1]+' .page-index').length){
+			$('.view-'+path[1]+' .page-index').css('display','block');
+
+			$('.create-edit-paid-subscribe-caption').html('&hellip;');
+			viz.api.getPaidSubscriptionOptions(current_user,function(err,response){
+				if(err){
+					$('.create-edit-paid-subscribe-caption').html(ltmp_arr.create_paid_subscribe_caption);
+				}
+				else{
+					$('.create-edit-paid-subscribe-caption').html(ltmp_arr.edit_paid_subscribe_caption);
+				}
+			});
+		}
+	}
+}
+function view_account(path,params,title){
+	title=ltmp_arr.account_title+' - '+title;
+	document.title=title;
+	/*
+	if(''==current_user){
+		if(standalone){
+			parse_standalone_fullpath();
+			change_state('/login/?back='+standalone_path+encodeURIComponent(standalone_search),{},true);
+		}
+		else{
+			change_state('/login/?back='+document.location.pathname+encodeURIComponent(document.location.search),{},true);
+		}
+		return false;
+	}
+	*/
+	$('.view').css('display','none');
+	if(0<$('.view-'+path[1]).length){
+		$('.view-'+path[1]).css('display','block');
+		$('.view-'+path[1]+' .page').css('display','none');
+		if(typeof path[2] != 'undefined'){
+			if(0<$('.view-'+path[1]+' .page-'+path[2]).length){
+				$('.view-'+path[1]+' .page-'+path[2]).css('display','block');
+
+				if(0<$('.view-'+path[1]+' .page-'+path[2]+' .account-balance').length){
+					$('.account-balance').css('display','none');
+
+					update_balances($('.view-'+path[1]+' .page-'+path[2]+' .account-balance'));
+				}
+
+				if('create-account'==path[2]){
+					viz.api.getChainProperties(function(err,response){
+						if(!err){
+							$('.median-props[rel="account_creation_fee"]').html(show_price_in_tokens(response.account_creation_fee,true));
+							$('.median-props[rel="create_account_delegation_fee"]').html(show_price_in_tokens(parseFloat(response.account_creation_fee) * response.create_account_delegation_ratio,true));
+						}
+					});
+					$('.page-create-account input[name=create-account-login]').unbind('keypress');
+					$('.page-create-account input[name=create-account-login]').bind('keypress',function(e){
+						if(!e)e=window.event;
+						let key=(e.charCode)?e.charCode:((e.keyCode)?e.keyCode:((e.which)?e.which:0));
+						let char=String.fromCharCode(key);
+						if(/^([A-Z])$/.test(char)){
+							$(this).val(''+$(this).val()+char.toLowerCase());
+							return false;
+						}
+						if(0==$(this).val().length){
+							if(/^([a-z])$/.test(char)){
+								return true;
+							}
+							else{
+								return false;
+							}
+						}
+						else{
+							if(/^([a-z0-9\-\.])$/.test(char)){
+								return true;
+							}
+							else{
+								return false;
+							}
+						}
+						return true;
+					});
+					$('.page-create-account input[name=create-account-login]').unbind('keyup');
+					$('.page-create-account input[name=create-account-login]').bind('keyup',function(e){
+						clearTimeout(check_login_timer);
+						check_login_timer=setTimeout(check_login,500,$('.page-create-account input[name=create-account-login]'),$('.page-create-account .create-account-available'));
+					});
+				}
+
+				if('create-subaccount'==path[2]){
+					viz.api.getChainProperties(function(err,response){
+						if(!err){
+							$('.median-props[rel="account_creation_fee"]').html(show_price_in_tokens(response.account_creation_fee,true));
+							$('.median-props[rel="create_account_delegation_fee"]').html(show_price_in_tokens(parseFloat(response.account_creation_fee) * response.create_account_delegation_ratio,true));
+						}
+					});
+					$('.view-'+path[1]+' .page-'+path[2]+' .current_user').html(current_user);
+					$('.page-create-subaccount input[name=create-subaccount-login]').unbind('keypress');
+					$('.page-create-subaccount input[name=create-subaccount-login]').bind('keypress',function(e){
+						if(!e)e=window.event;
+						let key=(e.charCode)?e.charCode:((e.keyCode)?e.keyCode:((e.which)?e.which:0));
+						let char=String.fromCharCode(key);
+						if(/^([A-Z])$/.test(char)){
+							$(this).val(''+$(this).val()+char.toLowerCase());
+							return false;
+						}
+						if(0==$(this).val().length){
+							if(/^([a-z])$/.test(char)){
+								return true;
+							}
+							else{
+								return false;
+							}
+						}
+						else{
+							if(/^([a-z0-9\-\.])$/.test(char)){
+								return true;
+							}
+							else{
+								return false;
+							}
+						}
+						return true;
+					});
+					$('.page-create-account input[name=create-subaccount-login]').unbind('keyup');
+					$('.page-create-account input[name=create-subaccount-login]').bind('keyup',function(e){
+						clearTimeout(check_login_timer);
+						check_login_timer=setTimeout(check_login,500,$('.page-create-subaccount input[name=create-subaccount-login]'),$('.page-create-subaccount .create-subaccount-available'));
+					});
+				}
 
 				if('buy-account'==path[2]){
 					if(''!=path[3]){
@@ -2144,17 +2407,13 @@ function view_market(path,params,title){
 			}
 		}
 		if(0<$('.view-'+path[1]+' .page-index').length){
+			$('.view-'+path[1]+' .page-index .buy-account-column').css('display','grid');
+			$('.view-'+path[1]+' .page-index .sell-account-column').css('display','grid');
+			if(standalone){
+				$('.view-'+path[1]+' .page-index .buy-account-column').css('display','none');
+				$('.view-'+path[1]+' .page-index .sell-account-column').css('display','none');
+			}
 			$('.view-'+path[1]+' .page-index').css('display','block');
-
-			$('.create-edit-paid-subscribe-caption').html('&hellip;');
-			viz.api.getPaidSubscriptionOptions(current_user,function(err,response){
-				if(err){
-					$('.create-edit-paid-subscribe-caption').html(ltmp_arr.create_paid_subscribe_caption);
-				}
-				else{
-					$('.create-edit-paid-subscribe-caption').html(ltmp_arr.edit_paid_subscribe_caption);
-				}
-			});
 		}
 	}
 }
@@ -2164,7 +2423,7 @@ function view_portable(path,params,title){
 		$('.view-'+path[1]).css('display','block');
 	}
 }
-function view_accounts(path,params,title){
+function view_settings(path,params,title){
 	if(''==current_user){
 		if(standalone){
 			parse_standalone_fullpath();
@@ -2189,117 +2448,36 @@ function view_accounts(path,params,title){
 					update_balances($('.view-'+path[1]+' .page-'+path[2]+' .account-balance'));
 				}
 
-				if('create-account'==path[2]){
-					viz.api.getChainProperties(function(err,response){
-						if(!err){
-							$('.median-props[rel="account_creation_fee"]').html(show_price_in_tokens(response.account_creation_fee,true));
-							$('.median-props[rel="create_account_delegation_fee"]').html(show_price_in_tokens(parseFloat(response.account_creation_fee) * response.create_account_delegation_ratio,true));
-						}
-					});
-					$('.page-create-account input[name=create-account-login]').unbind('keypress');
-					$('.page-create-account input[name=create-account-login]').bind('keypress',function(e){
-						if(!e)e=window.event;
-						let key=(e.charCode)?e.charCode:((e.keyCode)?e.keyCode:((e.which)?e.which:0));
-						let char=String.fromCharCode(key);
-						if(/^([A-Z])$/.test(char)){
-							$(this).val(''+$(this).val()+char.toLowerCase());
-							return false;
-						}
-						if(0==$(this).val().length){
-							if(/^([a-z])$/.test(char)){
-								return true;
-							}
-							else{
-								return false;
-							}
-						}
-						else{
-							if(/^([a-z0-9\-\.])$/.test(char)){
-								return true;
-							}
-							else{
-								return false;
-							}
-						}
-						return true;
-					});
-					$('.page-create-account input[name=create-account-login]').unbind('keyup');
-					$('.page-create-account input[name=create-account-login]').bind('keyup',function(e){
-						clearTimeout(check_login_timer);
-						check_login_timer=setTimeout(check_login,500,$('.page-create-account input[name=create-account-login]'),$('.page-create-account .create-account-available'));
-					});
-				}
+				if('profile'==path[2]){
+					$('.page-profile input[name=manage-profile-nickname]').val('');
+					$('.page-profile input[name=manage-profile-about]').val('');
+					$('.page-profile input[name=manage-profile-avatar]').val('');
+					$('.page-profile select[name=manage-profile-gender]').val('').change();
 
-				if('create-subaccount'==path[2]){
-					viz.api.getChainProperties(function(err,response){
-						if(!err){
-							$('.median-props[rel="account_creation_fee"]').html(show_price_in_tokens(response.account_creation_fee,true));
-							$('.median-props[rel="create_account_delegation_fee"]').html(show_price_in_tokens(parseFloat(response.account_creation_fee) * response.create_account_delegation_ratio,true));
-						}
-					});
-					$('.view-'+path[1]+' .page-'+path[2]+' .current_user').html(current_user);
-					$('.page-create-subaccount input[name=create-subaccount-login]').unbind('keypress');
-					$('.page-create-subaccount input[name=create-subaccount-login]').bind('keypress',function(e){
-						if(!e)e=window.event;
-						let key=(e.charCode)?e.charCode:((e.keyCode)?e.keyCode:((e.which)?e.which:0));
-						let char=String.fromCharCode(key);
-						if(/^([A-Z])$/.test(char)){
-							$(this).val(''+$(this).val()+char.toLowerCase());
-							return false;
-						}
-						if(0==$(this).val().length){
-							if(/^([a-z])$/.test(char)){
-								return true;
-							}
-							else{
-								return false;
-							}
-						}
-						else{
-							if(/^([a-z0-9\-\.])$/.test(char)){
-								return true;
-							}
-							else{
-								return false;
-							}
-						}
-						return true;
-					});
-					$('.page-create-account input[name=create-subaccount-login]').unbind('keyup');
-					$('.page-create-account input[name=create-subaccount-login]').bind('keyup',function(e){
-						clearTimeout(check_login_timer);
-						check_login_timer=setTimeout(check_login,500,$('.page-create-subaccount input[name=create-subaccount-login]'),$('.page-create-subaccount .create-subaccount-available'));
-					});
-				}
-				if('manage-profile'==path[2]){
-					$('.page-manage-profile input[name=manage-profile-nickname]').val('');
-					$('.page-manage-profile input[name=manage-profile-about]').val('');
-					$('.page-manage-profile input[name=manage-profile-avatar]').val('');
-					$('.page-manage-profile select[name=manage-profile-gender]').val('').change();
+					$('.page-profile input[name=manage-profile-location]').val('');
+					$('.page-profile input[name=manage-profile-interests]').val('');
+					$('.page-profile input[name=manage-profile-site]').val('');
+					$('.page-profile input[name=manage-profile-mail]').val('');
 
-					$('.page-manage-profile input[name=manage-profile-location]').val('');
-					$('.page-manage-profile input[name=manage-profile-interests]').val('');
-					$('.page-manage-profile input[name=manage-profile-site]').val('');
-					$('.page-manage-profile input[name=manage-profile-mail]').val('');
+					$('.page-profile input[name=manage-profile-facebook]').val('');
+					$('.page-profile input[name=manage-profile-instagram]').val('');
+					$('.page-profile input[name=manage-profile-twitter]').val('');
+					$('.page-profile input[name=manage-profile-vk]').val('');
 
-					$('.page-manage-profile input[name=manage-profile-facebook]').val('');
-					$('.page-manage-profile input[name=manage-profile-instagram]').val('');
-					$('.page-manage-profile input[name=manage-profile-twitter]').val('');
-					$('.page-manage-profile input[name=manage-profile-vk]').val('');
+					$('.page-profile input[name=manage-profile-telegram]').val('');
+					$('.page-profile input[name=manage-profile-skype]').val('');
+					$('.page-profile input[name=manage-profile-viber]').val('');
+					$('.page-profile input[name=manage-profile-whatsapp]').val('');
 
-					$('.page-manage-profile input[name=manage-profile-telegram]').val('');
-					$('.page-manage-profile input[name=manage-profile-skype]').val('');
-					$('.page-manage-profile input[name=manage-profile-viber]').val('');
-					$('.page-manage-profile input[name=manage-profile-whatsapp]').val('');
+					$('.page-profile .submit-button-ring').css('display','none');
+					$('.page-profile .manage-profile-error').html('');
+					$('.page-profile .manage-profile-success').html('');
+					$('.page-profile .icon-check').css('display','none');
 
-					$('.page-manage-profile .submit-button-ring').css('display','none');
-					$('.page-manage-profile .manage-profile-error').html('');
-					$('.page-manage-profile .manage-profile-success').html('');
-					$('.page-manage-profile .icon-check').css('display','none');
-
+					$('.page-profile .public-profile').html('');
 					viz.api.getAccounts([current_user],function(err,response){
 						if(err){
-							$('.page-manage-profile .manage-profile-error').html('<p class="red">'+ltmp_arr.default_node_not_respond+'</p>');
+							$('.page-profile .manage-profile-error').html('<p class="red">'+ltmp_arr.default_node_not_respond+'</p>');
 						}
 						else{
 							if(current_user==response[0].name){
@@ -2310,66 +2488,152 @@ function view_accounts(path,params,title){
 								console.log(json_metadata);
 								if(typeof json_metadata.profile !== 'undefined'){
 									if(typeof json_metadata.profile.nickname !== 'undefined'){
-										$('.page-manage-profile input[name=manage-profile-nickname]').val(json_metadata.profile.nickname);
+										$('.page-profile input[name=manage-profile-nickname]').val(json_metadata.profile.nickname);
 									}
 									if(typeof json_metadata.profile.about !== 'undefined'){
-										$('.page-manage-profile input[name=manage-profile-about]').val(json_metadata.profile.about);
+										$('.page-profile input[name=manage-profile-about]').val(json_metadata.profile.about);
 									}
 									if(typeof json_metadata.profile.avatar !== 'undefined'){
-										$('.page-manage-profile input[name=manage-profile-avatar]').val(json_metadata.profile.avatar);
+										$('.page-profile input[name=manage-profile-avatar]').val(json_metadata.profile.avatar);
 									}
 									if(typeof json_metadata.profile.gender !== 'undefined'){
-										$('.page-manage-profile select[name=manage-profile-gender]').val(json_metadata.profile.gender);
+										$('.page-profile select[name=manage-profile-gender]').val(json_metadata.profile.gender);
 									}
 
 									if(typeof json_metadata.profile.location !== 'undefined'){
-										$('.page-manage-profile input[name=manage-profile-location]').val(json_metadata.profile.location);
+										$('.page-profile input[name=manage-profile-location]').val(json_metadata.profile.location);
 									}
 									if(typeof json_metadata.profile.interests !== 'undefined'){
-										$('.page-manage-profile input[name=manage-profile-interests]').val(json_metadata.profile.interests.join(', '));
+										$('.page-profile input[name=manage-profile-interests]').val(json_metadata.profile.interests.join(', '));
 									}
 									if(typeof json_metadata.profile.site !== 'undefined'){
-										$('.page-manage-profile input[name=manage-profile-site]').val(json_metadata.profile.site);
+										$('.page-profile input[name=manage-profile-site]').val(json_metadata.profile.site);
 									}
 									if(typeof json_metadata.profile.mail !== 'undefined'){
-										$('.page-manage-profile input[name=manage-profile-mail]').val(json_metadata.profile.mail);
+										$('.page-profile input[name=manage-profile-mail]').val(json_metadata.profile.mail);
 									}
 
 									if(typeof json_metadata.profile.services !== 'undefined'){
 										if(typeof json_metadata.profile.services.facebook !== 'undefined'){
-											$('.page-manage-profile input[name=manage-profile-facebook]').val(json_metadata.profile.services.facebook);
+											$('.page-profile input[name=manage-profile-facebook]').val(json_metadata.profile.services.facebook);
 										}
 										if(typeof json_metadata.profile.services.instagram !== 'undefined'){
-											$('.page-manage-profile input[name=manage-profile-instagram]').val(json_metadata.profile.services.instagram);
+											$('.page-profile input[name=manage-profile-instagram]').val(json_metadata.profile.services.instagram);
 										}
 										if(typeof json_metadata.profile.services.twitter !== 'undefined'){
-											$('.page-manage-profile input[name=manage-profile-twitter]').val(json_metadata.profile.services.twitter);
+											$('.page-profile input[name=manage-profile-twitter]').val(json_metadata.profile.services.twitter);
 										}
 										if(typeof json_metadata.profile.services.vk !== 'undefined'){
-											$('.page-manage-profile input[name=manage-profile-vk]').val(json_metadata.profile.services.vk);
+											$('.page-profile input[name=manage-profile-vk]').val(json_metadata.profile.services.vk);
 										}
 										if(typeof json_metadata.profile.services.telegram !== 'undefined'){
-											$('.page-manage-profile input[name=manage-profile-telegram]').val(json_metadata.profile.services.telegram);
+											$('.page-profile input[name=manage-profile-telegram]').val(json_metadata.profile.services.telegram);
 										}
 										if(typeof json_metadata.profile.services.skype !== 'undefined'){
-											$('.page-manage-profile input[name=manage-profile-skype]').val(json_metadata.profile.services.skype);
+											$('.page-profile input[name=manage-profile-skype]').val(json_metadata.profile.services.skype);
 										}
 										if(typeof json_metadata.profile.services.viber !== 'undefined'){
-											$('.page-manage-profile input[name=manage-profile-viber]').val(json_metadata.profile.services.viber);
+											$('.page-profile input[name=manage-profile-viber]').val(json_metadata.profile.services.viber);
 										}
 										if(typeof json_metadata.profile.services.whatsapp !== 'undefined'){
-											$('.page-manage-profile input[name=manage-profile-whatsapp]').val(json_metadata.profile.services.whatsapp);
+											$('.page-profile input[name=manage-profile-whatsapp]').val(json_metadata.profile.services.whatsapp);
 										}
 									}
+
+
+									let public_profile='';
+									if(typeof json_metadata.profile.avatar !== 'undefined'){
+										let profile_avatar=safe_image(json_metadata.profile.avatar);
+										if(false===profile_avatar){
+											profile_avatar='/profile/default-avatar.png';
+										}
+										public_profile+='<img alt="'+current_user+'" src="'+profile_avatar+'" class="avatar">';
+									}
+									else{
+										let profile_avatar='/profile/default-avatar.png';
+										public_profile+='<img alt="'+current_user+'" src="'+profile_avatar+'" class="avatar">';
+									}
+									public_profile+='<div class="information">';
+									if(typeof json_metadata.profile.nickname === 'undefined'){
+										json_metadata.profile.nickname='@'+current_user;
+									}
+									public_profile+='<h3 class="left" title="'+ltmp_arr.profile_nickname+'">'+escape_html(json_metadata.profile.nickname)+'</h3>';
+
+									if(typeof json_metadata.profile.about === 'undefined'){
+										json_metadata.profile.about=ltmp_arr.profile_empty_about;
+									}
+
+									public_profile+='<p title="'+ltmp_arr.profile_about+'">'+escape_html(json_metadata.profile.about)+'</p>';
+									if(typeof json_metadata.profile.location !== 'undefined'){
+										public_profile+='<p class="grey small captions"><img src="/profile/globe-ico.svg" class="icon-16" alt="'+ltmp_arr.profile_location+'" title="'+ltmp_arr.profile_location+'">'+escape_html(json_metadata.profile.location)+'</p>';
+									}
+									if(typeof json_metadata.profile.site !== 'undefined'){
+										public_profile+='<p class="grey small captions"><img src="/profile/link.svg" class="icon-16" alt="'+ltmp_arr.profile_site+'" title="'+ltmp_arr.profile_site+'"><a target="_blank" href="/go/?url='+escape_html(json_metadata.profile.site)+'">'+escape_html(json_metadata.profile.site)+'</a></p>';
+									}
+									if(typeof json_metadata.profile.mail !== 'undefined'){
+										public_profile+='<p class="grey small captions"><img src="/profile/mail.svg" class="icon-16" alt="'+ltmp_arr.profile_mail+'" title="'+ltmp_arr.profile_mail+'"><a target="_blank" href="mailto:'+escape_html(json_metadata.profile.mail)+'">'+escape_html(json_metadata.profile.mail)+'</a></p>';
+									}
+									if(typeof json_metadata.profile.interests !== 'undefined'){
+										if(typeof json_metadata.profile.interests === 'object'){
+											if(Object.keys(json_metadata.profile.interests).length!=0){
+												let profile_interests='';
+												let i=0;
+												for(let el in json_metadata.profile.interests){
+													console.log(el);
+													profile_interests+=(i!=0?', ':'')+json_metadata.profile.interests[el];
+													i++;
+												}
+												public_profile+='<p class="grey small captions">'+ltmp_arr.profile_interests+' '+escape_html(profile_interests)+'</p>';
+											}
+										}
+									}
+									if(typeof json_metadata.profile.services !== 'undefined'){
+										public_profile+='<p class="grey small captions">'+ltmp_arr.profile_services+' ';
+										if(typeof json_metadata.profile.services.facebook !== 'undefined'){
+											json_metadata.profile.services.facebook=fast_str_replace('https://www.facebook.com/','',json_metadata.profile.services.facebook);
+											public_profile+='<a href="/go/?url=https://www.facebook.com/'+escape_html(json_metadata.profile.services.facebook)+'" target="_blank" class="icon-link"><img src="/profile/facebook.svg" class="icon-16" alt="'+ltmp_arr.services_facebook+'" title="'+ltmp_arr.services_facebook+'"></a>';
+										}
+										if(typeof json_metadata.profile.services.instagram !== 'undefined'){
+											json_metadata.profile.services.instagram=fast_str_replace('https://www.instagram.com/','',json_metadata.profile.services.instagram);
+											public_profile+='<a href="/go/?url=https://www.instagram.com/'+escape_html(json_metadata.profile.services.instagram)+'" target="_blank" class="icon-link"><img src="/profile/instagram.svg" class="icon-16" alt="'+ltmp_arr.services_instagram+'" title="'+ltmp_arr.services_instagram+'"></a>';
+										}
+										if(typeof json_metadata.profile.services.twitter !== 'undefined'){
+											json_metadata.profile.services.twitter=fast_str_replace('https://twitter.com/','',json_metadata.profile.services.twitter);
+											public_profile+='<a href="/go/?url=https://twitter.com/'+escape_html(json_metadata.profile.services.twitter)+'" target="_blank" class="icon-link"><img src="/profile/twitter.svg" class="icon-16" alt="'+ltmp_arr.services_twitter+'" title="'+ltmp_arr.services_twitter+'"></a>';
+										}
+										if(typeof json_metadata.profile.services.vk !== 'undefined'){
+											json_metadata.profile.services.vk=fast_str_replace('https://vk.com/','',json_metadata.profile.services.vk);
+											public_profile+='<a href="/go/?url=https://vk.com/'+escape_html(json_metadata.profile.services.vk)+'" target="_blank" class="icon-link"><img src="/profile/vk.svg" class="icon-16" alt="'+ltmp_arr.services_vk+'" title="'+ltmp_arr.services_vk+'"></a>';
+										}
+										if(typeof json_metadata.profile.services.telegram !== 'undefined'){
+											if('@'==json_metadata.profile.services.telegram.substr(0,1)){
+												json_metadata.profile.services.telegram=json_metadata.profile.services.telegram.substr(1);
+											}
+											public_profile+='<a href="tg://resolve?domain='+escape_html(json_metadata.profile.services.telegram)+'" class="icon-link"><img src="/profile/telegram.svg" class="icon-16" alt="'+ltmp_arr.services_telegram+'" title="'+ltmp_arr.services_telegram+'"></a>';
+										}
+										if(typeof json_metadata.profile.services.skype !== 'undefined'){
+											public_profile+='<a href="skype:'+escape_html(json_metadata.profile.services.skype)+'?call" target="_blank" class="icon-link"><img src="/profile/skype.svg" class="icon-16" alt="'+ltmp_arr.services_skype+'" title="'+ltmp_arr.services_skype+'"></a>';
+										}
+										if(typeof json_metadata.profile.services.viber !== 'undefined'){
+											public_profile+='<a href="viber://pa/info?uri='+escape_html(json_metadata.profile.services.viber)+'" target="_blank" class="icon-link"><img src="/profile/viber.svg" class="icon-16" alt="'+ltmp_arr.services_viber+'" title="'+ltmp_arr.services_viber+'"></a>';
+										}
+										if(typeof json_metadata.profile.services.whatsapp !== 'undefined'){
+											public_profile+='<a href="/go/?url=https://wa.me/'+escape_html(json_metadata.profile.services.whatsapp)+'" target="_blank" class="icon-link"><img src="/profile/whatsapp.svg" class="icon-16" alt="'+ltmp_arr.services_whatsapp+'" title="'+ltmp_arr.services_whatsapp+'"></a>';
+										}
+										public_profile+='</p>';
+									}
+									public_profile+='</div>';
+									public_profile+='</div>';
+									$('.page-profile .public-profile').html(public_profile);
 								}
 							}
 						}
 					});
 				}
-				if('manage-access'==path[2]){
-					$('.page-manage-access input[name=manage-access-login]').val(current_user);
-					$('.page-manage-access input[name=manage-access-login]').unbind('keypress');
-					$('.page-manage-access input[name=manage-access-login]').bind('keypress',function(e){
+				if('access'==path[2]){
+					$('.page-access input[name=manage-access-login]').val(current_user);
+					$('.page-access input[name=manage-access-login]').unbind('keypress');
+					$('.page-access input[name=manage-access-login]').bind('keypress',function(e){
 						if(!e)e=window.event;
 						let key=(e.charCode)?e.charCode:((e.keyCode)?e.keyCode:((e.which)?e.which:0));
 						let char=String.fromCharCode(key);
@@ -2600,6 +2864,7 @@ function load_history(el,back,clear){
 }
 
 function view_assets(path,params,title){
+	console.log('view_assets',path,params);
 	if(''==current_user){
 		if(standalone){
 			parse_standalone_fullpath();
@@ -2616,18 +2881,6 @@ function view_assets(path,params,title){
 		$('.view-'+path[1]+' .page').css('display','none');
 		if(typeof path[2] != 'undefined'){
 			if(0<$('.view-'+path[1]+' .page-'+path[2]).length){
-				if('booster'==path[2]){
-					//check exchange canary state
-					if(typeof window['booster_init'] === 'function'){
-						setTimeout(function(){booster_init();},1);
-					}
-				}
-				if('exchange'==path[2]){
-					//check exchange canary state
-					if(typeof window['load_exchange_data'] === 'function'){
-						setTimeout(function(){load_exchange_data();},1);
-					}
-				}
 				$('.view-'+path[1]+' .page-'+path[2]).css('display','block');
 				if('unstake-shares'==path[2]){
 					viz.api.getChainProperties(function(err,response){
@@ -2705,12 +2958,24 @@ function view_assets(path,params,title){
 						$('.page-award input[name=award-energy]').val(0);
 						$('.page-award input[name=award-energy]').keyup();
 						$('.page-award input[name=award-account]').focus();
+						if(typeof params.to !== "undefined"){
+							$('.page-award input[name=award-account]').val(params.to);
+						}
+						if(typeof params.energy !== "undefined"){
+							$('.page-award input[name=award-energy]').val(params.energy);
+							$('.page-award input[name=award-energy]').keyup();
+						}
+						if(typeof params.memo !== "undefined"){
+							$('.page-award input[name=award-memo]').val(params.memo);
+						}
 					},100);
 					load_history($('.page-award .history'),false,true);
 				}
 				if('checks'==path[2]){
+					/*
 					$('.page-checks .icon-check[rel=create]').css('display','none');
 					$('.page-checks .submit-button-ring[rel=create]').css('display','none');
+					*/
 					$('.page-checks .invites-create-error').html('');
 					$('.page-checks .invites-create-success').html('');
 					$('.page-checks input[name=invites-create-amount]').val('');
@@ -2719,6 +2984,7 @@ function view_assets(path,params,title){
 					$('.page-checks .submit-button-ring[rel=claim]').css('display','none');
 					$('.page-checks .invites-claim-error').html('');
 					$('.page-checks .invites-claim-success').html('');
+					$('.page-checks input[name=invites-claim-receiver]').val(current_user);
 					$('.page-checks input[name=invites-claim-code]').val('');
 					$('.page-checks .invites-claim-code-caption').css('display','none');
 
@@ -2728,6 +2994,13 @@ function view_assets(path,params,title){
 					load_history($('.page-checks .history'),false,true);
 				}
 				if('transfer'==path[2]){
+					$('.view-'+path[1]+' .page-transfer .transfer-templates-wrapper').css('display','block');
+					$('.view-'+path[1]+' .page-transfer .transfer-templates-hint').css('display','block');
+					if(standalone){
+						$('.view-'+path[1]+' .page-transfer .transfer-templates-wrapper').css('display','none');
+						$('.view-'+path[1]+' .page-transfer .transfer-templates-hint').css('display','none');
+					}
+
 					$('.page-transfer .submit-button-ring').css('display','none');
 					$('.page-transfer .icon-check').css('display','none');
 					$('.page-transfer .transfer-error').html('');
@@ -2738,8 +3011,19 @@ function view_assets(path,params,title){
 					$('.page-transfer input[name=transfer-tokens-amount]').val('');
 					$('.page-transfer input[name=transfer-memo]').val('');
 
+					if(typeof params.account !== "undefined"){
+						$('.page-transfer input[name=transfer-account]').val(params.account);
+					}
+					if(typeof params.amount !== "undefined"){
+						$('.page-transfer input[name=transfer-tokens-amount]').val(params.amount);
+					}
+					if(typeof params.memo !== "undefined"){
+						$('.page-transfer input[name=transfer-memo]').val(params.memo);
+					}
+
 					load_history($('.page-transfer .history'),false,true);
 				}
+				/*
 				if('deposit'==path[2]){
 					$('.page-deposit .submit-button-ring').css('display','none');
 					$('.page-deposit .icon-check').css('display','none');
@@ -2749,6 +3033,7 @@ function view_assets(path,params,title){
 					$('.page-deposit .current_user').html(current_user);
 					$('.page-deposit input[name=deposit-account]').val(current_user);
 				}
+				*/
 				if('stake-shares'==path[2]){
 					viz.api.getChainProperties(function(err,response){
 						if(!err){
@@ -2794,6 +3079,13 @@ function view_assets(path,params,title){
 						calc_max_delegation_timer=setTimeout(function(){calc_max_delegation();},1000);
 					});
 
+					if(typeof params.account !== "undefined"){
+						$('.page-delegate-shares input[name=delegate-shares-account]').val(params.account);
+					}
+					if(typeof params.amount !== "undefined"){
+						$('.page-delegate-shares input[name=delegate-shares-tokens-amount]').val(params.amount);
+					}
+
 					let balance_el=$('.view-'+path[1]+' .page-'+path[2]+' .shares-balance');
 					balance_el.find('.vesting-shares').html('&hellip;');
 					balance_el.find('.delegated-vesting-shares').html('&hellip;');
@@ -2822,12 +3114,8 @@ function view_assets(path,params,title){
 			}
 		}
 		if(0<$('.view-'+path[1]+' .page-index').length){
-			$('.view-'+path[1]+' .page-index a.exchange-button').css('display','none');
 			if(standalone){
 				$('.view-'+path[1]+' .page-index .tokens-caption').addClass('standalone');
-			}
-			else{
-				$('.view-'+path[1]+' .page-index a.exchange-button').css('display','block');
 			}
 			$('.view-'+path[1]+' .page-index').css('display','block');
 			path[2]='index';
@@ -2887,13 +3175,13 @@ function view_services(path,params,title){
 		}
 	}
 }
-function witness_vote_action(e){
+function validator_vote_action(e){
 	let check=$(e.target);
 	let el=$(e.target).closest('.witnesses-list');
 	check.removeClass('red');
-	viz.broadcast.accountWitnessVote(users[current_user]['active_key'],current_user,check.val(),check.prop('checked'),function(err, result){
+	viz.broadcast.accountValidatorVote(users[current_user]['active_key'],current_user,check.val(),check.prop('checked'),function(err, result){
 		if(!err){
-			update_witnesses_list();
+			update_validators_list();
 		}
 		else{
 			check.addClass('red');
@@ -2901,17 +3189,17 @@ function witness_vote_action(e){
 		}
 	});
 }
-function update_witnesses_list(){
+function update_validators_list(){
 	$('.witnesses-list').find('div').remove();
 	$('.witnesses-list').find('.loading').css('display','block');
 	$('.inactive-witnesses-list').find('div').remove();
 	viz.api.getAccounts([current_user],function(err,response){
 		if(!err){
 			if(current_user==response[0].name){
-				let user_votes=response[0].witness_votes;
+				let user_votes=response[0].validator_votes ?? response[0].witness_votes;
 				let user_shares=parseFloat(response[0].vesting_shares);
 				$('.witnesses-list').attr('data-shares',user_shares);
-				viz.api.getWitnessesByVote('',100,function(err,response){
+				viz.api.getValidatorsByVote('',100,function(err,response){
 					if(!err){
 						let data='';
 						let inactive_data='';
@@ -2926,6 +3214,7 @@ function update_witnesses_list(){
 							item+='<div class="witness-item captions'+(active?'':' inactive')+'">';
 							item+='<label class="check color-orange">'+witness_account+'<input type="checkbox" value="'+witness_account+'"'+(-1!=user_votes.indexOf(witness_account)?' checked="checked" title="'+ltmp(ltmp_arr.witness_unvote_caption,{witness:witness_account})+'"':' title="'+ltmp(ltmp_arr.witness_vote_caption,{witness:witness_account})+'"')+'><span class="mark"></span></label>';
 							item+=' <span class="witness-props-action inline-button grey small">'+ltmp_arr.witness_props_caption+'</span>';
+							/*//31.10.2021 change, remove link from a witnesses list
 							if(-1==item_arr.url.indexOf('https://')){
 								if(-1==item_arr.url.indexOf('http://')){
 									item_arr.url='https://'+item_arr.url;
@@ -2935,10 +3224,10 @@ function update_witnesses_list(){
 								}
 							}
 							item+=' <a href="'+item_arr.url+'" target="_blank" class="inline-button color-orange small">'+ltmp_arr.witness_url_caption+'</a>';
-
-							item+=' <span class="inline-button grey small" title="'+ltmp_arr.witness_votes_weight_caption+'">'+number_thousands(Math.round(parseInt(item_arr.votes/1000000)/100)/10)+'k</span>';
+							*/
+							item+=' <span class="small" style="width:110px;text-align:right;display:inline-block;" title="'+ltmp_arr.witness_votes_weight_caption+'">'+number_thousands(Math.round(parseInt(item_arr.votes/1000000)/100)/10)+'k</span>';
 							if(-1!=user_votes.indexOf(witness_account)){
-								item+=' <span class="inline-button color-green small vote-shares-value" title="'+ltmp_arr.witness_user_vote_weight_caption+'">+'+number_thousands(Math.round(parseInt(user_shares / user_votes.length)/100)/10)+'k</span>';
+								item+=' <span class="/*inline-button color-green*/ small vote-shares-value" title="'+ltmp_arr.witness_user_vote_weight_caption+'">+'+number_thousands(Math.round(parseInt(user_shares / user_votes.length)/100)/10)+'k</span>';
 							}
 							item+='<div class="witness-props">';
 							let new_hardfork=(parseInt(fast_str_replace('.','',item_arr.running_version)) < parseInt(fast_str_replace('.','',item_arr.hardfork_version_vote)));
@@ -2947,11 +3236,14 @@ function update_witnesses_list(){
 								item+=' <p>'+ltmp_arr.witness_hardfork_vote_caption+item_arr.hardfork_version_vote+ltmp(ltmp.witness_hardfork_vote_starting_caption,{date:show_date(item_arr.hardfork_time_vote,true)})+ltmp_arr.default_date_utc+'</p>';
 							}
 							item+='<p>'+ltmp_arr.witness_penalty_caption+'<strong>'+(parseInt(item_arr.penalty_percent)/100)+'%</strong></p>';
+							if(typeof item_arr.sharing_rate !== 'undefined'){
+								item+='<p>'+ltmp_arr.witness_sharing_rate_caption+'<strong>'+(parseInt(item_arr.sharing_rate)/100)+'%</strong></p>';
+							}
 							let props_item=item_arr.props;
 							for(let j_num in ltmp_arr.witness_props_order){
 								let j=ltmp_arr.witness_props_order[j_num];
-								if(typeof witness_props_captions[j] != 'undefined'){
-									item+='<p>'+witness_props_captions[j]+': <strong data-prop="'+j+'" data-value="'+props_item[j]+'">'+(-1!==witness_props_percent.indexOf(j)?(parseFloat(props_item[j])/100)+'%':props_item[j])+'</strong></p>';
+								if(typeof validator_props_captions[j] != 'undefined' && typeof props_item[j] != 'undefined'){
+									item+='<p>'+validator_props_captions[j]+': <strong data-prop="'+j+'" data-value="'+props_item[j]+'">'+(-1!==validator_props_percent.indexOf(j)?(parseFloat(props_item[j])/100)+'%':props_item[j])+'</strong></p>';
 								}
 							}
 							/*
@@ -2960,7 +3252,7 @@ function update_witnesses_list(){
 							delete(props_item['min_curation_percent']);
 							delete(props_item['max_curation_percent']);
 							for(j in props_item){
-								item+='<p>'+witness_props_captions[j]+': <strong data-prop="'+j+'" data-value="'+props_item[j]+'">'+(-1!==witness_props_percent.indexOf(j)?(parseFloat(props_item[j])/100)+'%':props_item[j])+'</strong></p>';
+								item+='<p>'+validator_props_captions[j]+': <strong data-prop="'+j+'" data-value="'+props_item[j]+'">'+(-1!==validator_props_percent.indexOf(j)?(parseFloat(props_item[j])/100)+'%':props_item[j])+'</strong></p>';
 							}
 							*/
 							item+='</div>';
@@ -2976,7 +3268,7 @@ function update_witnesses_list(){
 						inactive_data='<div><a class="show-inactive-witnesses-action captions">'+ltmp_arr.witness_show_inactive_link+'</a></div><div class="inactive-witnesses hidden">'+inactive_data+'</div>';
 						$('.inactive-witnesses-list').append(inactive_data);
 						$('.page-witnesses .check input').unbind('change');
-						$('.page-witnesses .check input').bind('change',witness_vote_action);
+						$('.page-witnesses .check input').bind('change',validator_vote_action);
 					}
 					else{
 						$('.witnesses-list').append('<div><p>'+ltmp_arr.default_node_error+'</p></div>');
@@ -2993,14 +3285,14 @@ function update_witnesses_list(){
 		}
 	});
 }
-function update_witness_props(props){
+function update_validator_props(props){
 	props=typeof props==='undefined'?false:props;
 	let el=$('.page-witness-params .witness-set-props');
 	if(false===props){
-		viz.api.getWitnessByAccount(current_user,function(err,response){
+		viz.api.getValidatorByAccount(current_user,function(err,response){
 			if(!err){
 				if(null!==response){
-					update_witness_props(response.props);
+					update_validator_props(response.props);
 				}
 			}
 			else{
@@ -3014,13 +3306,21 @@ function update_witness_props(props){
 		for(j_num in ltmp_arr.witness_props_order){
 			let j=ltmp_arr.witness_props_order[j_num];
 		//for(j in props){//old order by props object sort
-			if(typeof witness_props_captions[j] == 'undefined'){
+			if(typeof props[j] === 'undefined'){
+				if(typeof validator_props_hf13_defaults[j] !== 'undefined'){
+					props[j]=validator_props_hf13_defaults[j];
+				}
+				else{
+					continue;
+				}
+			}
+			if(typeof validator_props_captions[j] == 'undefined'){
 				data+='<input type="hidden" name="witness-set-props-'+j+'" value="'+escape_html(''+props[j])+'">';
 			}
 			else{
-				data+='<p><label class="input-descr"><span class="input-caption">'+witness_props_captions[j]+':</span>';
-				data+='<input type="text" name="witness-set-props-'+j+'" class="simple-rounded" placeholder="'+(-1!==witness_props_percent.indexOf(j)?'0.00%':'')+'" ';
-				data+='value="'+(-1!==witness_props_percent.indexOf(j)?((parseInt(props[j])/100)+'%'):escape_html(''+props[j]))+'">';
+				data+='<p><label class="input-descr"><span class="input-caption">'+validator_props_captions[j]+':</span>';
+				data+='<input type="text" name="witness-set-props-'+j+'" class="simple-rounded" placeholder="'+(-1!==validator_props_percent.indexOf(j)?'0.00%':'')+'" ';
+				data+='value="'+(-1!==validator_props_percent.indexOf(j)?((parseInt(props[j])/100)+'%'):escape_html(''+props[j]))+'">';
 				data+='</label></p>';
 			}
 		}
@@ -3108,7 +3408,7 @@ function update_fund_request(id,votes,votes_update){
 							voters_percent_arr[vote.voter]=parseInt(vote.vote_percent);
 							let vote_percent=(parseInt(vote.vote_percent)/100);
 							vote_percent=fast_str_replace('-','&minus;',''+vote_percent)+'%';
-							data+=' <span class="view-percent">'+vote_percent+'</span>'+ltmp_arr.fund_request_vote_list_from+'<a class="view-account'+(current_user==vote.voter?' bold':'')+'" href="https://info.viz.plus/accounts/'+vote.voter+'/" target="_blank">'+vote.voter+'</a>';
+							data+=' <span class="view-percent">'+vote_percent+'</span>'+ltmp_arr.fund_request_vote_list_from+'<a class="view-account'+(current_user==vote.voter?' bold':'')+'" href="https://info.viz.world/accounts/'+vote.voter+'/" target="_blank">'+vote.voter+'</a>';
 							data+='<span class="shares"></span>';
 							data+='</div>';
 						}
@@ -3168,9 +3468,9 @@ function update_fund_request(id,votes,votes_update){
 						if(''!=url){
 							data+='<p>'+ltmp_arr.fund_request_url_caption+'<span class="request-url"><a href="'+escape_html(url)+'" target="_blank">'+escape_html(url)+'</a></span></p>';
 						}
-						data+='<p>'+ltmp_arr.fund_request_creator_caption+'<a class="view-account request-creator" href="https://info.viz.plus/accounts/'+response.creator+'/" target="_blank">'+response.creator+'</a></p>';
+						data+='<p>'+ltmp_arr.fund_request_creator_caption+'<a class="view-account request-creator" href="https://info.viz.world/accounts/'+response.creator+'/" target="_blank">'+response.creator+'</a></p>';
 						if(response.worker!=response.creator){
-							data+='<p>'+ltmp_arr.fund_request_worker_caption+'<a class="view-account request-worker" href="https://info.viz.plus/accounts/'+response.worker+'/" target="_blank">'+response.worker+'</a></p>';
+							data+='<p>'+ltmp_arr.fund_request_worker_caption+'<a class="view-account request-worker" href="https://info.viz.world/accounts/'+response.worker+'/" target="_blank">'+response.worker+'</a></p>';
 						}
 						data+='<p>'+ltmp_arr.fund_request_min_amount_caption+'<span class="request-required-amount-min">'+number_thousands(show_balance_in_tokens(response.required_amount_min,true))+'</span></p>';
 						let required_amount_max=response.required_amount_max;
@@ -3236,7 +3536,7 @@ function update_fund_request(id,votes,votes_update){
 									voters_percent_arr[vote.voter]=parseInt(vote.vote_percent);
 									let vote_percent=(parseInt(vote.vote_percent)/100);
 									vote_percent=fast_str_replace('-','&minus;',''+vote_percent)+'%';
-									data+=' <span class="view-percent">'+vote_percent+'</span>'+ltmp_arr.fund_request_vote_list_from+'<a class="view-account'+(current_user==vote.voter?' bold':'')+'" href="https://info.viz.plus/accounts/'+vote.voter+'/" target="_blank">'+vote.voter+'</a>';
+									data+=' <span class="view-percent">'+vote_percent+'</span>'+ltmp_arr.fund_request_vote_list_from+'<a class="view-account'+(current_user==vote.voter?' bold':'')+'" href="https://info.viz.world/accounts/'+vote.voter+'/" target="_blank">'+vote.voter+'</a>';
 									data+='<span class="shares"></span>';
 									data+='</div>';
 								}
@@ -3340,7 +3640,12 @@ function update_fund_requests(status){
 					$('.fund-requests[data-status='+status+']').append('<div class="load-more"><a class="inline-button color-orange no-margin fund-show-more-requests captions">'+ltmp_arr.fund_show_other_requests+'</a></div>');
 				}
 				if(0==response.length){
-					$('.fund-requests[data-status='+status+']').append('<div class="no-results"><p class="captions">'+ltmp_arr.fund_none_requests+'</p></div>');
+					if(0==status){
+						$('.fund-requests[data-status='+status+']').append('<div class="no-results"><p class="captions">'+ltmp_arr.fund_none_new_requests+'</p></div>');
+					}
+					else{
+						$('.fund-requests[data-status='+status+']').append('<div class="no-results"><p class="captions">'+ltmp_arr.fund_none_requests+'</p></div>');
+					}
 				}
 			}
 			else{
@@ -3371,7 +3676,7 @@ function view_dao(path,params,title){
 				if('fund-create-request'==path[2]){
 					viz.api.getChainProperties(function(err,response){
 						if(!err){
-							$('.median-props[rel="committee_create_request_fee"]').html(show_price_in_tokens(response.create_paid_subscription_fee,true));
+							$('.median-props[rel="committee_create_request_fee"]').html(show_price_in_tokens(response.committee_create_request_fee,true));
 						}
 					});
 				}
@@ -3395,8 +3700,38 @@ function view_dao(path,params,title){
 					}
 				}
 				if('witnesses'==path[2]){
+					$('.page-witnesses .submit-button-ring[rel=proxy]').css('display','none');
+					$('.page-witnesses .icon-check[rel=proxy]').css('display','none');
 					update_balances($('.page-witnesses .account-balance'));
-					update_witnesses_list();
+					update_validators_list();
+				}
+				if('witness-reward-sharing'==path[2]){
+					$('.page-witness-reward-sharing .witness-reward-sharing-error').html('');
+					$('.page-witness-reward-sharing .witness-reward-sharing-success').html('');
+					$('.page-witness-reward-sharing input[name=witness-reward-sharing-rate]').val('');
+					$('.page-witness-reward-sharing .witness-reward-sharing-action').removeAttr('disabled');
+					$('.page-witness-reward-sharing .icon-check[rel=reward-sharing]').css('display','none');
+					$('.page-witness-reward-sharing .submit-button-ring[rel=reward-sharing]').css('display','none');
+
+					viz.api.getValidatorByAccount(current_user,function(err,response){
+						if(!err){
+							if(null==response){
+								$('.page-witness-reward-sharing .witness-reward-sharing-error').html(ltmp_arr.account_not_witness);
+							}
+							else{
+								if(typeof response.owner != 'undefined' && current_user==response.owner){
+									let current_rate=typeof response.sharing_rate !== 'undefined'?response.sharing_rate:0;
+									$('.page-witness-reward-sharing input[name=witness-reward-sharing-rate]').val((current_rate/100)+'%');
+								}
+								else{
+									$('.page-witness-reward-sharing .witness-reward-sharing-error').html(ltmp_arr.account_not_witness);
+								}
+							}
+						}
+						else{
+							$('.page-witness-reward-sharing .witness-reward-sharing-error').html(ltmp_arr.default_node_error);
+						}
+					});
 				}
 				if('witness-params'==path[2]){
 					$('.page-witness-params .witness-setup-error').html('');
@@ -3411,11 +3746,11 @@ function view_dao(path,params,title){
 					$('.page-witness-params .fee-checkbox').css('display','none');
 					viz.api.getChainProperties(function(err,response){
 						if(!err){
-							$('.median-props[rel="witness_declaration_fee"]').html(show_price_in_tokens(response.witness_declaration_fee,true));
+							$('.median-props[rel="witness_declaration_fee"]').html(show_price_in_tokens(response.validator_declaration_fee ?? response.witness_declaration_fee,true));
 						}
 					});
 
-					viz.api.getWitnessByAccount(current_user,function(err,response){
+					viz.api.getValidatorByAccount(current_user,function(err,response){
 						if(!err){
 							if(null==response){
 								$('.page-witness-params .witness-setup-error').html(ltmp_arr.account_not_witness);
@@ -3429,7 +3764,7 @@ function view_dao(path,params,title){
 								else{
 									$('.page-witness-params .witness-setup-error').html(ltmp_arr.account_not_witness);
 								}
-								update_witness_props(response.props);
+								update_validator_props(response.props);
 							}
 						}
 						else{
@@ -3453,7 +3788,7 @@ function change_state(location,state,save_state){
 	$('body,html').animate({scrollTop:0},0);
 	var params=[];
 	var path=[];
-	var title='my VIZ+';
+	var title='Wallet VIZ World';
 
 	if(typeof state.path == 'undefined'){
 		if(-1!=location.indexOf('?')){
@@ -3480,6 +3815,7 @@ function change_state(location,state,save_state){
 			params=state.params;
 		}
 	}
+	console.log('change_state',location,params);
 
 	if(typeof state.title == 'undefined'){
 		if(''==path[1]){
@@ -3488,7 +3824,11 @@ function change_state(location,state,save_state){
 		}
 		else{
 			if(0<$('.menu-el[data-href="/'+path[1]+'/"]').length){
-				title=$('.menu-el[data-href="/'+path[1]+'/"]').html()+' - '+title;
+				let menu_title=$('.menu-el[data-href="/'+path[1]+'/"]').html();
+				if(typeof $('.menu-el[data-href="/'+path[1]+'/"]').attr('title')=='string'){
+					menu_title=$('.menu-el[data-href="/'+path[1]+'/"]').attr('title');
+				}
+				title=menu_title+' - '+title;
 			}
 			if((0<$('.view-'+path[1]+'').length) && (typeof $('.view-'+path[1]+'').attr('data-title') !== 'undefined')){
 				title=$('.view-'+path[1]+'').attr('data-title')+' - '+title;
@@ -3525,14 +3865,6 @@ function change_state(location,state,save_state){
 	document.title=title;
 	//exec function from path
 	if(typeof window['view_'+path[1]] === 'function'){
-		//stop exchange data updates
-		if(typeof window['stop_booster_updates'] === 'function'){
-			setTimeout(window['stop_booster_updates'],1);
-		}
-		//stop exchange data updates
-		if(typeof window['stop_load_exchange_data'] === 'function'){
-			setTimeout(window['stop_load_exchange_data'],1);
-		}
 		current_view=path[1];
 		setTimeout(window['view_'+path[1]],1,path,params,title);
 		setTimeout(function(){
@@ -3546,8 +3878,9 @@ function change_state(location,state,save_state){
 		},2);
 	}
 }
-function claim_invite(code,el){
+function claim_invite(receiver,code,el){
 	let page=$(el).closest('.page');
+	page.find('.invites-new-claim-action').attr('disabled','disabled');
 	page.find('.invites-claim-action').attr('disabled','disabled');
 	page.find('.invites-use-action').attr('disabled','disabled');
 	page.find('.icon-check[rel=claim]').css('display','none');
@@ -3556,10 +3889,11 @@ function claim_invite(code,el){
 	page.find('.invites-claim-error').html('');
 	page.find('.invites-claim-success').html('');
 	if(viz.auth.isWif(code)){
-		viz.broadcast.claimInviteBalance(users[current_user].active_key,current_user,current_user,code,function(err,result){
+		viz.broadcast.claimInviteBalance(users[current_user].active_key,current_user,receiver,code,function(err,result){
 			if(!err){
-				page.find('.invites-claim-success').html(ltmp(ltmp_arr.invites_claim_success,{account:current_user}));
+				page.find('.invites-claim-success').html(ltmp(ltmp_arr.invites_claim_success,{account:receiver}));
 
+				page.find('.invites-new-claim-action').removeAttr('disabled');
 				page.find('.invites-claim-action').removeAttr('disabled');
 				page.find('.invites-use-action').removeAttr('disabled');
 				page.find('.submit-button-ring[rel=claim]').css('display','none');
@@ -3575,6 +3909,7 @@ function claim_invite(code,el){
 			else{
 				page.find('.invites-claim-error').html(ltmp_arr.default_operation_error);
 
+				page.find('.invites-new-claim-action').removeAttr('disabled');
 				page.find('.invites-claim-action').removeAttr('disabled');
 				page.find('.invites-use-action').removeAttr('disabled');
 				page.find('.submit-button-ring[rel=claim]').css('display','none');
@@ -3590,13 +3925,15 @@ function claim_invite(code,el){
 		else{
 			page.find('.invites-claim-error').html(ltmp_arr.invites_claim_code_incorrect);
 		}
+		page.find('.invites-new-claim-action').removeAttr('disabled');
 		page.find('.invites-claim-action').removeAttr('disabled');
 		page.find('.invites-use-action').removeAttr('disabled');
 		page.find('.submit-button-ring[rel=claim]').css('display','none');
 	}
 }
-function use_invite(code,el){
+function use_invite(receiver,code,el){
 	let page=$(el).closest('.page');
+	page.find('.invites-new-claim-action').attr('disabled','disabled');
 	page.find('.invites-claim-action').attr('disabled','disabled');
 	page.find('.invites-use-action').attr('disabled','disabled');
 	page.find('.icon-check[rel=claim]').css('display','none');
@@ -3605,10 +3942,11 @@ function use_invite(code,el){
 	page.find('.invites-claim-error').html('');
 	page.find('.invites-claim-success').html('');
 	if(viz.auth.isWif(code)){
-		viz.broadcast.useInviteBalance(users[current_user].active_key,current_user,current_user,code,function(err,result){
+		viz.broadcast.useInviteBalance(users[current_user].active_key,current_user,receiver,code,function(err,result){
 			if(!err){
-				page.find('.invites-claim-success').html(ltmp(ltmp_arr.invites_claim_success,{account:current_user}));
+				page.find('.invites-claim-success').html(ltmp(ltmp_arr.invites_claim_success,{account:receiver}));
 
+				page.find('.invites-new-claim-action').removeAttr('disabled');
 				page.find('.invites-claim-action').removeAttr('disabled');
 				page.find('.invites-use-action').removeAttr('disabled');
 				page.find('.submit-button-ring[rel=claim]').css('display','none');
@@ -3624,6 +3962,7 @@ function use_invite(code,el){
 			else{
 				page.find('.invites-claim-error').html(ltmp_arr.default_operation_error);
 
+				page.find('.invites-new-claim-action').removeAttr('disabled');
 				page.find('.invites-claim-action').removeAttr('disabled');
 				page.find('.invites-use-action').removeAttr('disabled');
 				page.find('.submit-button-ring[rel=claim]').css('display','none');
@@ -3639,6 +3978,7 @@ function use_invite(code,el){
 		else{
 			page.find('.invites-claim-error').html(ltmp_arr.invites_claim_code_incorrect);
 		}
+		page.find('.invites-new-claim-action').removeAttr('disabled');
 		page.find('.invites-claim-action').removeAttr('disabled');
 		page.find('.invites-use-action').removeAttr('disabled');
 		page.find('.submit-button-ring[rel=claim]').css('display','none');
@@ -4052,7 +4392,7 @@ function create_invite(amount,el){
 			page.find('.invites-create').removeClass('hidden');
 
 			page.find('.invites-create').html('<p>'+ltmp(ltmp_arr.invite_info_success,{amount:show_balance_in_tokens(fixed_tokens_amount,true),private_key:private_key})+'</p>');
-			download('viz-check.txt','my.VIZ.plus\r\n\r\Check balance: '+fixed_tokens_amount+'\r\nActivation code: '+private_key+'');
+			download('viz-check.txt','wallet.VIZ.world\r\n\r\Check balance: '+fixed_tokens_amount+'\r\nActivation code: '+private_key+'');
 
 			//update balances info
 			update_balances($('.page-checks .account-balance'));
@@ -4400,7 +4740,7 @@ function transfer(account,amount,memo,encode,el){
 		}
 	});
 }
-function witness_set_props(el){
+function validator_set_props(el){
 	let page=$(el).closest('.page');
 	page.find('.witness-set-props-action').attr('disabled','disabled');
 	page.find('.icon-check[rel=set-props]').css('display','none');
@@ -4409,12 +4749,12 @@ function witness_set_props(el){
 	page.find('.witness-set-props-error').html('');
 	page.find('.witness-set-props-success').html('');
 
-	viz.api.getWitnessByAccount(current_user,function(err,response){
+	viz.api.getValidatorByAccount(current_user,function(err,response){
 		if(!err){
 			var props=response.props;
 			for(i in props){
 				props[i]=page.find('input[name="witness-set-props-'+i+'"]').val();
-				if(-1!==witness_props_percent.indexOf(i)){
+				if(-1!==validator_props_percent.indexOf(i)){
 					props[i]=parseInt(parseFloat(props[i])*100);
 					if(props[i]>100000){
 						props[i]=100000;
@@ -4429,7 +4769,15 @@ function witness_set_props(el){
 					}
 				}
 			}
-			let props_version=3;//protocol properties version
+			for(let hf13_key in validator_props_hf13_defaults){
+				if(typeof props[hf13_key] === 'undefined'){
+					let hf13_val=page.find('input[name="witness-set-props-'+hf13_key+'"]').val();
+					if(''!==hf13_val && hf13_val!==null){
+						props[hf13_key]=parseInt(hf13_val);
+					}
+				}
+			}
+			let props_version=(typeof props.distribution_epoch_length !== 'undefined')?4:3;
 			viz.broadcast.versionedChainPropertiesUpdate(users[current_user].active_key,current_user,[props_version,props],function(err,result){
 				if(!err){
 					page.find('.witness-set-props-success').html(ltmp_arr.witness_set_props_success);
@@ -4455,7 +4803,7 @@ function witness_set_props(el){
 		}
 	});
 }
-function witness_setup(url,public_key,private_key,el){
+function validator_setup(url,public_key,private_key,el){
 	private_key=typeof private_key==='undefined'?'':private_key;
 	let page=$(el).closest('.page');
 	page.find('.witness-setup-action').attr('disabled','disabled');
@@ -4494,7 +4842,7 @@ function witness_setup(url,public_key,private_key,el){
 		public_key='VIZ1111111111111111111111111111111114T1Anm';
 		deactivation=true;
 	}
-	viz.broadcast.witnessUpdate(users[current_user].active_key,current_user,url,public_key,function(err,result){
+	viz.broadcast.validatorUpdate(users[current_user].active_key,current_user,url,public_key,function(err,result){
 		if(!err){
 			page.find('.witness-setup-success').html(ltmp_arr.default_successful_operation+(''!=private_key?ltmp_arr.witness_save_signing_key+private_key:'')+(deactivation?ltmp_arr.witness_was_disabled:''));
 
@@ -4509,6 +4857,56 @@ function witness_setup(url,public_key,private_key,el){
 			page.find('.submit-button-ring[rel=setup]').css('display','none');
 
 			console.log(err);
+		}
+	});
+}
+function validator_reward_sharing(el){
+	let page=$(el).closest('.page');
+	page.find('.witness-reward-sharing-action').attr('disabled','disabled');
+	page.find('.icon-check[rel=reward-sharing]').css('display','none');
+	page.find('.submit-button-ring[rel=reward-sharing]').css('display','inline-block');
+	page.find('.witness-reward-sharing-error').html('');
+	page.find('.witness-reward-sharing-success').html('');
+
+	let rate_str=page.find('input[name=witness-reward-sharing-rate]').val().trim();
+	let sharing_rate=parseInt(parseFloat(rate_str)*100);
+	if(sharing_rate>10000) sharing_rate=10000;
+	if(0>sharing_rate) sharing_rate=0;
+
+	viz.broadcast.setRewardSharing(users[current_user].active_key,current_user,sharing_rate,function(err,result){
+		if(!err){
+			page.find('.witness-reward-sharing-success').html(ltmp_arr.witness_reward_sharing_success);
+			page.find('.witness-reward-sharing-action').removeAttr('disabled');
+			page.find('.submit-button-ring[rel=reward-sharing]').css('display','none');
+			page.find('.icon-check[rel=reward-sharing]').css('display','inline-block');
+		}
+		else{
+			page.find('.witness-reward-sharing-error').html(ltmp_arr.witness_reward_sharing_error);
+			page.find('.witness-reward-sharing-action').removeAttr('disabled');
+			page.find('.submit-button-ring[rel=reward-sharing]').css('display','none');
+			console.log(err);
+		}
+	});
+}
+function validator_proxy(proxy_account){
+	$('.page-witnesses .witness-proxy-action').attr('disabled','disabled');
+	$('.page-witnesses .witness-proxy-success').html('');
+	$('.page-witnesses .witness-proxy-error').html('');
+	$('.page-witnesses .submit-button-ring[rel=proxy]').css('display','inline-block');
+	$('.page-witnesses .icon-check[rel=proxy]').css('display','none');
+
+	viz.broadcast.accountValidatorProxy(users[current_user].active_key,current_user,proxy_account,function(err,result){
+		console.log('witness_proxy',proxy_account,err,result);
+		$('.page-witnesses .submit-button-ring[rel=proxy]').css('display','none');
+		if(err){
+			$('.page-witnesses .witness-proxy-error').html(ltmp_arr.default_operation_error);
+			$('.page-witnesses .witness-proxy-action').removeAttr('disabled');
+		}
+		else{
+			$('.page-witnesses .witness-proxy-success').html(ltmp(ltmp_arr.setted_witness_proxy,{account:proxy_account}));
+			$('.page-witnesses .witness-proxy-action').removeAttr('disabled');
+			$('.page-witnesses .icon-check[rel=proxy]').css('display','inline-block');
+			update_validators_list();
 		}
 	});
 }
@@ -4687,11 +5085,81 @@ function stake_shares(tokens_amount,el){
 		}
 	});
 }
+function invite_create_account(account_login,secret_key,login_el){
+	let page=login_el.closest('.page');
+	page.find('.invite-create-account-action').attr('disabled','disabled');
+	page.find('.icon-check[rel="invite-create-account"]').css('display','none');
+	page.find('.submit-button-ring[rel="invite-create-account"]').css('display','inline-block');
+	page.find('.invite-create-account-error').html('');
+	page.find('.invite-create-account-available').html('');
+
+	if(!viz.auth.isWif(secret_key)){
+		page.find('.invite-create-account-error').html(ltmp_arr.invites_invalid_code);
+		page.find('.invite-create-account-action').removeAttr('disabled');
+		page.find('.submit-button-ring[rel="invite-create-account"]').css('display','none');
+		return;
+	}
+
+	let invite_public=viz.auth.wifToPublic(secret_key);
+	let private_key=pass_gen(100,true);
+	let public_key=viz.auth.wifToPublic(private_key);
+
+	viz.api.getInviteByKey(invite_public,function(err,response){
+		if(!err){
+			let invite_balance=response.balance;
+			viz.broadcast.inviteRegistration('5KcfoRuDfkhrLCxVcE9x51J6KN9aM9fpb78tLrvvFckxVV6FyFW','invite',account_login,secret_key,public_key,function(err,result){
+				if(!err){
+					page.find('.submit-button-ring[rel="invite-create-account"]').css('display','none');
+					page.find('.icon-check[rel="invite-create-account"]').css('display','inline-block');
+					page.find('.invite-create-account-error').html('');
+					page.find('.invite-create-account-action').removeAttr('disabled');
+
+					login_el.val('');
+					login_el.css('border-color','');
+
+					page.find('.invite-account-keys .account-login').html(account_login);
+					page.find('.invite-account-keys .master-key').html(private_key);
+					page.find('.invite-account-keys .active-key').html(private_key);
+					page.find('.invite-account-keys .regular-key').html(private_key);
+					page.find('.invite-account-keys .memo-key').html(private_key);
+					page.find('.invite-account-keys').css('display','block');
+
+					download('viz-account.txt','wallet.VIZ.world\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+private_key+'\r\nActive key: '+private_key+'\r\nRegular key: '+private_key+'\r\nMemo key: '+private_key+'');
+				}
+				else{
+					console.log(err);
+
+					page.find('.submit-button-ring[rel="invite-create-account"]').css('display','none');
+					page.find('.invite-create-account-error').html(ltmp_arr.create_account_error);
+					page.find('.invite-create-account-available').html('');
+					page.find('.invite-create-account-action').removeAttr('disabled');
+
+					if(account_login){
+						viz.api.getAccounts([account_login],function(err2,response){
+							if(!err2){
+								page.find('.invite-create-account-available').html(ltmp_arr.check_login_already_exist);
+								if(typeof err.cause !== 'undefined'){
+									page.find('.invite-create-account-error').html(page.find('.invite-create-account-error').html()+': '+err.cause.data.stack[0].format);
+								}
+							}
+						});
+					}
+				}
+			});
+		}
+		else{
+			page.find('.invite-create-account-error').html(ltmp_arr.invites_code_not_found);
+			page.find('.invite-create-account-action').removeAttr('disabled');
+			page.find('.submit-button-ring[rel="invite-create-account"]').css('display','none');
+			return;
+		}
+	});
+}
 function create_account(account_login,token_amount,shares_amount,login_el){
 	let page=login_el.closest('.page');
 	page.find('.create-account-action').attr('disabled','disabled');
-	page.find('.icon-check').css('display','none');
-	page.find('.submit-button-ring').css('display','inline-block');
+	page.find('.icon-check[rel="create-account"]').css('display','none');
+	page.find('.submit-button-ring[rel="create-account"]').css('display','inline-block');
 	let fixed_token_amount=''+parseFloat(token_amount).toFixed(3)+' VIZ';
 	let fixed_shares_amount=''+parseFloat(shares_amount).toFixed(6)+' SHARES';
 	if(''==token_amount){
@@ -4728,8 +5196,8 @@ function create_account(account_login,token_amount,shares_amount,login_el){
 	let referrer='';
 
 	let account_success=function(result){
-		page.find('.submit-button-ring').css('display','none');
-		page.find('.icon-check').css('display','inline-block');
+		page.find('.submit-button-ring[rel="create-account"]').css('display','none');
+		page.find('.icon-check[rel="create-account"]').css('display','inline-block');
 		$('.page-create-account .create-account-error').html('');
 		$('.page-create-account .create-account-available').html('');
 		login_el.val('');
@@ -4743,14 +5211,14 @@ function create_account(account_login,token_amount,shares_amount,login_el){
 		page.find('.account-keys .memo-key').html(keys['memo']);
 		page.find('.account-keys').css('display','block');
 
-		download('viz-account.txt','my.VIZ.plus\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+keys['master']+'\r\nActive key: '+keys['active']+'\r\nRegular key: '+keys['regular']+'\r\nMemo key: '+keys['memo']+'');
+		download('viz-account.txt','wallet.VIZ.world\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+keys['master']+'\r\nActive key: '+keys['active']+'\r\nRegular key: '+keys['regular']+'\r\nMemo key: '+keys['memo']+'');
 
 		update_balances(page.find('.account-balance'));
 	}
 	let account_failure=function(err){
 		console.log(err);
 
-		page.find('.submit-button-ring').css('display','none');
+		page.find('.submit-button-ring[rel="create-account"]').css('display','none');
 		page.find('.create-account-error').html(ltmp_arr.create_account_error);
 		page.find('.create-account-available').html('');
 		page.find('.create-account-action').removeAttr('disabled');
@@ -4801,7 +5269,7 @@ function buy_account(account_login,offer_price,tokens_amount,el){
 					el.find('.account-keys .memo-key').html(private_key);
 					el.find('.account-keys').css('display','block');
 
-					download('viz-account.txt','my.VIZ.plus\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+private_key+'\r\nActive key: '+private_key+'\r\nRegular key: '+private_key+'\r\nMemo key: '+private_key+'');
+					download('viz-account.txt','wallet.VIZ.world\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+private_key+'\r\nActive key: '+private_key+'\r\nRegular key: '+private_key+'\r\nMemo key: '+private_key+'');
 
 					update_balances(el.closest('.page').find('.account-balance'));
 				}
@@ -4846,7 +5314,7 @@ function buy_short_account(account_login,offer_price,tokens_amount,el){
 					el.find('.account-keys .memo-key').html(private_key);
 					el.find('.account-keys').css('display','block');
 
-					download('viz-account.txt','my.VIZ.plus\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+private_key+'\r\nActive key: '+private_key+'\r\nRegular key: '+private_key+'\r\nMemo key: '+private_key+'');
+					download('viz-account.txt','wallet.VIZ.world\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+private_key+'\r\nActive key: '+private_key+'\r\nRegular key: '+private_key+'\r\nMemo key: '+private_key+'');
 
 					update_balances(el.closest('.page').find('.account-balance'));
 				}
@@ -5027,7 +5495,7 @@ function manage_access_save(account,master_key,el){
 
 	let txt_to_save='';
 	if(0<to_save.length){
-		txt_to_save='my.VIZ.plus\r\n\r\n';
+		txt_to_save='wallet.VIZ.world\r\n\r\n';
 		txt_to_save+='Account: '+account+'\r\n\r\n';
 		txt_to_save+='New authorites\r\n';
 		html_to_show='<p class="captions">Account: <strong>'+account+'</strong></p>';
@@ -5381,7 +5849,6 @@ function save_profile(el){
 			}
 		}
 	});
-	let nickname=$('.page-manage-profile input[name=manage-profile-nickname]').val().trim();
 }
 function reset_access(account,master_key,el){
 	if(!viz.auth.isWif(master_key)){
@@ -5439,7 +5906,7 @@ function reset_access(account,master_key,el){
 					el.find('.account-keys .memo-key').html(keys['memo']);
 					el.find('.account-keys').css('display','block');
 
-					download('viz-account.txt','my.VIZ.plus\r\n\r\nAccount login: '+account+'\r\nMaster key: '+keys['master']+'\r\nActive key: '+keys['active']+'\r\nRegular key: '+keys['regular']+'\r\nMemo key: '+keys['memo']+'');
+					download('viz-account.txt','wallet.VIZ.world\r\n\r\nAccount login: '+account+'\r\nMaster key: '+keys['master']+'\r\nActive key: '+keys['active']+'\r\nRegular key: '+keys['regular']+'\r\nMemo key: '+keys['memo']+'');
 				}
 				else{
 					el.find('.reset-access-error').html(ltmp_arr.access_error);
@@ -5538,7 +6005,7 @@ function buy_subaccount(account_login,offer_price,tokens_amount,el){
 							el.find('.account-keys .memo-key').html(private_key);
 							el.find('.account-keys').css('display','block');
 
-							download('viz-account.txt','my.VIZ.plus\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+private_key+'\r\nActive key: '+private_key+'\r\nRegular key: '+private_key+'\r\nMemo key: '+private_key+'');
+							download('viz-account.txt','wallet.VIZ.world\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+private_key+'\r\nActive key: '+private_key+'\r\nRegular key: '+private_key+'\r\nMemo key: '+private_key+'');
 
 							update_balances(el.closest('.page').find('.account-balance'));
 						}
@@ -5618,7 +6085,7 @@ function create_subaccount(account_login,token_amount,shares_amount,login_el){
 		page.find('.account-keys .memo-key').html(keys['memo']);
 		page.find('.account-keys').css('display','block');
 
-		download('viz-account.txt','my.VIZ.plus\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+keys['master']+'\r\nActive key: '+keys['active']+'\r\nRegular key: '+keys['regular']+'\r\nMemo key: '+keys['memo']+'');
+		download('viz-account.txt','wallet.VIZ.world\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+keys['master']+'\r\nActive key: '+keys['active']+'\r\nRegular key: '+keys['regular']+'\r\nMemo key: '+keys['memo']+'');
 
 		update_balances(page.find('.account-balance'));
 	}
@@ -5762,7 +6229,7 @@ function app_mouse(e){
 			}
 		}
 		if(false===error){
-			$(target).html(decoded_memo_str);
+			$(target).html(escape_html(decoded_memo_str));
 			$(target).removeAttr('data-text');
 			$(target).removeClass('decode-memo-action');
 		}
@@ -5970,13 +6437,24 @@ function app_mouse(e){
 		let amount=$('.page-checks input[name=invites-create-amount]').val().trim();
 		create_invite(amount,target);
 	}
+	if($(target).hasClass('invites-new-claim-action')){
+		let receiver=$('.page-checks input[name=invites-claim-receiver]').val().trim();
+		let code=$('.page-checks input[name=invites-claim-code]').val().trim();
+		let capital=('true'==$('.page-checks input[name=invites-claim-capital]:checked').val());
+		if(capital){
+			use_invite(receiver,code,target);
+		}
+		else{
+			claim_invite(receiver,code,target);
+		}
+	}
 	if($(target).hasClass('invites-claim-action')){
 		let code=$('.page-checks input[name=invites-claim-code]').val().trim();
-		claim_invite(code,target);
+		claim_invite(current_user,code,target);
 	}
 	if($(target).hasClass('invites-use-action')){
 		let code=$('.page-checks input[name=invites-claim-code]').val().trim();
-		use_invite(code,target);
+		use_invite(current_user,code,target);
 	}
 	if($(target).hasClass('activate-viz-dollars-action')){
 		var error=false;
@@ -5989,7 +6467,7 @@ function app_mouse(e){
 		$('.page-stake-shares .activate-viz-dollars-success').html('');
 		$.ajax({
 			type:'POST',
-			url:'https://start.viz.plus/ajax/claim-code/',
+			url:'https://start.viz.world/ajax/claim-code/',
 			data:{account_login:account,code},
 			success:function(result){
 				result_json=JSON.parse(result);
@@ -6032,7 +6510,7 @@ function app_mouse(e){
 		$('.page-deposit .deposit-success').html('');
 		$.ajax({
 			type:'POST',
-			url:'https://start.viz.plus/ajax/claim-code-balance/',
+			url:'https://start.viz.world/ajax/claim-code-balance/',
 			data:{account_login:account,code},
 			success:function(result){
 				result_json=JSON.parse(result);
@@ -6063,33 +6541,6 @@ function app_mouse(e){
 				$('.page-deposit .icon-check').css('display','inline-block');
 			},
 		});
-	}
-	if($(target).hasClass('activate-booster-action')){
-		if(typeof window['booster_code'] === 'function'){
-			let login=$('.page-booster input[name=booster-account]').val().toLowerCase().trim();
-			let code=$('.page-booster input[name=booster-code]').val().trim();
-			booster_code(code,login);
-		}
-	}
-	if($(target).hasClass('exchange-buy-action')){
-		if(typeof window['exchange_buy'] === 'function'){
-			exchange_buy(target);
-		}
-	}
-	if($(target).hasClass('exchange-copy-eth-action')){
-		if(typeof window['exchange_copy_eth'] === 'function'){
-			exchange_copy_eth(target);
-		}
-	}
-	if($(target).hasClass('exchange-qr-eth-action')){
-		if(typeof window['exchange_qr_eth'] === 'function'){
-			exchange_qr_eth(target);
-		}
-	}
-	if($(target).hasClass('exchange-sell-action')){
-		if(typeof window['exchange_sell'] === 'function'){
-			exchange_sell(target);
-		}
 	}
 	if($(target).hasClass('transfer-action')){
 		let account=$('.page-transfer input[name=transfer-account]').val().toLowerCase().trim();
@@ -6125,6 +6576,13 @@ function app_mouse(e){
 			let token_amount=$('.page-create-account input[name=create-account-token-amount]').val().trim();
 			let shares_amount=$('.page-create-account input[name=create-account-shares-amount]').val().trim();
 			create_account(account_login,token_amount,shares_amount,$('.page-create-account input[name=create-account-login]'));
+		}
+	}
+	if($(target).hasClass('invite-create-account-action')){
+		if($(target).closest('.page-create-account').length){
+			let account_login=$('.page-create-account input[name=invite-create-account-login]').val().toLowerCase().trim();
+			let secret_key=$('.page-create-account input[name=invite-create-account-secret-key]').val().trim();
+			invite_create_account(account_login,secret_key,$('.page-create-account input[name=invite-create-account-login]'));
 		}
 	}
 	if($(target).hasClass('create-subaccount-action')){
@@ -6169,7 +6627,7 @@ function app_mouse(e){
 		}
 	}
 	if($(target).hasClass('manage-profile-action')){
-		save_profile($('.page-manage-profile'));
+		save_profile($('.page-profile'));
 	}
 	if($(target).hasClass('reset-access-action')){
 		let account=$('.page-reset-access input[name=reset-access-login]').val().toLowerCase().trim();
@@ -6177,14 +6635,14 @@ function app_mouse(e){
 		reset_access(account,master_key,$('.page-reset-access'));
 	}
 	if($(target).hasClass('manage-access-preload-action')){
-		let account=$('.page-manage-access input[name=manage-access-login]').val().toLowerCase().trim();
-		manage_access_preload(account,$('.page-manage-access'));
+		let account=$('.page-access input[name=manage-access-login]').val().toLowerCase().trim();
+		manage_access_preload(account,$('.page-access'));
 	}
 
 	if($(target).hasClass('manage-access-save-action')){
-		let account=$('.page-manage-access input[name=manage-access-master-key]').attr('data-account');
-		let master_key=$('.page-manage-access input[name=manage-access-master-key]').val().trim();
-		manage_access_save(account,master_key,$('.page-manage-access'));
+		let account=$('.page-access input[name=manage-access-master-key]').attr('data-account');
+		let master_key=$('.page-access input[name=manage-access-master-key]').val().trim();
+		manage_access_save(account,master_key,$('.page-access'));
 	}
 	if($(target).hasClass('delete-auth-action')){
 		let parent=$(target).parent();
@@ -6219,11 +6677,26 @@ function app_mouse(e){
 	if($(target).hasClass('manage-access-gen-memo')){
 		let private_key=pass_gen(100,true);
 		let public_key=viz.auth.wifToPublic(private_key);
-		$('.page-manage-access input[name=manage-access-memo-key]').attr('data-private-key',private_key);
-		$('.page-manage-access input[name=manage-access-memo-key]').val(public_key);
+		$('.page-access input[name=manage-access-memo-key]').attr('data-private-key',private_key);
+		$('.page-access input[name=manage-access-memo-key]').val(public_key);
+	}
+	if($(target).hasClass('witness-proxy-action')){
+		let proxy_account=$('.page-witnesses input[name="witness-proxy"]').val();
+		$('.page-witnesses .witness-proxy-success').html('');
+		$('.page-witnesses .witness-proxy-error').html('');
+		if(''==proxy_account){
+			$('.page-witnesses .witness-proxy-error').html(ltmp_arr.default_account_error);
+			$('.page-witnesses input[name="witness-proxy-action"]').addClass('red');
+			$('.page-witnesses input[name="witness-proxy-action"]').focus();
+			return;
+		}
+		validator_proxy(proxy_account);
 	}
 	if($(target).hasClass('witness-set-props-action')){
-		witness_set_props($('.page-witness-params .witness-set-props'));
+		validator_set_props($('.page-witness-params .witness-set-props'));
+	}
+	if($(target).hasClass('witness-reward-sharing-action')){
+		validator_reward_sharing($('.page-witness-reward-sharing .witness-reward-sharing-action'));
 	}
 	if($(target).hasClass('witness-setup-action')){
 		let url=$('.page-witness-params input[name=witness-setup-url]').val().trim();
@@ -6232,7 +6705,7 @@ function app_mouse(e){
 		if(typeof $('.page-witness-params input[name=witness-setup-signing-key]').attr('data-private-key') !== 'undefined'){
 			private_key=$('.page-witness-params input[name=witness-setup-signing-key]').attr('data-private-key');
 		}
-		witness_setup(url,public_key,private_key,$('.page-witness-params .witness-setup-action'));
+		validator_setup(url,public_key,private_key,$('.page-witness-params .witness-setup-action'));
 	}
 	if($(target).hasClass('witness-setup-signing-key-action')){
 		e.preventDefault();
@@ -6256,29 +6729,29 @@ function app_mouse(e){
 	}
 	if($(target).hasClass('add-account-auths-action')){
 		let type=$(target).attr('rel');
-		$('.page-manage-access .account-keys-'+type+' .add-account-auths input[name=account]').removeClass('red');
-		$('.page-manage-access .account-keys-'+type+' .add-account-auths input[name=weight]').removeClass('red');
-		let account=$('.page-manage-access .account-keys-'+type+' .add-account-auths input[name=account]').val().toLowerCase().trim();
-		let weight=$('.page-manage-access .account-keys-'+type+' .add-account-auths input[name=weight]').val();
-		$('.page-manage-access .account-keys-'+type+' .add-account-auths input[name=account]').val(account);
+		$('.page-access .account-keys-'+type+' .add-account-auths input[name=account]').removeClass('red');
+		$('.page-access .account-keys-'+type+' .add-account-auths input[name=weight]').removeClass('red');
+		let account=$('.page-access .account-keys-'+type+' .add-account-auths input[name=account]').val().toLowerCase().trim();
+		let weight=$('.page-access .account-keys-'+type+' .add-account-auths input[name=weight]').val();
+		$('.page-access .account-keys-'+type+' .add-account-auths input[name=account]').val(account);
 		if(''==account){
-			$('.page-manage-access .account-keys-'+type+' .add-account-auths input[name=account]').addClass('red');
-			$('.page-manage-access .account-keys-'+type+' .add-account-auths input[name=account]').focus();
+			$('.page-access .account-keys-'+type+' .add-account-auths input[name=account]').addClass('red');
+			$('.page-access .account-keys-'+type+' .add-account-auths input[name=account]').focus();
 			return;
 		}
 		if(!(/^([a-z0-9\-\.]*)$/).test(account)){
-			$('.page-manage-access .account-keys-'+type+' .add-account-auths input[name=account]').addClass('red');
-			$('.page-manage-access .account-keys-'+type+' .add-account-auths input[name=account]').focus();
+			$('.page-access .account-keys-'+type+' .add-account-auths input[name=account]').addClass('red');
+			$('.page-access .account-keys-'+type+' .add-account-auths input[name=account]').focus();
 			return;
 		}
 		if(''==weight){
-			$('.page-manage-access .account-keys-'+type+' .add-account-auths input[name=weight]').addClass('red');
-			$('.page-manage-access .account-keys-'+type+' .add-account-auths input[name=weight]').focus();
+			$('.page-access .account-keys-'+type+' .add-account-auths input[name=weight]').addClass('red');
+			$('.page-access .account-keys-'+type+' .add-account-auths input[name=weight]').focus();
 			return;
 		}
 		if((parseInt(weight)<=0)||(isNaN(parseInt(weight)))){
-			$('.page-manage-access .account-keys-'+type+' .add-account-auths input[name=weight]').addClass('red');
-			$('.page-manage-access .account-keys-'+type+' .add-account-auths input[name=weight]').focus();
+			$('.page-access .account-keys-'+type+' .add-account-auths input[name=weight]').addClass('red');
+			$('.page-access .account-keys-'+type+' .add-account-auths input[name=weight]').focus();
 			return;
 		}
 		let new_el='<div class="account-auths" data-account="'+account+'" data-weight="'+weight+'">';
@@ -6286,44 +6759,44 @@ function app_mouse(e){
 		new_el+='<span class="weight-inline">'+ltmp(ltmp_arr.access_weight_caption,{weight:weight})+'</span>';
 		new_el+='<a class="red-button-inline delete-auth-action">'+ltmp_arr.access_remove_caption+'</a>';
 		new_el+='</div>';
-		$('.page-manage-access .account-keys .'+type+'-accounts').append(new_el);
+		$('.page-access .account-keys .'+type+'-accounts').append(new_el);
 
-		$('.page-manage-access .account-keys .'+type+'-accounts .none-auths').css('display','none');
+		$('.page-access .account-keys .'+type+'-accounts .none-auths').css('display','none');
 	}
 	if($(target).hasClass('add-key-auths-action')){
 		let type=$(target).attr('rel');
-		$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=private-key]').removeClass('red');
-		$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=public-key]').removeClass('red');
-		$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=weight]').removeClass('red');
-		let private_key=$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=private-key]').val();
-		let public_key=$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=public-key]').val();
-		let weight=$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=weight]').val();
+		$('.page-access .account-keys-'+type+' .add-key-auths input[name=private-key]').removeClass('red');
+		$('.page-access .account-keys-'+type+' .add-key-auths input[name=public-key]').removeClass('red');
+		$('.page-access .account-keys-'+type+' .add-key-auths input[name=weight]').removeClass('red');
+		let private_key=$('.page-access .account-keys-'+type+' .add-key-auths input[name=private-key]').val();
+		let public_key=$('.page-access .account-keys-'+type+' .add-key-auths input[name=public-key]').val();
+		let weight=$('.page-access .account-keys-'+type+' .add-key-auths input[name=weight]').val();
 		if(!viz.auth.isPubkey(public_key)){
-			$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=public-key]').addClass('red');
-			$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=public-key]').focus();
+			$('.page-access .account-keys-'+type+' .add-key-auths input[name=public-key]').addClass('red');
+			$('.page-access .account-keys-'+type+' .add-key-auths input[name=public-key]').focus();
 			return;
 		}
 		if(''!=private_key){
 			if(!viz.auth.isWif(private_key)){
-				$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=private-key]').addClass('red');
-				$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=private-key]').focus();
+				$('.page-access .account-keys-'+type+' .add-key-auths input[name=private-key]').addClass('red');
+				$('.page-access .account-keys-'+type+' .add-key-auths input[name=private-key]').focus();
 				return;
 			}
 			if(viz.auth.wifToPublic(private_key)!=public_key){
-				$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=private-key]').addClass('red');
-				$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=public-key]').addClass('red');
-				$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=private-key]').focus();
+				$('.page-access .account-keys-'+type+' .add-key-auths input[name=private-key]').addClass('red');
+				$('.page-access .account-keys-'+type+' .add-key-auths input[name=public-key]').addClass('red');
+				$('.page-access .account-keys-'+type+' .add-key-auths input[name=private-key]').focus();
 				return;
 			}
 		}
 		if(''==weight){
-			$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=weight]').addClass('red');
-			$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=weight]').focus();
+			$('.page-access .account-keys-'+type+' .add-key-auths input[name=weight]').addClass('red');
+			$('.page-access .account-keys-'+type+' .add-key-auths input[name=weight]').focus();
 			return;
 		}
 		if((parseInt(weight)<=0)||(isNaN(parseInt(weight)))){
-			$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=weight]').addClass('red');
-			$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=weight]').focus();
+			$('.page-access .account-keys-'+type+' .add-key-auths input[name=weight]').addClass('red');
+			$('.page-access .account-keys-'+type+' .add-key-auths input[name=weight]').focus();
 			return;
 		}
 		let new_el='<div class="key-auths" data-key="'+public_key+'" data-weight="'+weight+'" data-private-key="'+private_key+'">';
@@ -6331,16 +6804,16 @@ function app_mouse(e){
 		new_el+='<span class="weight-inline">'+ltmp(ltmp_arr.access_weight_caption,{weight:weight})+'</span>';
 		new_el+='<a class="red-button-inline delete-auth-action">'+ltmp_arr.access_remove_caption+'</a>';
 		new_el+='</div>';
-		$('.page-manage-access .account-keys .'+type+'-keys').append(new_el);
+		$('.page-access .account-keys .'+type+'-keys').append(new_el);
 
-		$('.page-manage-access .account-keys .'+type+'-keys .none-auths').css('display','none');
+		$('.page-access .account-keys .'+type+'-keys .none-auths').css('display','none');
 	}
 	if($(target).hasClass('gen-key-auths-action')){
 		let type=$(target).attr('rel');
 		let private_key=pass_gen(100,true);
 		let public_key=viz.auth.wifToPublic(private_key);
-		$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=private-key]').val(private_key);
-		$('.page-manage-access .account-keys-'+type+' .add-key-auths input[name=public-key]').val(public_key);
+		$('.page-access .account-keys-'+type+' .add-key-auths input[name=private-key]').val(private_key);
+		$('.page-access .account-keys-'+type+' .add-key-auths input[name=public-key]').val(public_key);
 	}
 	if($(target).hasClass('sell-subaccount-action')){
 		if(0==$('.page-sell-subaccount input[name=set-subaccount-on-sale]:checked').length){
@@ -6486,7 +6959,7 @@ function app_mouse(e){
 
 						let txt_to_save='';
 						let html_to_show='';
-						txt_to_save='my.VIZ.plus\r\n\r\n';
+						txt_to_save='wallet.VIZ.world\r\n\r\n';
 						txt_to_save+='Account: '+current_user+'\r\n';
 						txt_to_save+='Memo private key:  '+memo_key;
 						html_to_show='<p class="captions">Account: <strong>'+current_user+'</strong></p>';
@@ -6678,7 +7151,7 @@ function preset_template(callback){
 	}
 	let select_lang=ltmp(ltmp_arr.select_lang,{items:available_langs_str});
 	$('.menu-bg').html(ltmp(ltmp_arr.menu_preset));
-	let preset_view=['index','portable','login','memo','accounts','assets','dao','market'];
+	let preset_view=['index','portable','login','memo','settings','assets','dao','account','market'];
 	for(let i in preset_view){
 		let view_name=preset_view[i];
 		if(typeof ltmp_arr['preset_view_'+view_name] !== 'undefined'){
