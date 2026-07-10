@@ -1,1 +1,35 @@
+# --- Секреты и приватные данные (НИКОГДА не коммитить) ---
+# Локальная конфигурация с паролями админа, доступом к БД и адресом ноды.
 config.php
+# Приватные ключи / WIF / сиды на случай локальных тестов.
+*.wif
+*.key
+*.pem
+secrets.php
+keys.php
+
+# --- Сборочные артефакты (генерируются minify.php) ---
+wallet-viz-world-portable.html
+min-*.html
+min-*.js
+min-*.css
+
+# --- Рантайм-кэш ---
+*_cache.json
+
+# --- Зависимости / инструменты сборки ---
+/node_modules/
+package-lock.json
+
+# --- Логи ---
+*.log
+
+# --- Системные и редакторские файлы ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+*~
+*.bak
+*.swp
+.idea/
+.vscode/
