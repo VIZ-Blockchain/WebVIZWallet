@@ -1796,6 +1796,8 @@ var ltmp_en_arr={
 	pm_pick_outcome:'Pick an outcome to bet on:',
 	pm_shares:'Shares',
 	pm_source:'Source',
+	pm_rules:'Rules',
+	pm_volume:'Betting volume',
 	pm_status_active:'Active',
 	pm_status_awaiting:'Awaiting resolution',
 	pm_status_closed:'Closed',
@@ -1859,7 +1861,7 @@ var ltmp_en_arr={
 			</div>
 		</div>
 		<div class="page page-market">
-			<div class="card transparent">
+			<div class="card">
 				<div class="pm-market-detail"></div>
 				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>

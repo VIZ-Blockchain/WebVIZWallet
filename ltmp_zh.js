@@ -1797,6 +1797,8 @@ var ltmp_zh_arr = {
 	pm_pick_outcome:'选择下注的结果：',
 	pm_shares:'份额',
 	pm_source:'来源',
+	pm_rules:'规则',
+	pm_volume:'下注量',
 	pm_status_active:'进行中',
 	pm_status_awaiting:'等待结算',
 	pm_status_closed:'已关闭',
@@ -1855,7 +1857,7 @@ var ltmp_zh_arr = {
 			</div>
 		</div>
 		<div class="page page-market">
-			<div class="card transparent">
+			<div class="card">
 				<div class="pm-market-detail"></div>
 				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>

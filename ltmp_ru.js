@@ -1797,6 +1797,8 @@ var ltmp_ru_arr={
 	pm_pick_outcome:'Выберите исход для ставки:',
 	pm_shares:'Доли',
 	pm_source:'Источник',
+	pm_rules:'Правила',
+	pm_volume:'Объём ставок',
 	pm_status_active:'Активен',
 	pm_status_awaiting:'Ожидает резолва',
 	pm_status_closed:'Закрыт',
@@ -1855,7 +1857,7 @@ var ltmp_ru_arr={
 			</div>
 		</div>
 		<div class="page page-market">
-			<div class="card transparent">
+			<div class="card">
 				<div class="pm-market-detail"></div>
 				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
