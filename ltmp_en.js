@@ -1837,7 +1837,6 @@ var ltmp_en_arr={
 	preset_view_pm:`
 		<div class="page page-index">
 			<div class="card transparent">
-				<h3 class="adaptive-show-block captions">Prediction markets</h3>
 				<div class="wide-buttons size2 captions">
 					<a class="wide-button" data-href="/pm/">Markets</a>
 					<a class="wide-button" data-href="/pm/completed/">My completed</a>
@@ -1848,8 +1847,15 @@ var ltmp_en_arr={
 						<input type="text" name="pm-filter" class="simple-rounded wide" placeholder="Filter by title">
 					</label>
 				</p>
-				<div class="pm-markets-list"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
-				<div class="pm-markets-footer center"></div>
+				<div class="table-view captions">
+					<div class="table-header">
+						<h3 class="captions">Prediction markets <span class="loading">%%default_loading%%</span></h3>
+					</div>
+					<div class="table-data pm-markets-list"></div>
+					<div class="table-footer">
+						<a class="inline-button pm-load-more-action">%%default_loading_more%%</a>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="page page-market">

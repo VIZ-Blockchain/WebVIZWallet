@@ -3689,7 +3689,7 @@ function view_pm(path,params,title){
 		$('.view-pm .page-index').css('display','block');
 		load_pm_markets(true);
 		$('.view-pm .page-index input[name=pm-filter]').off('input.pm').on('input.pm',function(){ load_pm_markets(true); });
-		$('.view-pm .page-index .pm-markets-footer').off('click.pm').on('click.pm','.pm-load-more',function(){ pm_markets_page++; load_pm_markets(false); });
+		$('.view-pm .page-index .table-footer').off('click.pm').on('click.pm','.pm-load-more-action',function(){ pm_markets_page++; load_pm_markets(false); });
 	}
 }
 function pm_market_status_label(m){
@@ -3704,11 +3704,18 @@ function pm_market_status_label(m){
 var pm_markets_page=0;
 function load_pm_markets(reset){
 	reset=typeof reset==='undefined'?true:reset;
-	if(reset){ pm_markets_page=0; }
+	let list=$('.view-pm .page-index .pm-markets-list');
+	let tv=list.closest('.table-view');
+	//guard against double-loads while a page is in flight (mirrors load_history)
+	if('none'!=tv.find('.table-header .loading').css('display')){ return; }
+	if(reset){ pm_markets_page=0; list.html(''); }
+	tv.find('.table-header .loading').css('display','inline-block');
+	tv.find('.table-footer').css('display','none');
 	let per_page=20;
 	let from=pm_markets_page*per_page;
 	viz.api.listMarkets(1,from,per_page,true,'',function(err,markets){
-		if(err||!markets){ $('.view-pm .page-index .pm-markets-list').html('<p class="red">'+ltmp_arr.default_node_error+'</p>'); if(err){console.log(err);} return; }
+		tv.find('.table-header .loading').css('display','none');
+		if(err||!markets){ if(reset){ list.html('<p class="red">'+ltmp_arr.default_node_error+'</p>'); } if(err){console.log(err);} return; }
 		let filter=(''+($('.view-pm .page-index input[name=pm-filter]').val()||'')).toLowerCase().trim();
 		let data='';
 		for(let i in markets){
@@ -3723,9 +3730,9 @@ function load_pm_markets(reset){
 			if(m.url){ data+='<a class="wide-button" href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_source||'Source')+' &#8599;</a>'; }
 			data+='</div></div></div>';
 		}
-		if(reset){ $('.view-pm .page-index .pm-markets-list').html(data||('<p>'+ltmp_arr.default_no_items+'</p>')); }
-		else{ $('.view-pm .page-index .pm-markets-list').append(data); }
-		$('.view-pm .page-index .pm-markets-footer').html((markets.length>=per_page)?('<div class="wide-buttons captions"><a class="wide-button pm-load-more">'+(ltmp_arr.pm_load_more||'Load more')+'</a></div>'):'');
+		if(reset){ list.html(data||('<p>'+ltmp_arr.default_no_items+'</p>')); }
+		else{ list.append(data); }
+		tv.find('.table-footer').css('display',(markets.length>=per_page)?'':'none');
 	});
 }
 function pm_market_bettable(m){

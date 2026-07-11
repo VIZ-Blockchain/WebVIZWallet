@@ -1838,14 +1838,20 @@ var ltmp_zh_arr = {
 	preset_view_pm:`
 		<div class="page page-index">
 			<div class="card transparent">
-				<h3 class="adaptive-show-block captions">预测市场</h3>
 				<div class="wide-buttons size2 captions">
 					<a class="wide-button" data-href="/pm/">市场</a>
 					<a class="wide-button" data-href="/pm/completed/">我的已完成</a>
 				</div>
 				<p><label class="input-descr"><span class="input-caption">筛选：</span><input type="text" name="pm-filter" class="simple-rounded wide" placeholder="按标题筛选"></label></p>
-				<div class="pm-markets-list"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
-				<div class="pm-markets-footer center"></div>
+				<div class="table-view captions">
+					<div class="table-header">
+						<h3 class="captions">预测市场 <span class="loading">%%default_loading%%</span></h3>
+					</div>
+					<div class="table-data pm-markets-list"></div>
+					<div class="table-footer">
+						<a class="inline-button pm-load-more-action">%%default_loading_more%%</a>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="page page-market">

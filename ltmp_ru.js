@@ -1838,14 +1838,20 @@ var ltmp_ru_arr={
 	preset_view_pm:`
 		<div class="page page-index">
 			<div class="card transparent">
-				<h3 class="adaptive-show-block captions">Рынки прогнозов</h3>
 				<div class="wide-buttons size2 captions">
 					<a class="wide-button" data-href="/pm/">Рынки</a>
 					<a class="wide-button" data-href="/pm/completed/">Мои завершённые</a>
 				</div>
 				<p><label class="input-descr"><span class="input-caption">Фильтр:</span><input type="text" name="pm-filter" class="simple-rounded wide" placeholder="Фильтр по названию"></label></p>
-				<div class="pm-markets-list"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
-				<div class="pm-markets-footer center"></div>
+				<div class="table-view captions">
+					<div class="table-header">
+						<h3 class="captions">Рынки прогнозов <span class="loading">%%default_loading%%</span></h3>
+					</div>
+					<div class="table-data pm-markets-list"></div>
+					<div class="table-footer">
+						<a class="inline-button pm-load-more-action">%%default_loading_more%%</a>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="page page-market">
