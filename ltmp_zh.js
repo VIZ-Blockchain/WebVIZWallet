@@ -2156,6 +2156,7 @@ var ltmp_zh_arr = {
 	validator_penalty_caption:'跳过区块的惩罚：',
 	validator_show_inactive_link:'显示已停用的验证人',
 	validator_set_props_button:'设置参数',
+	validator_pm_props_toggle:'预测市场参数 (HF14) — 显示/隐藏',
 	validator_set_props_success:'参数设置成功',
 	validator_set_props_error:'错误：请检查修改的字段',
 	validator_save_signing_key:'，请保存签名私钥：',

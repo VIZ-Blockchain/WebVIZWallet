@@ -2157,6 +2157,7 @@ var ltmp_ru_arr={
 	validator_penalty_caption:'Штраф за пропуск блоков: ',
 	validator_show_inactive_link:'Показать деактивированных валидаторов',
 	validator_set_props_button:'Отправить',
+	validator_pm_props_toggle:'Параметры рынков предсказаний (HF14) — показать/скрыть',
 	validator_set_props_success:'Голосуемые параметры успешно отправлены',
 	validator_set_props_error:'Ошибка: проверьте измененные поля',
 	validator_save_signing_key:', сохраните приватный ключ подписи: ',

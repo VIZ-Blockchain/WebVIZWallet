@@ -2160,6 +2160,7 @@ var ltmp_en_arr={
 	validator_penalty_caption:'Penalty for skipping blocks: ',
 	validator_show_inactive_link:'Show deactivated validators',
 	validator_set_props_button:'Set the parameters',
+	validator_pm_props_toggle:'Prediction market params (HF14) — show/hide',
 	validator_set_props_success:'Parameters are successfully set',
 	validator_set_props_error:'Error: check modified fields',
 	validator_save_signing_key:', save the signature private key: ',

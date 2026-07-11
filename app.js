@@ -3556,6 +3556,17 @@ function update_validators_list(){
 									item+='<p>'+validator_props_captions[j]+': <strong data-prop="'+j+'" data-value="'+props_item[j]+'">'+(-1!==validator_props_percent.indexOf(j)?(parseFloat(props_item[j])/100)+'%':props_item[j])+'</strong></p>';
 								}
 							}
+							//HF14 prediction-market params this validator has voted → collapsible toggle (hidden by default)
+							let pm_list='';
+							for(let pk in props_item){
+								if('pm_'!==(''+pk).substring(0,3)){ continue; }
+								let pcap=(typeof validator_props_captions[pk]!=='undefined')?validator_props_captions[pk]:((typeof ltmp_arr.validator_props_captions[pk]!=='undefined')?ltmp_arr.validator_props_captions[pk]:(''+pk).replace(/_/g,' '));
+								pm_list+='<p>'+escape_html(pcap)+': <strong data-prop="'+pk+'" data-value="'+escape_html(''+props_item[pk])+'">'+(-1!==validator_props_percent.indexOf(pk)?(parseFloat(props_item[pk])/100)+'%':escape_html(''+props_item[pk]))+'</strong></p>';
+							}
+							if(pm_list){
+								item+='<p><a class="validator-pm-props-action inline-button grey small">'+(ltmp_arr.validator_pm_props_toggle||'Prediction market params (HF14)')+'</a></p>';
+								item+='<div class="validator-pm-props" style="display:none">'+pm_list+'</div>';
+							}
 							/*
 							//old order by props object sort
 							delete(props_item['flag_energy_additional_cost']);
@@ -3612,6 +3623,11 @@ function update_validator_props(props){
 		});
 	}
 	else{
+		//Fetch current chain pm params so a validator can set the HF14 prediction-market params even
+		//if their stored props predate HF14 (median get_chain_properties has no pm fields until
+		//validators actually vote them, so we seed the inputs with the live pm chain defaults).
+		viz.api.getPmChainProperties(function(pmerr,pmprops){
+		if(!pmerr && pmprops){ for(let pk in pmprops){ if('pm_'===(''+pk).substring(0,3) && typeof props[pk]==='undefined'){ props[pk]=pmprops[pk]; } } }
 		let data='';
 		let rendered_props={};
 		for(j_num in ltmp_arr.validator_props_order){
@@ -3636,20 +3652,20 @@ function update_validator_props(props){
 				data+='</label></p>';
 			}
 		}
-		//HF14+: render node props absent from the predefined order (prediction-market params etc.) so they are
-		//shown, editable, and preserved on re-broadcast — never silently dropped (correct v5 serialization).
-		let pm_group_added=false;
+		//props present but not in the predefined order: HF14 prediction-market params go into a
+		//collapsible toggle (so the ~47 fields don't overload the screen); other unknowns render inline.
+		let pm_data='';
 		for(let k in props){
 			if(true===rendered_props[k]){continue;}
-			if(!pm_group_added && 'pm_'===(''+k).substring(0,3)){
-				data+='<p class="input-caption bold">'+(typeof ltmp_arr.validator_props_pm_group!=='undefined'?ltmp_arr.validator_props_pm_group:'Prediction market (HF14)')+'</p>';
-				pm_group_added=true;
-			}
 			let cap=(typeof validator_props_captions[k]!=='undefined')?validator_props_captions[k]:((typeof ltmp_arr.validator_props_captions[k]!=='undefined')?ltmp_arr.validator_props_captions[k]:(''+k).replace(/_/g,' '));
 			let is_pct=(-1!==validator_props_percent.indexOf(k));
-			data+='<p><label class="input-descr"><span class="input-caption">'+escape_html(cap)+':</span>';
-			data+='<input type="text" name="validator-set-props-'+k+'" class="simple-rounded" placeholder="'+(is_pct?'0.00%':'')+'" value="'+(is_pct?((parseInt(props[k])/100)+'%'):escape_html(''+props[k]))+'">';
-			data+='</label></p>';
+			let field='<p><label class="input-descr"><span class="input-caption">'+escape_html(cap)+':</span>'
+				+'<input type="text" name="validator-set-props-'+k+'" class="simple-rounded" placeholder="'+(is_pct?'0.00%':'')+'" value="'+(is_pct?((parseInt(props[k])/100)+'%'):escape_html(''+props[k]))+'"></label></p>';
+			if('pm_'===(''+k).substring(0,3)){ pm_data+=field; } else { data+=field; }
+		}
+		if(pm_data){
+			data+='<p><a class="validator-pm-props-action inline-button grey small">'+(ltmp_arr.validator_pm_props_toggle||'Prediction market params (HF14)')+'</a></p>';
+			data+='<div class="validator-pm-props" style="display:none">'+pm_data+'</div>';
 		}
 		data+='<p class="red validator-set-props-error"></p>\
 		<p class="green validator-set-props-success"></p>\
@@ -3659,6 +3675,7 @@ function update_validator_props(props){
 			<span class="icon icon-margin hidden icon-color-orange icon-check" rel="set-props"></span>\
 		</p>';
 		el.html(data);
+		});
 	}
 }
 //Prediction markets (#/pm) — simple viewer/actions (cel #52)
@@ -5541,6 +5558,10 @@ function validator_set_props(el){
 	viz.api.getValidatorByAccount(current_user,function(err,response){
 		if(!err){
 			var props=response.props;
+			viz.api.getPmChainProperties(function(pmerr,pmprops){
+			//merge HF14 pm params (the form seeds them from chain defaults) so they are read from the
+			//inputs below and submitted as a v5 versioned_chain_properties vote
+			if(!pmerr && pmprops){ for(let pk in pmprops){ if('pm_'===(''+pk).substring(0,3) && typeof props[pk]==='undefined'){ props[pk]=pmprops[pk]; } } }
 			for(i in props){
 				let prop_orig_type=typeof props[i];
 				props[i]=page.find('input[name="validator-set-props-'+i+'"]').val();
@@ -5586,6 +5607,7 @@ function validator_set_props(el){
 
 					console.log(err);
 				}
+			});
 			});
 		}
 		else{
@@ -7133,6 +7155,11 @@ function app_mouse(e){
 		else{
 			props_el.css('display','none');
 		}
+	}
+	if($(target).hasClass('validator-pm-props-action')){
+		//the collapsible HF14 pm-params block sits right after the toggle link's paragraph (form + list)
+		let pm_el=$(target).parent().next('.validator-pm-props');
+		pm_el.css('display', 'none'==pm_el.css('display')?'block':'none');
 	}
 	if($(target).hasClass('view-account')){
 		let page=$(target).closest('.page');
