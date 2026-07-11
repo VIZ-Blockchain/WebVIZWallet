@@ -973,7 +973,7 @@ a.submit-button:hover{
 	display:none !important;
 }
 
-.witness-setup-signing-private-key{
+.validator-setup-signing-private-key{
 	overflow:hidden;
 	display:inline-block;
 	text-overflow:ellipsis;
@@ -1099,8 +1099,8 @@ a.submit-button:hover{
 	-webkit-mask:50% 50% url(/icons/send-token-long.svg) no-repeat;
 	-webkit-mask-size:contain;
 }
-.icon-witnesses{
-	-webkit-mask:50% 50% url(/icons/witnesses.svg) no-repeat;
+.icon-validators{
+	-webkit-mask:50% 50% url(/icons/validators.svg) no-repeat;
 	-webkit-mask-size:contain;
 }
 .icon-fund{
@@ -1814,18 +1814,18 @@ input.simple-inline.red{
 	padding:2px 5px;
 	margin-left:5px;
 }
-.witness-item{
+.validator-item{
 	margin-bottom:10px;
 	line-height:35px;
 }
-.witness-item.inactive{
+.validator-item.inactive{
 	opacity:0.5;
 	transition:all .15s ease-in-out;
 }
-.witness-item.inactive:hover{
+.validator-item.inactive:hover{
 	opacity:1.0;
 }
-.witness-item .check{
+.validator-item .check{
 	font-size:16px;
 	line-height:25px;
 	display:inline-block;
@@ -1836,13 +1836,13 @@ input.simple-inline.red{
 	text-overflow:ellipsis;
 	vertical-align:middle;
 }
-.witness-item.inactive .check{
+.validator-item.inactive .check{
 	text-decoration:line-through;
 }
-.witness-props-action{
+.validator-props-action{
 	cursor:pointer;
 }
-.witness-props{
+.validator-props{
 	display:none;
 	line-height:22px;
 	font-size:16px;
@@ -1850,7 +1850,7 @@ input.simple-inline.red{
 	background:#eee;
 	border-radius:8px;
 }
-.witness-props p{
+.validator-props p{
 	font-size:16px;
 	margin-bottom:10px;
 }
@@ -2289,12 +2289,12 @@ input.simple-inline.red{
 	.table-view .inline-button{
 		margin-top:-4px;
 	}
-	.witnesses-list .inline-button{
+	.validators-list .inline-button{
 		display:block;
 		margin:10px 0;
 		line-height:24px;
 	}
-	.inactive-witnesses-list .inline-button{
+	.inactive-validators-list .inline-button{
 		display:block;
 		margin:10px 0;
 		line-height:24px;
@@ -2400,7 +2400,7 @@ input.simple-inline.red{
 	.key-auths .weight-inline{
 		margin-left:0 !important;
 	}
-	.witness-item{
+	.validator-item{
 		margin-bottom:10px;
 		border-bottom:1px solid rgba(175,175,175,0.5);
 		padding-bottom:10px;

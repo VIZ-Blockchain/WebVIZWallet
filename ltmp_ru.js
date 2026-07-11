@@ -1072,11 +1072,11 @@ var ltmp_ru_arr={
 				<div class="columns-view">
 					<div class="column column-2 shadow grid">
 						<h4 class="center captions">Валидаторы</h4>
-						<!--<div class="icon icon-wide icon-150px icon-color-orange icon-witnesses"></div>-->
+						<!--<div class="icon icon-wide icon-150px icon-color-orange icon-validators"></div>-->
 						<div class="wide-buttons captions">
-							<a class="wide-button color-orange" data-href="/dao/witnesses/">Голосование</a>
-							<a class="wide-button color-orange" data-href="/dao/witness-params/">Установить параметры</a>
-							<a class="wide-button color-orange" data-href="/dao/witness-reward-sharing/">Распределение вознаграждения</a>
+							<a class="wide-button color-orange" data-href="/dao/validators/">Голосование</a>
+							<a class="wide-button color-orange" data-href="/dao/validator-params/">Установить параметры</a>
+							<a class="wide-button color-orange" data-href="/dao/validator-reward-sharing/">Распределение вознаграждения</a>
 						</div>
 					</div>
 					<div class="column column-2 shadow">
@@ -1090,7 +1090,7 @@ var ltmp_ru_arr={
 				</div>
 			</div>
 		</div>
-		<div class="page page-witnesses" data-title="Валидаторы">
+		<div class="page page-validators" data-title="Валидаторы">
 			<div class="card">
 				<h3>Валидаторы</h3>
 				<div class="account-balance captions">
@@ -1106,46 +1106,46 @@ var ltmp_ru_arr={
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Передать право голоса аккаунту:</span>
-						<input type="text" name="witness-proxy" class="simple-rounded" placeholder="">
+						<input type="text" name="validator-proxy" class="simple-rounded" placeholder="">
 					</label>
 				</p>
-				<p class="red witness-proxy-error"></p>
-				<p class="green witness-proxy-success"></p>
+				<p class="red validator-proxy-error"></p>
+				<p class="green validator-proxy-success"></p>
 				<p>
-					<input class="witness-proxy-action orange-button captions" type="button" value="Подтвердить">
+					<input class="validator-proxy-action orange-button captions" type="button" value="Подтвердить">
 					<span class="submit-button-ring" rel="proxy"></span>
 					<span class="icon icon-margin hidden icon-color-orange icon-check" rel="proxy"></span>
 				</p>
 				<hr>
 
-				<div class="witnesses-list"><p class="loading"><span class="submit-button-ring" style="display:inline-block"></span> %%default_loading%%</p></div>
-				<div class="inactive-witnesses-list"></div>
+				<div class="validators-list"><p class="loading"><span class="submit-button-ring" style="display:inline-block"></span> %%default_loading%%</p></div>
+				<div class="inactive-validators-list"></div>
 
 				<p><hr><a data-href="/dao/">%%default_return_link%%</a></p>
 			</div>
 		</div>
-		<div class="page page-witness-params" data-title="Установить параметры">
+		<div class="page page-validator-params" data-title="Установить параметры">
 			<div class="card">
 				<h3>Установить параметры</h3>
 				<p>Объявите себя валидатором и/или установите голосуемые параметры блокчейна.</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Ссылка на заявление валидатора:</span>
-						<input type="text" name="witness-setup-url" class="simple-rounded" placeholder="https://">
+						<input type="text" name="validator-setup-url" class="simple-rounded" placeholder="https://">
 					</label>
 				</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Ключ подписи (публичный):</span>
-						<input type="text" name="witness-setup-signing-key" class="simple-rounded" placeholder="VIZ...">
-						<span class="input-caption text-small grey captions witness-setup-signing-key-action">(сгенерировать: <span class="witness-setup-signing-private-key">&mdash;</span>)</span>
+						<input type="text" name="validator-setup-signing-key" class="simple-rounded" placeholder="VIZ...">
+						<span class="input-caption text-small grey captions validator-setup-signing-key-action">(сгенерировать: <span class="validator-setup-signing-private-key">&mdash;</span>)</span>
 					</label>
 				</p>
-				<label class="check color-red fee-checkbox">При объявлении аккаунта валидатором с вашего кошелька будет списано <span class="median-props" rel="witness_declaration_fee">&hellip; viz</span>.<input type="checkbox" name="witness-declaration-fee"><span class="mark"></span></label>
-				<p class="red witness-setup-error"></p>
-				<p class="green witness-setup-success"></p>
+				<label class="check color-red fee-checkbox">При объявлении аккаунта валидатором с вашего кошелька будет списано <span class="median-props" rel="validator_declaration_fee">&hellip; viz</span>.<input type="checkbox" name="validator-declaration-fee"><span class="mark"></span></label>
+				<p class="red validator-setup-error"></p>
+				<p class="green validator-setup-success"></p>
 				<p>
-					<input class="witness-setup-action orange-button captions" type="button" value="Подтвердить">
+					<input class="validator-setup-action orange-button captions" type="button" value="Подтвердить">
 					<span class="submit-button-ring" rel="setup"></span>
 					<span class="icon icon-margin hidden icon-color-orange icon-check" rel="setup"></span>
 				</p>
@@ -1153,25 +1153,25 @@ var ltmp_ru_arr={
 					<h3>Подсказка</h3>
 					<p>Вы можете установить ключ подписи пустым, чтобы временно или насовсем отключить валидатора.</p>
 				</div>
-				<div class="witness-set-props"></div>
+				<div class="validator-set-props"></div>
 
 				<p><hr><a data-href="/dao/">%%default_return_link%%</a></p>
 			</div>
 		</div>
-		<div class="page page-witness-reward-sharing" data-title="Распределение вознаграждения">
+		<div class="page page-validator-reward-sharing" data-title="Распределение вознаграждения">
 			<div class="card">
 				<h3>Распределение вознаграждения</h3>
 				<p>Задайте процент от вашего блок-вознаграждения, который будет распределяться между стейкхолдерами (избирателями) в конце каждой эпохи.</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Доля для стейкхолдеров (0.00% &mdash; 100.00%):</span>
-						<input type="text" name="witness-reward-sharing-rate" class="simple-rounded" placeholder="0.00%">
+						<input type="text" name="validator-reward-sharing-rate" class="simple-rounded" placeholder="0.00%">
 					</label>
 				</p>
-				<p class="red witness-reward-sharing-error"></p>
-				<p class="green witness-reward-sharing-success"></p>
+				<p class="red validator-reward-sharing-error"></p>
+				<p class="green validator-reward-sharing-success"></p>
 				<p>
-					<input class="witness-reward-sharing-action orange-button captions" type="button" value="Подтвердить">
+					<input class="validator-reward-sharing-action orange-button captions" type="button" value="Подтвердить">
 					<span class="submit-button-ring" rel="reward-sharing"></span>
 					<span class="icon icon-margin hidden icon-color-orange icon-check" rel="reward-sharing"></span>
 				</p>
@@ -2141,27 +2141,27 @@ var ltmp_ru_arr={
 	access_reset_success:'Ключи успешно сброшены, обязательно сохраните их',
 	access_loaded:'Схема доступов аккаунта успешно загружена',
 
-	/* Witnesses */
 	/* Validators */
-	witness_vote_caption:'Проголосовать за валидатора {witness}',
-	witness_unvote_caption:'Снять голос с валидатора {witness}',
-	witness_props_caption:'параметры',
-	witness_url_caption:'ссылка',
-	witness_votes_weight_caption:'Вес голосов',
-	witness_user_vote_weight_caption:'Вес вашего голоса',
-	witness_node_version_caption:'Версия ноды: ',
-	witness_hardfork_vote_caption:'Голосует за новый хардфорк: ',
-	witness_hardfork_vote_starting_caption:' начиная с {date}',
-	witness_penalty_caption:'Штраф за пропуск блоков: ',
-	witness_show_inactive_link:'Показать деактивированных валидаторов',
-	witness_set_props_button:'Отправить',
-	witness_set_props_success:'Голосуемые параметры успешно отправлены',
-	witness_set_props_error:'Ошибка: проверьте измененные поля',
-	witness_save_signing_key:', сохраните приватный ключ подписи: ',
-	witness_was_disabled:', валидатор деактивирован',
-	witness_sharing_rate_caption:'Распределение вознаграждения: ',
-	witness_reward_sharing_success:'Доля вознаграждения успешно установлена',
-	witness_reward_sharing_error:'Ошибка: не удалось установить долю вознаграждения',
+	/* Validators */
+	validator_vote_caption:'Проголосовать за валидатора {validator}',
+	validator_unvote_caption:'Снять голос с валидатора {validator}',
+	validator_props_caption:'параметры',
+	validator_url_caption:'ссылка',
+	validator_votes_weight_caption:'Вес голосов',
+	validator_user_vote_weight_caption:'Вес вашего голоса',
+	validator_node_version_caption:'Версия ноды: ',
+	validator_hardfork_vote_caption:'Голосует за новый хардфорк: ',
+	validator_hardfork_vote_starting_caption:' начиная с {date}',
+	validator_penalty_caption:'Штраф за пропуск блоков: ',
+	validator_show_inactive_link:'Показать деактивированных валидаторов',
+	validator_set_props_button:'Отправить',
+	validator_set_props_success:'Голосуемые параметры успешно отправлены',
+	validator_set_props_error:'Ошибка: проверьте измененные поля',
+	validator_save_signing_key:', сохраните приватный ключ подписи: ',
+	validator_was_disabled:', валидатор деактивирован',
+	validator_sharing_rate_caption:'Распределение вознаграждения: ',
+	validator_reward_sharing_success:'Доля вознаграждения успешно установлена',
+	validator_reward_sharing_error:'Ошибка: не удалось установить долю вознаграждения',
 
 	/* Delegations */
 	social_capital_own_adaptive_caption:'Собственный:',
@@ -2226,12 +2226,12 @@ var ltmp_ru_arr={
 	bsa_account_not_found:'Такой аккаунт продавца не найден',
 	bsa_accounts_not_on_sale:'Данный субаккаунт не доступен к покупке',
 
-	/* Witness params */
 	/* Validator params */
-	account_not_witness:'Аккаунт не объявлен валидатором',
-	witness_keys_dont_match:'Приватный и публичный ключ не соответствуют',
-	witness_url_is_needed:'Заполните поле ссылки на заявление валидатора',
-	witness_props_captions:{
+	/* Validator params */
+	account_not_validator:'Аккаунт не объявлен валидатором',
+	validator_keys_dont_match:'Приватный и публичный ключ не соответствуют',
+	validator_url_is_needed:'Заполните поле ссылки на заявление валидатора',
+	validator_props_captions:{
 		account_creation_fee:'Передаваемая комиссия при создании аккаунта',
 		create_account_delegation_ratio:'Коэффициент наценки делегирования при создании аккаунта',
 		create_account_delegation_time:'Срок делегирования при создании аккаунта (в секундах)',
@@ -2306,7 +2306,7 @@ var ltmp_ru_arr={
 	},
 
 	/* Validator props order on manage page*/
-	witness_props_order:[
+	validator_props_order:[
 		'maximum_block_size',
 		'account_creation_fee',
 		'create_account_delegation_ratio',
@@ -2487,7 +2487,7 @@ var ltmp_ru_arr={
 	transfer_memo_not_match_template:'Заметка не соответствует формату шаблона',
 	withdraw_success:'Уменьшение капитала подтверждено',
 	stop_withdraw_error:'Ошибка в операции остановки',
-	setted_witness_proxy:'Право голоса передано аккаунту {account}',
+	setted_validator_proxy:'Право голоса передано аккаунту {account}',
 
 	/* Market menu */
 	create_paid_subscribe_caption:'Создать',

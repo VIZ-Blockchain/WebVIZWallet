@@ -1072,11 +1072,11 @@ var ltmp_en_arr={
 				<div class="columns-view">
 					<div class="column column-2 shadow grid">
 						<h4 class="center captions">Validators</h4>
-						<!--<div class="icon icon-wide icon-150px icon-color-orange icon-witnesses"></div>-->
+						<!--<div class="icon icon-wide icon-150px icon-color-orange icon-validators"></div>-->
 						<div class="wide-buttons captions">
-							<a class="wide-button color-orange" data-href="/dao/witnesses/">Voting</a>
-							<a class="wide-button color-orange" data-href="/dao/witness-params/">Set the parameters</a>
-							<a class="wide-button color-orange" data-href="/dao/witness-reward-sharing/">Reward sharing</a>
+							<a class="wide-button color-orange" data-href="/dao/validators/">Voting</a>
+							<a class="wide-button color-orange" data-href="/dao/validator-params/">Set the parameters</a>
+							<a class="wide-button color-orange" data-href="/dao/validator-reward-sharing/">Reward sharing</a>
 						</div>
 					</div>
 					<div class="column column-2 shadow">
@@ -1090,7 +1090,7 @@ var ltmp_en_arr={
 				</div>
 			</div>
 		</div>
-		<div class="page page-witnesses" data-title="Validators">
+		<div class="page page-validators" data-title="Validators">
 			<div class="card">
 				<h3>Validators</h3>
 				<div class="account-balance captions">
@@ -1106,46 +1106,46 @@ var ltmp_en_arr={
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Proxy voting rights to an account:</span>
-						<input type="text" name="witness-proxy" class="simple-rounded" placeholder="">
+						<input type="text" name="validator-proxy" class="simple-rounded" placeholder="">
 					</label>
 				</p>
-				<p class="red witness-proxy-error"></p>
-				<p class="green witness-proxy-success"></p>
+				<p class="red validator-proxy-error"></p>
+				<p class="green validator-proxy-success"></p>
 				<p>
-					<input class="witness-proxy-action orange-button captions" type="button" value="Confirm">
+					<input class="validator-proxy-action orange-button captions" type="button" value="Confirm">
 					<span class="submit-button-ring" rel="proxy"></span>
 					<span class="icon icon-margin hidden icon-color-orange icon-check" rel="proxy"></span>
 				</p>
 				<hr>
 
-				<div class="witnesses-list"><p class="loading"><span class="submit-button-ring" style="display:inline-block"></span> %%default_loading%%</p></div>
-				<div class="inactive-witnesses-list"></div>
+				<div class="validators-list"><p class="loading"><span class="submit-button-ring" style="display:inline-block"></span> %%default_loading%%</p></div>
+				<div class="inactive-validators-list"></div>
 
 				<p><hr><a data-href="/dao/">%%default_return_link%%</a></p>
 			</div>
 		</div>
-		<div class="page page-witness-params" data-title="Set the parameters">
+		<div class="page page-validator-params" data-title="Set the parameters">
 			<div class="card">
 				<h3>Set the parameters</h3>
 				<p>Declare yourself a validator and/or set voting parameters for the blockchain.</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Link to validator statement:</span>
-						<input type="text" name="witness-setup-url" class="simple-rounded" placeholder="https://">
+						<input type="text" name="validator-setup-url" class="simple-rounded" placeholder="https://">
 					</label>
 				</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Signing key (public):</span>
-						<input type="text" name="witness-setup-signing-key" class="simple-rounded" placeholder="VIZ...">
-						<span class="input-caption text-small grey captions witness-setup-signing-key-action">(generate: <span class="witness-setup-signing-private-key">&mdash;</span>)</span>
+						<input type="text" name="validator-setup-signing-key" class="simple-rounded" placeholder="VIZ...">
+						<span class="input-caption text-small grey captions validator-setup-signing-key-action">(generate: <span class="validator-setup-signing-private-key">&mdash;</span>)</span>
 					</label>
 				</p>
-				<label class="check color-red fee-checkbox">When an account is declared as a validator, it will be charged <span class="median-props" rel="witness_declaration_fee">&hellip; viz</span>.<input type="checkbox" name="witness-declaration-fee"><span class="mark"></span></label>
-				<p class="red witness-setup-error"></p>
-				<p class="green witness-setup-success"></p>
+				<label class="check color-red fee-checkbox">When an account is declared as a validator, it will be charged <span class="median-props" rel="validator_declaration_fee">&hellip; viz</span>.<input type="checkbox" name="validator-declaration-fee"><span class="mark"></span></label>
+				<p class="red validator-setup-error"></p>
+				<p class="green validator-setup-success"></p>
 				<p>
-					<input class="witness-setup-action orange-button captions" type="button" value="Confirm">
+					<input class="validator-setup-action orange-button captions" type="button" value="Confirm">
 					<span class="submit-button-ring" rel="setup"></span>
 					<span class="icon icon-margin hidden icon-color-orange icon-check" rel="setup"></span>
 				</p>
@@ -1153,25 +1153,25 @@ var ltmp_en_arr={
 					<h3>Hint</h3>
 					<p>You can set the signature key to blank to temporarily or permanently disable the validator.</p>
 				</div>
-				<div class="witness-set-props"></div>
+				<div class="validator-set-props"></div>
 
 				<p><hr><a data-href="/dao/">%%default_return_link%%</a></p>
 			</div>
 		</div>
-		<div class="page page-witness-reward-sharing" data-title="Reward sharing">
+		<div class="page page-validator-reward-sharing" data-title="Reward sharing">
 			<div class="card">
 				<h3>Reward sharing</h3>
 				<p>Set the percentage of your block reward to be distributed among your stakeholders (voters) at the end of each epoch.</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Sharing rate (0.00% &mdash; 100.00%):</span>
-						<input type="text" name="witness-reward-sharing-rate" class="simple-rounded" placeholder="0.00%">
+						<input type="text" name="validator-reward-sharing-rate" class="simple-rounded" placeholder="0.00%">
 					</label>
 				</p>
-				<p class="red witness-reward-sharing-error"></p>
-				<p class="green witness-reward-sharing-success"></p>
+				<p class="red validator-reward-sharing-error"></p>
+				<p class="green validator-reward-sharing-success"></p>
 				<p>
-					<input class="witness-reward-sharing-action orange-button captions" type="button" value="Confirm">
+					<input class="validator-reward-sharing-action orange-button captions" type="button" value="Confirm">
 					<span class="submit-button-ring" rel="reward-sharing"></span>
 					<span class="icon icon-margin hidden icon-color-orange icon-check" rel="reward-sharing"></span>
 				</p>
@@ -2146,25 +2146,25 @@ var ltmp_en_arr={
 	access_loaded:'The account access scheme has been successfully updated',
 
 	/* Validators */
-	witness_vote_caption:'Vote for a validator {witness}',
-	witness_unvote_caption:'Withdraw a vote from a validator {witness}',
-	witness_props_caption:'parameters',
-	witness_url_caption:'link',
-	witness_votes_weight_caption:'Weight of votes',
-	witness_user_vote_weight_caption:'The weight of your vote',
-	witness_node_version_caption:'Node version: ',
-	witness_hardfork_vote_caption:'Votes for new hardfork: ',
-	witness_hardfork_vote_starting_caption:' as of {date}',
-	witness_penalty_caption:'Penalty for skipping blocks: ',
-	witness_show_inactive_link:'Show deactivated validators',
-	witness_set_props_button:'Set the parameters',
-	witness_set_props_success:'Parameters are successfully set',
-	witness_set_props_error:'Error: check modified fields',
-	witness_save_signing_key:', save the signature private key: ',
-	witness_was_disabled:', validator was deactivated',
-	witness_sharing_rate_caption:'Reward sharing: ',
-	witness_reward_sharing_success:'Sharing rate successfully set',
-	witness_reward_sharing_error:'Error: failed to set sharing rate',
+	validator_vote_caption:'Vote for a validator {validator}',
+	validator_unvote_caption:'Withdraw a vote from a validator {validator}',
+	validator_props_caption:'parameters',
+	validator_url_caption:'link',
+	validator_votes_weight_caption:'Weight of votes',
+	validator_user_vote_weight_caption:'The weight of your vote',
+	validator_node_version_caption:'Node version: ',
+	validator_hardfork_vote_caption:'Votes for new hardfork: ',
+	validator_hardfork_vote_starting_caption:' as of {date}',
+	validator_penalty_caption:'Penalty for skipping blocks: ',
+	validator_show_inactive_link:'Show deactivated validators',
+	validator_set_props_button:'Set the parameters',
+	validator_set_props_success:'Parameters are successfully set',
+	validator_set_props_error:'Error: check modified fields',
+	validator_save_signing_key:', save the signature private key: ',
+	validator_was_disabled:', validator was deactivated',
+	validator_sharing_rate_caption:'Reward sharing: ',
+	validator_reward_sharing_success:'Sharing rate successfully set',
+	validator_reward_sharing_error:'Error: failed to set sharing rate',
 
 	/* Delegations */
 	social_capital_own_adaptive_caption:'Own:',
@@ -2230,10 +2230,10 @@ var ltmp_en_arr={
 	bsa_accounts_not_on_sale:'This subaccount is not available for purchase',
 
 	/* Validator params */
-	account_not_witness:'The account is not declared as validator',
-	witness_keys_dont_match:'Private key and public key do not match',
-	witness_url_is_needed:'Fill in the validator statement link field',
-	witness_props_captions:{
+	account_not_validator:'The account is not declared as validator',
+	validator_keys_dont_match:'Private key and public key do not match',
+	validator_url_is_needed:'Fill in the validator statement link field',
+	validator_props_captions:{
 		account_creation_fee:'Chargeable fee when creating an account',
 		create_account_delegation_ratio:'Delegation coefficient when creating an account',
 		create_account_delegation_time:'Delegation period at account creation (in seconds)',
@@ -2308,7 +2308,7 @@ var ltmp_en_arr={
 	},
 
 	/* Validator props order on manage page*/
-	witness_props_order:[
+	validator_props_order:[
 		'maximum_block_size',
 		'account_creation_fee',
 		'create_account_delegation_ratio',
@@ -2489,7 +2489,7 @@ var ltmp_en_arr={
 	transfer_memo_not_match_template:'The memo does not match the format of the template',
 	withdraw_success:'Unstake capital is confirmed',
 	stop_withdraw_error:'Error in the stop operation',
-	setted_witness_proxy:'The right to vote has been proxied to the account {account}',
+	setted_validator_proxy:'The right to vote has been proxied to the account {account}',
 
 	/* Market menu */
 	create_paid_subscribe_caption:'Create',

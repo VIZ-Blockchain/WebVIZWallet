@@ -345,29 +345,29 @@ function pass_gen(length,to_wif){
 var keys=[];
 keys=viz.auth.getPrivateKeys('',pass_gen(100),['master','active','regular','memo']);
 var validator_props_captions={
-	'account_creation_fee':ltmp_arr.witness_props_captions.account_creation_fee,
-	'create_account_delegation_ratio':ltmp_arr.witness_props_captions.create_account_delegation_ratio,
-	'create_account_delegation_time':ltmp_arr.witness_props_captions.create_account_delegation_time,
-	'bandwidth_reserve_percent':ltmp_arr.witness_props_captions.bandwidth_reserve_percent,
-	'bandwidth_reserve_below':ltmp_arr.witness_props_captions.bandwidth_reserve_below,
-	'committee_request_approve_min_percent':ltmp_arr.witness_props_captions.committee_request_approve_min_percent,
-	'min_delegation':ltmp_arr.witness_props_captions.min_delegation,
-	'vote_accounting_min_rshares':ltmp_arr.witness_props_captions.vote_accounting_min_rshares,
-	'maximum_block_size':ltmp_arr.witness_props_captions.maximum_block_size,
-	'inflation_validator_percent':ltmp_arr.witness_props_captions.inflation_witness_percent,
-	'inflation_ratio_committee_vs_reward_fund':ltmp_arr.witness_props_captions.inflation_ratio_committee_vs_reward_fund,
-	'inflation_recalc_period':ltmp_arr.witness_props_captions.inflation_recalc_period,
-	'data_operations_cost_additional_bandwidth':ltmp_arr.witness_props_captions.data_operations_cost_additional_bandwidth,
-	'validator_miss_penalty_percent':ltmp_arr.witness_props_captions.witness_miss_penalty_percent,
-	'validator_miss_penalty_duration':ltmp_arr.witness_props_captions.witness_miss_penalty_duration,
-	'create_invite_min_balance':ltmp_arr.witness_props_captions.create_invite_min_balance,
-	'committee_create_request_fee':ltmp_arr.witness_props_captions.committee_create_request_fee,
-	'create_paid_subscription_fee':ltmp_arr.witness_props_captions.create_paid_subscription_fee,
-	'account_on_sale_fee':ltmp_arr.witness_props_captions.account_on_sale_fee,
-	'subaccount_on_sale_fee':ltmp_arr.witness_props_captions.subaccount_on_sale_fee,
-	'validator_declaration_fee':ltmp_arr.witness_props_captions.witness_declaration_fee,
-	'withdraw_intervals':ltmp_arr.witness_props_captions.withdraw_intervals,
-	'distribution_epoch_length':ltmp_arr.witness_props_captions.distribution_epoch_length,
+	'account_creation_fee':ltmp_arr.validator_props_captions.account_creation_fee,
+	'create_account_delegation_ratio':ltmp_arr.validator_props_captions.create_account_delegation_ratio,
+	'create_account_delegation_time':ltmp_arr.validator_props_captions.create_account_delegation_time,
+	'bandwidth_reserve_percent':ltmp_arr.validator_props_captions.bandwidth_reserve_percent,
+	'bandwidth_reserve_below':ltmp_arr.validator_props_captions.bandwidth_reserve_below,
+	'committee_request_approve_min_percent':ltmp_arr.validator_props_captions.committee_request_approve_min_percent,
+	'min_delegation':ltmp_arr.validator_props_captions.min_delegation,
+	'vote_accounting_min_rshares':ltmp_arr.validator_props_captions.vote_accounting_min_rshares,
+	'maximum_block_size':ltmp_arr.validator_props_captions.maximum_block_size,
+	'inflation_validator_percent':ltmp_arr.validator_props_captions.inflation_validator_percent,
+	'inflation_ratio_committee_vs_reward_fund':ltmp_arr.validator_props_captions.inflation_ratio_committee_vs_reward_fund,
+	'inflation_recalc_period':ltmp_arr.validator_props_captions.inflation_recalc_period,
+	'data_operations_cost_additional_bandwidth':ltmp_arr.validator_props_captions.data_operations_cost_additional_bandwidth,
+	'validator_miss_penalty_percent':ltmp_arr.validator_props_captions.validator_miss_penalty_percent,
+	'validator_miss_penalty_duration':ltmp_arr.validator_props_captions.validator_miss_penalty_duration,
+	'create_invite_min_balance':ltmp_arr.validator_props_captions.create_invite_min_balance,
+	'committee_create_request_fee':ltmp_arr.validator_props_captions.committee_create_request_fee,
+	'create_paid_subscription_fee':ltmp_arr.validator_props_captions.create_paid_subscription_fee,
+	'account_on_sale_fee':ltmp_arr.validator_props_captions.account_on_sale_fee,
+	'subaccount_on_sale_fee':ltmp_arr.validator_props_captions.subaccount_on_sale_fee,
+	'validator_declaration_fee':ltmp_arr.validator_props_captions.validator_declaration_fee,
+	'withdraw_intervals':ltmp_arr.validator_props_captions.withdraw_intervals,
+	'distribution_epoch_length':ltmp_arr.validator_props_captions.distribution_epoch_length,
 };
 var validator_props_percent=['bandwidth_reserve_percent','committee_request_approve_min_percent','inflation_validator_percent','inflation_ratio_committee_vs_reward_fund','data_operations_cost_additional_bandwidth','validator_miss_penalty_percent',
 	//HF14 prediction-market basis-point params (10000 = 100% on chain; shown/edited as %).
@@ -1500,10 +1500,10 @@ function update_balances(el){
 				el.find('span[rel=energy]').html((new_energy/100).toFixed(2));
 
 				if(''!=data.proxy){
-					$('.page-witnesses .witness-proxy-success').html(ltmp(ltmp_arr.setted_witness_proxy,{account:data.proxy}));
+					$('.page-validators .validator-proxy-success').html(ltmp(ltmp_arr.setted_validator_proxy,{account:data.proxy}));
 				}
 				else{
-					$('.page-witnesses .witness-proxy-success').html('');
+					$('.page-validators .validator-proxy-success').html('');
 				}
 			}
 		}
@@ -3487,7 +3487,7 @@ function view_services(path,params,title){
 }
 function validator_vote_action(e){
 	let check=$(e.target);
-	let el=$(e.target).closest('.witnesses-list');
+	let el=$(e.target).closest('.validators-list');
 	check.removeClass('red');
 	viz.broadcast.accountValidatorVote(users[current_user]['active_key'],current_user,check.val(),check.prop('checked'),function(err, result){
 		if(!err){
@@ -3500,15 +3500,15 @@ function validator_vote_action(e){
 	});
 }
 function update_validators_list(){
-	$('.witnesses-list').find('div').remove();
-	$('.witnesses-list').find('.loading').css('display','block');
-	$('.inactive-witnesses-list').find('div').remove();
+	$('.validators-list').find('div').remove();
+	$('.validators-list').find('.loading').css('display','block');
+	$('.inactive-validators-list').find('div').remove();
 	viz.api.getAccounts([current_user],function(err,response){
 		if(!err){
 			if(current_user==response[0].name){
 				let user_votes=response[0].validator_votes ?? response[0].witness_votes;
 				let user_shares=parseFloat(response[0].vesting_shares);
-				$('.witnesses-list').attr('data-shares',user_shares);
+				$('.validators-list').attr('data-shares',user_shares);
 				viz.api.getValidatorsByVote('',100,function(err,response){
 					if(!err){
 						let data='';
@@ -3520,11 +3520,11 @@ function update_validators_list(){
 							if('VIZ1111111111111111111111111111111114T1Anm'==item_arr.signing_key){
 								active=false;
 							}
-							let witness_account=item_arr.owner;
-							item+='<div class="witness-item captions'+(active?'':' inactive')+'">';
-							item+='<label class="check color-orange">'+witness_account+'<input type="checkbox" value="'+witness_account+'"'+(-1!=user_votes.indexOf(witness_account)?' checked="checked" title="'+ltmp(ltmp_arr.witness_unvote_caption,{witness:witness_account})+'"':' title="'+ltmp(ltmp_arr.witness_vote_caption,{witness:witness_account})+'"')+'><span class="mark"></span></label>';
-							item+=' <span class="witness-props-action inline-button grey small">'+ltmp_arr.witness_props_caption+'</span>';
-							/*//31.10.2021 change, remove link from a witnesses list
+							let validator_account=item_arr.owner;
+							item+='<div class="validator-item captions'+(active?'':' inactive')+'">';
+							item+='<label class="check color-orange">'+validator_account+'<input type="checkbox" value="'+validator_account+'"'+(-1!=user_votes.indexOf(validator_account)?' checked="checked" title="'+ltmp(ltmp_arr.validator_unvote_caption,{validator:validator_account})+'"':' title="'+ltmp(ltmp_arr.validator_vote_caption,{validator:validator_account})+'"')+'><span class="mark"></span></label>';
+							item+=' <span class="validator-props-action inline-button grey small">'+ltmp_arr.validator_props_caption+'</span>';
+							/*//31.10.2021 change, remove link from a validators list
 							if(-1==item_arr.url.indexOf('https://')){
 								if(-1==item_arr.url.indexOf('http://')){
 									item_arr.url='https://'+item_arr.url;
@@ -3533,25 +3533,25 @@ function update_validators_list(){
 									item_arr.url='http://'+item_arr.url;
 								}
 							}
-							item+=' <a href="'+item_arr.url+'" target="_blank" class="inline-button color-orange small">'+ltmp_arr.witness_url_caption+'</a>';
+							item+=' <a href="'+item_arr.url+'" target="_blank" class="inline-button color-orange small">'+ltmp_arr.validator_url_caption+'</a>';
 							*/
-							item+=' <span class="small" style="width:110px;text-align:right;display:inline-block;" title="'+ltmp_arr.witness_votes_weight_caption+'">'+number_thousands(Math.round(parseInt(item_arr.votes/1000000)/100)/10)+'k</span>';
-							if(-1!=user_votes.indexOf(witness_account)){
-								item+=' <span class="/*inline-button color-green*/ small vote-shares-value" title="'+ltmp_arr.witness_user_vote_weight_caption+'">+'+number_thousands(Math.round(parseInt(user_shares / user_votes.length)/100)/10)+'k</span>';
+							item+=' <span class="small" style="width:110px;text-align:right;display:inline-block;" title="'+ltmp_arr.validator_votes_weight_caption+'">'+number_thousands(Math.round(parseInt(item_arr.votes/1000000)/100)/10)+'k</span>';
+							if(-1!=user_votes.indexOf(validator_account)){
+								item+=' <span class="/*inline-button color-green*/ small vote-shares-value" title="'+ltmp_arr.validator_user_vote_weight_caption+'">+'+number_thousands(Math.round(parseInt(user_shares / user_votes.length)/100)/10)+'k</span>';
 							}
-							item+='<div class="witness-props">';
+							item+='<div class="validator-props">';
 							let new_hardfork=(parseInt(fast_str_replace('.','',item_arr.running_version)) < parseInt(fast_str_replace('.','',item_arr.hardfork_version_vote)));
-							item+=' <p>'+ltmp_arr.witness_node_version_caption+item_arr.running_version+'</p>';
+							item+=' <p>'+ltmp_arr.validator_node_version_caption+item_arr.running_version+'</p>';
 							if(new_hardfork){
-								item+=' <p>'+ltmp_arr.witness_hardfork_vote_caption+item_arr.hardfork_version_vote+ltmp(ltmp.witness_hardfork_vote_starting_caption,{date:show_date(item_arr.hardfork_time_vote,true)})+ltmp_arr.default_date_utc+'</p>';
+								item+=' <p>'+ltmp_arr.validator_hardfork_vote_caption+item_arr.hardfork_version_vote+ltmp(ltmp.validator_hardfork_vote_starting_caption,{date:show_date(item_arr.hardfork_time_vote,true)})+ltmp_arr.default_date_utc+'</p>';
 							}
-							item+='<p>'+ltmp_arr.witness_penalty_caption+'<strong>'+(parseInt(item_arr.penalty_percent)/100)+'%</strong></p>';
+							item+='<p>'+ltmp_arr.validator_penalty_caption+'<strong>'+(parseInt(item_arr.penalty_percent)/100)+'%</strong></p>';
 							if(typeof item_arr.sharing_rate !== 'undefined'){
-								item+='<p>'+ltmp_arr.witness_sharing_rate_caption+'<strong>'+(parseInt(item_arr.sharing_rate)/100)+'%</strong></p>';
+								item+='<p>'+ltmp_arr.validator_sharing_rate_caption+'<strong>'+(parseInt(item_arr.sharing_rate)/100)+'%</strong></p>';
 							}
 							let props_item=item_arr.props;
-							for(let j_num in ltmp_arr.witness_props_order){
-								let j=ltmp_arr.witness_props_order[j_num];
+							for(let j_num in ltmp_arr.validator_props_order){
+								let j=ltmp_arr.validator_props_order[j_num];
 								if(typeof validator_props_captions[j] != 'undefined' && typeof props_item[j] != 'undefined'){
 									item+='<p>'+validator_props_captions[j]+': <strong data-prop="'+j+'" data-value="'+props_item[j]+'">'+(-1!==validator_props_percent.indexOf(j)?(parseFloat(props_item[j])/100)+'%':props_item[j])+'</strong></p>';
 								}
@@ -3574,30 +3574,30 @@ function update_validators_list(){
 								inactive_data+=item;
 							}
 						}
-						$('.witnesses-list').append(data);
-						inactive_data='<div><a class="show-inactive-witnesses-action captions">'+ltmp_arr.witness_show_inactive_link+'</a></div><div class="inactive-witnesses hidden">'+inactive_data+'</div>';
-						$('.inactive-witnesses-list').append(inactive_data);
-						$('.page-witnesses .check input').unbind('change');
-						$('.page-witnesses .check input').bind('change',validator_vote_action);
+						$('.validators-list').append(data);
+						inactive_data='<div><a class="show-inactive-validators-action captions">'+ltmp_arr.validator_show_inactive_link+'</a></div><div class="inactive-validators hidden">'+inactive_data+'</div>';
+						$('.inactive-validators-list').append(inactive_data);
+						$('.page-validators .check input').unbind('change');
+						$('.page-validators .check input').bind('change',validator_vote_action);
 					}
 					else{
-						$('.witnesses-list').append('<div><p>'+ltmp_arr.default_node_error+'</p></div>');
+						$('.validators-list').append('<div><p>'+ltmp_arr.default_node_error+'</p></div>');
 					}
-					$('.witnesses-list').find('.loading').css('display','none');
+					$('.validators-list').find('.loading').css('display','none');
 				});
 			}
 			else{
-				$('.witnesses-list').append('<div><p>'+ltmp_arr.default_node_error+'</p></div>');
+				$('.validators-list').append('<div><p>'+ltmp_arr.default_node_error+'</p></div>');
 			}
 		}
 		else{
-			$('.witnesses-list').append('<div><p>'+ltmp_arr.default_node_error+'</p></div>');
+			$('.validators-list').append('<div><p>'+ltmp_arr.default_node_error+'</p></div>');
 		}
 	});
 }
 function update_validator_props(props){
 	props=typeof props==='undefined'?false:props;
-	let el=$('.page-witness-params .witness-set-props');
+	let el=$('.page-validator-params .validator-set-props');
 	if(false===props){
 		viz.api.getValidatorByAccount(current_user,function(err,response){
 			if(!err){
@@ -3614,8 +3614,8 @@ function update_validator_props(props){
 	else{
 		let data='';
 		let rendered_props={};
-		for(j_num in ltmp_arr.witness_props_order){
-			let j=ltmp_arr.witness_props_order[j_num];
+		for(j_num in ltmp_arr.validator_props_order){
+			let j=ltmp_arr.validator_props_order[j_num];
 		//for(j in props){//old order by props object sort
 			if(typeof props[j] === 'undefined'){
 				if(typeof validator_props_hf13_defaults[j] !== 'undefined'){
@@ -3627,11 +3627,11 @@ function update_validator_props(props){
 			}
 			rendered_props[j]=true;
 			if(typeof validator_props_captions[j] == 'undefined'){
-				data+='<input type="hidden" name="witness-set-props-'+j+'" value="'+escape_html(''+props[j])+'">';
+				data+='<input type="hidden" name="validator-set-props-'+j+'" value="'+escape_html(''+props[j])+'">';
 			}
 			else{
 				data+='<p><label class="input-descr"><span class="input-caption">'+validator_props_captions[j]+':</span>';
-				data+='<input type="text" name="witness-set-props-'+j+'" class="simple-rounded" placeholder="'+(-1!==validator_props_percent.indexOf(j)?'0.00%':'')+'" ';
+				data+='<input type="text" name="validator-set-props-'+j+'" class="simple-rounded" placeholder="'+(-1!==validator_props_percent.indexOf(j)?'0.00%':'')+'" ';
 				data+='value="'+(-1!==validator_props_percent.indexOf(j)?((parseInt(props[j])/100)+'%'):escape_html(''+props[j]))+'">';
 				data+='</label></p>';
 			}
@@ -3642,19 +3642,19 @@ function update_validator_props(props){
 		for(let k in props){
 			if(true===rendered_props[k]){continue;}
 			if(!pm_group_added && 'pm_'===(''+k).substring(0,3)){
-				data+='<p class="input-caption bold">'+(typeof ltmp_arr.witness_props_pm_group!=='undefined'?ltmp_arr.witness_props_pm_group:'Prediction market (HF14)')+'</p>';
+				data+='<p class="input-caption bold">'+(typeof ltmp_arr.validator_props_pm_group!=='undefined'?ltmp_arr.validator_props_pm_group:'Prediction market (HF14)')+'</p>';
 				pm_group_added=true;
 			}
-			let cap=(typeof validator_props_captions[k]!=='undefined')?validator_props_captions[k]:((typeof ltmp_arr.witness_props_captions[k]!=='undefined')?ltmp_arr.witness_props_captions[k]:(''+k).replace(/_/g,' '));
+			let cap=(typeof validator_props_captions[k]!=='undefined')?validator_props_captions[k]:((typeof ltmp_arr.validator_props_captions[k]!=='undefined')?ltmp_arr.validator_props_captions[k]:(''+k).replace(/_/g,' '));
 			let is_pct=(-1!==validator_props_percent.indexOf(k));
 			data+='<p><label class="input-descr"><span class="input-caption">'+escape_html(cap)+':</span>';
-			data+='<input type="text" name="witness-set-props-'+k+'" class="simple-rounded" placeholder="'+(is_pct?'0.00%':'')+'" value="'+(is_pct?((parseInt(props[k])/100)+'%'):escape_html(''+props[k]))+'">';
+			data+='<input type="text" name="validator-set-props-'+k+'" class="simple-rounded" placeholder="'+(is_pct?'0.00%':'')+'" value="'+(is_pct?((parseInt(props[k])/100)+'%'):escape_html(''+props[k]))+'">';
 			data+='</label></p>';
 		}
-		data+='<p class="red witness-set-props-error"></p>\
-		<p class="green witness-set-props-success"></p>\
+		data+='<p class="red validator-set-props-error"></p>\
+		<p class="green validator-set-props-success"></p>\
 		<p>\
-			<input class="witness-set-props-action orange-button captions" type="button" value="'+ltmp_arr.witness_set_props_button+'">\
+			<input class="validator-set-props-action orange-button captions" type="button" value="'+ltmp_arr.validator_set_props_button+'">\
 			<span class="submit-button-ring" rel="set-props"></span>\
 			<span class="icon icon-margin hidden icon-color-orange icon-check" rel="set-props"></span>\
 		</p>';
@@ -4338,76 +4338,76 @@ function view_dao(path,params,title){
 						$('.page-fund-requests .section-fund-requests').css('display','block');
 					}
 				}
-				if('witnesses'==path[2]){
-					$('.page-witnesses .submit-button-ring[rel=proxy]').css('display','none');
-					$('.page-witnesses .icon-check[rel=proxy]').css('display','none');
-					update_balances($('.page-witnesses .account-balance'));
+				if('validators'==path[2]){
+					$('.page-validators .submit-button-ring[rel=proxy]').css('display','none');
+					$('.page-validators .icon-check[rel=proxy]').css('display','none');
+					update_balances($('.page-validators .account-balance'));
 					update_validators_list();
 				}
-				if('witness-reward-sharing'==path[2]){
-					$('.page-witness-reward-sharing .witness-reward-sharing-error').html('');
-					$('.page-witness-reward-sharing .witness-reward-sharing-success').html('');
-					$('.page-witness-reward-sharing input[name=witness-reward-sharing-rate]').val('');
-					$('.page-witness-reward-sharing .witness-reward-sharing-action').removeAttr('disabled');
-					$('.page-witness-reward-sharing .icon-check[rel=reward-sharing]').css('display','none');
-					$('.page-witness-reward-sharing .submit-button-ring[rel=reward-sharing]').css('display','none');
+				if('validator-reward-sharing'==path[2]){
+					$('.page-validator-reward-sharing .validator-reward-sharing-error').html('');
+					$('.page-validator-reward-sharing .validator-reward-sharing-success').html('');
+					$('.page-validator-reward-sharing input[name=validator-reward-sharing-rate]').val('');
+					$('.page-validator-reward-sharing .validator-reward-sharing-action').removeAttr('disabled');
+					$('.page-validator-reward-sharing .icon-check[rel=reward-sharing]').css('display','none');
+					$('.page-validator-reward-sharing .submit-button-ring[rel=reward-sharing]').css('display','none');
 
 					viz.api.getValidatorByAccount(current_user,function(err,response){
 						if(!err){
 							if(null==response){
-								$('.page-witness-reward-sharing .witness-reward-sharing-error').html(ltmp_arr.account_not_witness);
+								$('.page-validator-reward-sharing .validator-reward-sharing-error').html(ltmp_arr.account_not_validator);
 							}
 							else{
 								if(typeof response.owner != 'undefined' && current_user==response.owner){
 									let current_rate=typeof response.sharing_rate !== 'undefined'?response.sharing_rate:0;
-									$('.page-witness-reward-sharing input[name=witness-reward-sharing-rate]').val((current_rate/100)+'%');
+									$('.page-validator-reward-sharing input[name=validator-reward-sharing-rate]').val((current_rate/100)+'%');
 								}
 								else{
-									$('.page-witness-reward-sharing .witness-reward-sharing-error').html(ltmp_arr.account_not_witness);
+									$('.page-validator-reward-sharing .validator-reward-sharing-error').html(ltmp_arr.account_not_validator);
 								}
 							}
 						}
 						else{
-							$('.page-witness-reward-sharing .witness-reward-sharing-error').html(ltmp_arr.default_node_error);
+							$('.page-validator-reward-sharing .validator-reward-sharing-error').html(ltmp_arr.default_node_error);
 						}
 					});
 				}
-				if('witness-params'==path[2]){
-					$('.page-witness-params .witness-setup-error').html('');
-					$('.page-witness-params .witness-setup-success').html('');
-					$('.page-witness-params input[name=witness-setup-url]').val('');
-					$('.page-witness-params input[name=witness-setup-signing-key]').val('');
-					$('.page-witness-params .witness-setup-action').removeAttr('disabled');
-					$('.page-witness-params .icon-check[rel=setup]').css('display','none');
-					$('.page-witness-params .submit-button-ring[rel=setup]').css('display','none');
-					$('.page-witness-params .witness-set-props').html('');
+				if('validator-params'==path[2]){
+					$('.page-validator-params .validator-setup-error').html('');
+					$('.page-validator-params .validator-setup-success').html('');
+					$('.page-validator-params input[name=validator-setup-url]').val('');
+					$('.page-validator-params input[name=validator-setup-signing-key]').val('');
+					$('.page-validator-params .validator-setup-action').removeAttr('disabled');
+					$('.page-validator-params .icon-check[rel=setup]').css('display','none');
+					$('.page-validator-params .submit-button-ring[rel=setup]').css('display','none');
+					$('.page-validator-params .validator-set-props').html('');
 
-					$('.page-witness-params .fee-checkbox').css('display','none');
+					$('.page-validator-params .fee-checkbox').css('display','none');
 					viz.api.getChainProperties(function(err,response){
 						if(!err){
-							$('.median-props[rel="witness_declaration_fee"]').html(show_price_in_tokens(response.validator_declaration_fee ?? response.witness_declaration_fee,true));
+							$('.median-props[rel="validator_declaration_fee"]').html(show_price_in_tokens(response.validator_declaration_fee ?? response.witness_declaration_fee,true));
 						}
 					});
 
 					viz.api.getValidatorByAccount(current_user,function(err,response){
 						if(!err){
 							if(null==response){
-								$('.page-witness-params .witness-setup-error').html(ltmp_arr.account_not_witness);
-								$('.page-witness-params .fee-checkbox').css('display','block');
+								$('.page-validator-params .validator-setup-error').html(ltmp_arr.account_not_validator);
+								$('.page-validator-params .fee-checkbox').css('display','block');
 							}
 							else{
 								if(typeof response.owner != 'undefined' && current_user==response.owner){
-									$('.page-witness-params input[name=witness-setup-url]').val(response.url);
-									$('.page-witness-params input[name=witness-setup-signing-key]').val(response.signing_key);
+									$('.page-validator-params input[name=validator-setup-url]').val(response.url);
+									$('.page-validator-params input[name=validator-setup-signing-key]').val(response.signing_key);
 								}
 								else{
-									$('.page-witness-params .witness-setup-error').html(ltmp_arr.account_not_witness);
+									$('.page-validator-params .validator-setup-error').html(ltmp_arr.account_not_validator);
 								}
 								update_validator_props(response.props);
 							}
 						}
 						else{
-							$('.page-witness-params .witness-setup-error').html(ltmp_arr.default_node_error);
+							$('.page-validator-params .validator-setup-error').html(ltmp_arr.default_node_error);
 						}
 					});
 				}
@@ -5505,19 +5505,19 @@ function transfer(account,amount,memo,encode,el){
 }
 function validator_set_props(el){
 	let page=$(el).closest('.page');
-	page.find('.witness-set-props-action').attr('disabled','disabled');
+	page.find('.validator-set-props-action').attr('disabled','disabled');
 	page.find('.icon-check[rel=set-props]').css('display','none');
 	page.find('.submit-button-ring[rel=set-props]').css('display','inline-block');
 
-	page.find('.witness-set-props-error').html('');
-	page.find('.witness-set-props-success').html('');
+	page.find('.validator-set-props-error').html('');
+	page.find('.validator-set-props-success').html('');
 
 	viz.api.getValidatorByAccount(current_user,function(err,response){
 		if(!err){
 			var props=response.props;
 			for(i in props){
 				let prop_orig_type=typeof props[i];
-				props[i]=page.find('input[name="witness-set-props-'+i+'"]').val();
+				props[i]=page.find('input[name="validator-set-props-'+i+'"]').val();
 				if('boolean'===prop_orig_type){
 					props[i]=('true'===(''+props[i]).toLowerCase()||'1'===(''+props[i]));
 				}
@@ -5538,7 +5538,7 @@ function validator_set_props(el){
 			}
 			for(let hf13_key in validator_props_hf13_defaults){
 				if(typeof props[hf13_key] === 'undefined'){
-					let hf13_val=page.find('input[name="witness-set-props-'+hf13_key+'"]').val();
+					let hf13_val=page.find('input[name="validator-set-props-'+hf13_key+'"]').val();
 					if(''!==hf13_val && hf13_val!==null){
 						props[hf13_key]=parseInt(hf13_val);
 					}
@@ -5548,14 +5548,14 @@ function validator_set_props(el){
 			let props_version=(typeof props.pm_max_outcomes !== 'undefined')?5:((typeof props.distribution_epoch_length !== 'undefined')?4:3);
 			viz.broadcast.versionedChainPropertiesUpdate(users[current_user].active_key,current_user,[props_version,props],function(err,result){
 				if(!err){
-					page.find('.witness-set-props-success').html(ltmp_arr.witness_set_props_success);
-					page.find('.witness-set-props-action').removeAttr('disabled');
+					page.find('.validator-set-props-success').html(ltmp_arr.validator_set_props_success);
+					page.find('.validator-set-props-action').removeAttr('disabled');
 					page.find('.submit-button-ring[rel=set-props]').css('display','none');
 					page.find('.icon-check[rel=set-props]').css('display','inline-block');
 				}
 				else{
-					page.find('.witness-set-props-error').html(ltmp_arr.witness_set_props_error);
-					page.find('.witness-set-props-action').removeAttr('disabled');
+					page.find('.validator-set-props-error').html(ltmp_arr.validator_set_props_error);
+					page.find('.validator-set-props-action').removeAttr('disabled');
 					page.find('.submit-button-ring[rel=set-props]').css('display','none');
 
 					console.log(err);
@@ -5563,8 +5563,8 @@ function validator_set_props(el){
 			});
 		}
 		else{
-			page.find('.witness-set-props-error').html(ltmp_arr.default_node_error);
-			page.find('.witness-set-props-action').removeAttr('disabled');
+			page.find('.validator-set-props-error').html(ltmp_arr.default_node_error);
+			page.find('.validator-set-props-action').removeAttr('disabled');
 			page.find('.submit-button-ring[rel=set-props]').css('display','none');
 
 			console.log(err);
@@ -5574,33 +5574,33 @@ function validator_set_props(el){
 function validator_setup(url,public_key,private_key,el){
 	private_key=typeof private_key==='undefined'?'':private_key;
 	let page=$(el).closest('.page');
-	page.find('.witness-setup-action').attr('disabled','disabled');
+	page.find('.validator-setup-action').attr('disabled','disabled');
 	page.find('.icon-check[rel=setup]').css('display','none');
 	page.find('.submit-button-ring[rel=setup]').css('display','inline-block');
 
-	page.find('.witness-setup-error').html('');
-	page.find('.witness-setup-success').html('');
+	page.find('.validator-setup-error').html('');
+	page.find('.validator-setup-success').html('');
 
 	if('block'==page.find('.fee-checkbox').css('display')){
-		if(!page.find('.fee-checkbox input[name="witness-declaration-fee"]').prop('checked')){
-			page.find('.witness-setup-error').html(ltmp_arr.default_fee_confirmation);
+		if(!page.find('.fee-checkbox input[name="validator-declaration-fee"]').prop('checked')){
+			page.find('.validator-setup-error').html(ltmp_arr.default_fee_confirmation);
 
-			page.find('.witness-setup-action').removeAttr('disabled');
+			page.find('.validator-setup-action').removeAttr('disabled');
 			page.find('.submit-button-ring').css('display','none');
 			return;
 		}
 	}
 
 	if(''==url){
-		page.find('.witness-setup-error').html(ltmp_arr.witness_url_is_needed);
-		page.find('.witness-setup-action').removeAttr('disabled');
+		page.find('.validator-setup-error').html(ltmp_arr.validator_url_is_needed);
+		page.find('.validator-setup-action').removeAttr('disabled');
 		page.find('.submit-button-ring[rel=setup]').css('display','none');
 		return;
 	}
 	if(''!=private_key){
 		if(viz.auth.wifToPublic(private_key)!=public_key){
-			page.find('.witness-setup-error').html(ltmp_arr.witness_keys_dont_match);
-			page.find('.witness-setup-action').removeAttr('disabled');
+			page.find('.validator-setup-error').html(ltmp_arr.validator_keys_dont_match);
+			page.find('.validator-setup-action').removeAttr('disabled');
 			page.find('.submit-button-ring[rel=setup]').css('display','none');
 			return;
 		}
@@ -5612,16 +5612,16 @@ function validator_setup(url,public_key,private_key,el){
 	}
 	viz.broadcast.validatorUpdate(users[current_user].active_key,current_user,url,public_key,function(err,result){
 		if(!err){
-			page.find('.witness-setup-success').html(ltmp_arr.default_successful_operation+(''!=private_key?ltmp_arr.witness_save_signing_key+private_key:'')+(deactivation?ltmp_arr.witness_was_disabled:''));
+			page.find('.validator-setup-success').html(ltmp_arr.default_successful_operation+(''!=private_key?ltmp_arr.validator_save_signing_key+private_key:'')+(deactivation?ltmp_arr.validator_was_disabled:''));
 
-			page.find('.witness-setup-action').removeAttr('disabled');
+			page.find('.validator-setup-action').removeAttr('disabled');
 			page.find('.submit-button-ring[rel=setup]').css('display','none');
 			page.find('.icon-check[rel=setup]').css('display','inline-block');
 		}
 		else{
-			page.find('.witness-setup-error').html(ltmp_arr.default_operation_error);
+			page.find('.validator-setup-error').html(ltmp_arr.default_operation_error);
 
-			page.find('.witness-setup-action').removeAttr('disabled');
+			page.find('.validator-setup-action').removeAttr('disabled');
 			page.find('.submit-button-ring[rel=setup]').css('display','none');
 
 			console.log(err);
@@ -5630,50 +5630,50 @@ function validator_setup(url,public_key,private_key,el){
 }
 function validator_reward_sharing(el){
 	let page=$(el).closest('.page');
-	page.find('.witness-reward-sharing-action').attr('disabled','disabled');
+	page.find('.validator-reward-sharing-action').attr('disabled','disabled');
 	page.find('.icon-check[rel=reward-sharing]').css('display','none');
 	page.find('.submit-button-ring[rel=reward-sharing]').css('display','inline-block');
-	page.find('.witness-reward-sharing-error').html('');
-	page.find('.witness-reward-sharing-success').html('');
+	page.find('.validator-reward-sharing-error').html('');
+	page.find('.validator-reward-sharing-success').html('');
 
-	let rate_str=page.find('input[name=witness-reward-sharing-rate]').val().trim();
+	let rate_str=page.find('input[name=validator-reward-sharing-rate]').val().trim();
 	let sharing_rate=parseInt(parseFloat(rate_str)*100);
 	if(sharing_rate>10000) sharing_rate=10000;
 	if(0>sharing_rate) sharing_rate=0;
 
 	viz.broadcast.setRewardSharing(users[current_user].active_key,current_user,sharing_rate,function(err,result){
 		if(!err){
-			page.find('.witness-reward-sharing-success').html(ltmp_arr.witness_reward_sharing_success);
-			page.find('.witness-reward-sharing-action').removeAttr('disabled');
+			page.find('.validator-reward-sharing-success').html(ltmp_arr.validator_reward_sharing_success);
+			page.find('.validator-reward-sharing-action').removeAttr('disabled');
 			page.find('.submit-button-ring[rel=reward-sharing]').css('display','none');
 			page.find('.icon-check[rel=reward-sharing]').css('display','inline-block');
 		}
 		else{
-			page.find('.witness-reward-sharing-error').html(ltmp_arr.witness_reward_sharing_error);
-			page.find('.witness-reward-sharing-action').removeAttr('disabled');
+			page.find('.validator-reward-sharing-error').html(ltmp_arr.validator_reward_sharing_error);
+			page.find('.validator-reward-sharing-action').removeAttr('disabled');
 			page.find('.submit-button-ring[rel=reward-sharing]').css('display','none');
 			console.log(err);
 		}
 	});
 }
 function validator_proxy(proxy_account){
-	$('.page-witnesses .witness-proxy-action').attr('disabled','disabled');
-	$('.page-witnesses .witness-proxy-success').html('');
-	$('.page-witnesses .witness-proxy-error').html('');
-	$('.page-witnesses .submit-button-ring[rel=proxy]').css('display','inline-block');
-	$('.page-witnesses .icon-check[rel=proxy]').css('display','none');
+	$('.page-validators .validator-proxy-action').attr('disabled','disabled');
+	$('.page-validators .validator-proxy-success').html('');
+	$('.page-validators .validator-proxy-error').html('');
+	$('.page-validators .submit-button-ring[rel=proxy]').css('display','inline-block');
+	$('.page-validators .icon-check[rel=proxy]').css('display','none');
 
 	viz.broadcast.accountValidatorProxy(users[current_user].active_key,current_user,proxy_account,function(err,result){
-		console.log('witness_proxy',proxy_account,err,result);
-		$('.page-witnesses .submit-button-ring[rel=proxy]').css('display','none');
+		console.log('validator_proxy',proxy_account,err,result);
+		$('.page-validators .submit-button-ring[rel=proxy]').css('display','none');
 		if(err){
-			$('.page-witnesses .witness-proxy-error').html(ltmp_arr.default_operation_error);
-			$('.page-witnesses .witness-proxy-action').removeAttr('disabled');
+			$('.page-validators .validator-proxy-error').html(ltmp_arr.default_operation_error);
+			$('.page-validators .validator-proxy-action').removeAttr('disabled');
 		}
 		else{
-			$('.page-witnesses .witness-proxy-success').html(ltmp(ltmp_arr.setted_witness_proxy,{account:proxy_account}));
-			$('.page-witnesses .witness-proxy-action').removeAttr('disabled');
-			$('.page-witnesses .icon-check[rel=proxy]').css('display','inline-block');
+			$('.page-validators .validator-proxy-success').html(ltmp(ltmp_arr.setted_validator_proxy,{account:proxy_account}));
+			$('.page-validators .validator-proxy-action').removeAttr('disabled');
+			$('.page-validators .icon-check[rel=proxy]').css('display','inline-block');
 			update_validators_list();
 		}
 	});
@@ -6930,9 +6930,9 @@ function app_mouse(e){
 		let amount=parseFloat($(target).text());
 		$('.page-checks input[name=invites-create-amount]').val(parseFloat(amount));
 	}
-	if($(target).hasClass('show-inactive-witnesses-action')){
+	if($(target).hasClass('show-inactive-validators-action')){
 		$(target).addClass('hidden');
-		$(target).parent().next('.inactive-witnesses').removeClass('hidden');
+		$(target).parent().next('.inactive-validators').removeClass('hidden');
 	}
 	if($(target).hasClass('paid-subscribe-action')){
 		let provider=$('.page-paid-subscriptions .view-paid-subscription .provider-account').html();
@@ -7099,8 +7099,8 @@ function app_mouse(e){
 	if($(target).hasClass('delegate-shares-max-tokens-amount-action') || $(target).hasClass('delegate-shares-max-tokens-amount')){
 		$('.page-delegate-shares input[name=delegate-shares-tokens-amount]').val($('.page-delegate-shares .delegate-shares-max-tokens-amount').attr('data-vesting-shares'));
 	}
-	if($(target).hasClass('witness-props-action')){
-		let props_el=$(target).parent().find('.witness-props');
+	if($(target).hasClass('validator-props-action')){
+		let props_el=$(target).parent().find('.validator-props');
 		if('none'==props_el.css('display')){
 			props_el.css('display','block');
 		}
@@ -7463,52 +7463,52 @@ function app_mouse(e){
 		$('.page-access input[name=manage-access-memo-key]').attr('data-private-key',private_key);
 		$('.page-access input[name=manage-access-memo-key]').val(public_key);
 	}
-	if($(target).hasClass('witness-proxy-action')){
-		let proxy_account=$('.page-witnesses input[name="witness-proxy"]').val();
-		$('.page-witnesses .witness-proxy-success').html('');
-		$('.page-witnesses .witness-proxy-error').html('');
+	if($(target).hasClass('validator-proxy-action')){
+		let proxy_account=$('.page-validators input[name="validator-proxy"]').val();
+		$('.page-validators .validator-proxy-success').html('');
+		$('.page-validators .validator-proxy-error').html('');
 		if(''==proxy_account){
-			$('.page-witnesses .witness-proxy-error').html(ltmp_arr.default_account_error);
-			$('.page-witnesses input[name="witness-proxy-action"]').addClass('red');
-			$('.page-witnesses input[name="witness-proxy-action"]').focus();
+			$('.page-validators .validator-proxy-error').html(ltmp_arr.default_account_error);
+			$('.page-validators input[name="validator-proxy-action"]').addClass('red');
+			$('.page-validators input[name="validator-proxy-action"]').focus();
 			return;
 		}
 		validator_proxy(proxy_account);
 	}
-	if($(target).hasClass('witness-set-props-action')){
-		validator_set_props($('.page-witness-params .witness-set-props'));
+	if($(target).hasClass('validator-set-props-action')){
+		validator_set_props($('.page-validator-params .validator-set-props'));
 	}
-	if($(target).hasClass('witness-reward-sharing-action')){
-		validator_reward_sharing($('.page-witness-reward-sharing .witness-reward-sharing-action'));
+	if($(target).hasClass('validator-reward-sharing-action')){
+		validator_reward_sharing($('.page-validator-reward-sharing .validator-reward-sharing-action'));
 	}
-	if($(target).hasClass('witness-setup-action')){
-		let url=$('.page-witness-params input[name=witness-setup-url]').val().trim();
-		let public_key=$('.page-witness-params input[name=witness-setup-signing-key]').val().trim();
+	if($(target).hasClass('validator-setup-action')){
+		let url=$('.page-validator-params input[name=validator-setup-url]').val().trim();
+		let public_key=$('.page-validator-params input[name=validator-setup-signing-key]').val().trim();
 		let private_key='';
-		if(typeof $('.page-witness-params input[name=witness-setup-signing-key]').attr('data-private-key') !== 'undefined'){
-			private_key=$('.page-witness-params input[name=witness-setup-signing-key]').attr('data-private-key');
+		if(typeof $('.page-validator-params input[name=validator-setup-signing-key]').attr('data-private-key') !== 'undefined'){
+			private_key=$('.page-validator-params input[name=validator-setup-signing-key]').attr('data-private-key');
 		}
-		validator_setup(url,public_key,private_key,$('.page-witness-params .witness-setup-action'));
+		validator_setup(url,public_key,private_key,$('.page-validator-params .validator-setup-action'));
 	}
-	if($(target).hasClass('witness-setup-signing-key-action')){
+	if($(target).hasClass('validator-setup-signing-key-action')){
 		e.preventDefault();
 		let private_key=pass_gen(100,true);
 		let public_key=viz.auth.wifToPublic(private_key);
-		$('.page-witness-params input[name=witness-setup-signing-key]').attr('data-private-key',private_key);
-		$('.page-witness-params input[name=witness-setup-signing-key]').val(public_key);
-		$('.page-witness-params .witness-setup-signing-private-key').html(': '+private_key);
+		$('.page-validator-params input[name=validator-setup-signing-key]').attr('data-private-key',private_key);
+		$('.page-validator-params input[name=validator-setup-signing-key]').val(public_key);
+		$('.page-validator-params .validator-setup-signing-private-key').html(': '+private_key);
 	}
-	if($(target).hasClass('witness-setup-signing-private-key')){
+	if($(target).hasClass('validator-setup-signing-private-key')){
 		e.preventDefault();
 		$(target).selText();
 	}
-	if($(target).hasClass('witness-setup-signing-key-action')){
+	if($(target).hasClass('validator-setup-signing-key-action')){
 		e.preventDefault();
 		let private_key=pass_gen(100,true);
 		let public_key=viz.auth.wifToPublic(private_key);
-		$('.page-witness-params input[name=witness-setup-signing-key]').attr('data-private-key',private_key);
-		$('.page-witness-params input[name=witness-setup-signing-key]').val(public_key);
-		$('.page-witness-params .witness-setup-signing-private-key').html(private_key);
+		$('.page-validator-params input[name=validator-setup-signing-key]').attr('data-private-key',private_key);
+		$('.page-validator-params input[name=validator-setup-signing-key]').val(public_key);
+		$('.page-validator-params .validator-setup-signing-private-key').html(private_key);
 	}
 	if($(target).hasClass('add-account-auths-action')){
 		let type=$(target).attr('rel');

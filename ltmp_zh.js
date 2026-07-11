@@ -1073,11 +1073,11 @@ var ltmp_zh_arr = {
 				<div class="columns-view">
 					<div class="column column-2 shadow grid">
 						<h4 class="center captions">验证人</h4>
-						<!--<div class="icon icon-wide icon-150px icon-color-orange icon-witnesses"></div>-->
+						<!--<div class="icon icon-wide icon-150px icon-color-orange icon-validators"></div>-->
 						<div class="wide-buttons captions">
-							<a class="wide-button color-orange" data-href="/dao/witnesses/">投票</a>
-							<a class="wide-button color-orange" data-href="/dao/witness-params/">设置参数</a>
-							<a class="wide-button color-orange" data-href="/dao/witness-reward-sharing/">奖励分享</a>
+							<a class="wide-button color-orange" data-href="/dao/validators/">投票</a>
+							<a class="wide-button color-orange" data-href="/dao/validator-params/">设置参数</a>
+							<a class="wide-button color-orange" data-href="/dao/validator-reward-sharing/">奖励分享</a>
 						</div>
 					</div>
 					<div class="column column-2 shadow">
@@ -1091,7 +1091,7 @@ var ltmp_zh_arr = {
 				</div>
 			</div>
 		</div>
-		<div class="page page-witnesses" data-title="验证人">
+		<div class="page page-validators" data-title="验证人">
 			<div class="card">
 				<h3>验证人</h3>
 				<div class="account-balance captions">
@@ -1107,46 +1107,46 @@ var ltmp_zh_arr = {
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">将投票权代理给账户：</span>
-						<input type="text" name="witness-proxy" class="simple-rounded" placeholder="">
+						<input type="text" name="validator-proxy" class="simple-rounded" placeholder="">
 					</label>
 				</p>
-				<p class="red witness-proxy-error"></p>
-				<p class="green witness-proxy-success"></p>
+				<p class="red validator-proxy-error"></p>
+				<p class="green validator-proxy-success"></p>
 				<p>
-					<input class="witness-proxy-action orange-button captions" type="button" value="确认">
+					<input class="validator-proxy-action orange-button captions" type="button" value="确认">
 					<span class="submit-button-ring" rel="proxy"></span>
 					<span class="icon icon-margin hidden icon-color-orange icon-check" rel="proxy"></span>
 				</p>
 				<hr>
 
-				<div class="witnesses-list"><p class="loading"><span class="submit-button-ring" style="display:inline-block"></span> %%default_loading%%</p></div>
-				<div class="inactive-witnesses-list"></div>
+				<div class="validators-list"><p class="loading"><span class="submit-button-ring" style="display:inline-block"></span> %%default_loading%%</p></div>
+				<div class="inactive-validators-list"></div>
 
 				<p><hr><a data-href="/dao/">%%default_return_link%%</a></p>
 			</div>
 		</div>
-		<div class="page page-witness-params" data-title="设置参数">
+		<div class="page page-validator-params" data-title="设置参数">
 			<div class="card">
 				<h3>设置参数</h3>
 				<p>声明自己为验证人和/或设置区块链的投票参数。</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">验证人声明链接：</span>
-						<input type="text" name="witness-setup-url" class="simple-rounded" placeholder="https://">
+						<input type="text" name="validator-setup-url" class="simple-rounded" placeholder="https://">
 					</label>
 				</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">签名密钥（公钥）：</span>
-						<input type="text" name="witness-setup-signing-key" class="simple-rounded" placeholder="VIZ...">
-						<span class="input-caption text-small grey captions witness-setup-signing-key-action">（生成：<span class="witness-setup-signing-private-key">&mdash;</span>）</span>
+						<input type="text" name="validator-setup-signing-key" class="simple-rounded" placeholder="VIZ...">
+						<span class="input-caption text-small grey captions validator-setup-signing-key-action">（生成：<span class="validator-setup-signing-private-key">&mdash;</span>）</span>
 					</label>
 				</p>
-				<label class="check color-red fee-checkbox">当账户被声明为验证人时，将被收取 <span class="median-props" rel="witness_declaration_fee">&hellip; viz</span> 的费用。<input type="checkbox" name="witness-declaration-fee"><span class="mark"></span></label>
-				<p class="red witness-setup-error"></p>
-				<p class="green witness-setup-success"></p>
+				<label class="check color-red fee-checkbox">当账户被声明为验证人时，将被收取 <span class="median-props" rel="validator_declaration_fee">&hellip; viz</span> 的费用。<input type="checkbox" name="validator-declaration-fee"><span class="mark"></span></label>
+				<p class="red validator-setup-error"></p>
+				<p class="green validator-setup-success"></p>
 				<p>
-					<input class="witness-setup-action orange-button captions" type="button" value="确认">
+					<input class="validator-setup-action orange-button captions" type="button" value="确认">
 					<span class="submit-button-ring" rel="setup"></span>
 					<span class="icon icon-margin hidden icon-color-orange icon-check" rel="setup"></span>
 				</p>
@@ -1154,25 +1154,25 @@ var ltmp_zh_arr = {
 					<h3>提示</h3>
 					<p>您可以将签名密钥设置为空白以暂时或永久禁用验证人。</p>
 				</div>
-				<div class="witness-set-props"></div>
+				<div class="validator-set-props"></div>
 
 				<p><hr><a data-href="/dao/">%%default_return_link%%</a></p>
 			</div>
 		</div>
-		<div class="page page-witness-reward-sharing" data-title="奖励分享">
+		<div class="page page-validator-reward-sharing" data-title="奖励分享">
 			<div class="card">
 				<h3>奖励分享</h3>
 				<p>设置您的区块奖励中将在每个周期结束时分配给投票支持您的权益持有人（选民）的百分比。</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">分享率（0.00% &mdash; 100.00%）：</span>
-						<input type="text" name="witness-reward-sharing-rate" class="simple-rounded" placeholder="0.00%">
+						<input type="text" name="validator-reward-sharing-rate" class="simple-rounded" placeholder="0.00%">
 					</label>
 				</p>
-				<p class="red witness-reward-sharing-error"></p>
-				<p class="green witness-reward-sharing-success"></p>
+				<p class="red validator-reward-sharing-error"></p>
+				<p class="green validator-reward-sharing-success"></p>
 				<p>
-					<input class="witness-reward-sharing-action orange-button captions" type="button" value="确认">
+					<input class="validator-reward-sharing-action orange-button captions" type="button" value="确认">
 					<span class="submit-button-ring" rel="reward-sharing"></span>
 					<span class="icon icon-margin hidden icon-color-orange icon-check" rel="reward-sharing"></span>
 				</p>
@@ -2142,25 +2142,25 @@ var ltmp_zh_arr = {
 	access_loaded:'账户访问方案已成功更新',
 
 	/* Validators */
-	witness_vote_caption:'投票给验证人 {witness}',
-	witness_unvote_caption:'撤销对验证人 {witness} 的投票',
-	witness_props_caption:'参数',
-	witness_url_caption:'链接',
-	witness_votes_weight_caption:'投票权重',
-	witness_user_vote_weight_caption:'您的投票权重',
-	witness_node_version_caption:'节点版本：',
-	witness_hardfork_vote_caption:'对新硬分叉的投票：',
-	witness_hardfork_vote_starting_caption:' 截至 {date}',
-	witness_penalty_caption:'跳过区块的惩罚：',
-	witness_show_inactive_link:'显示已停用的验证人',
-	witness_set_props_button:'设置参数',
-	witness_set_props_success:'参数设置成功',
-	witness_set_props_error:'错误：请检查修改的字段',
-	witness_save_signing_key:'，请保存签名私钥：',
-	witness_was_disabled:'，验证人已停用',
-	witness_sharing_rate_caption:'奖励分享：',
-	witness_reward_sharing_success:'分享率设置成功',
-	witness_reward_sharing_error:'错误：设置分享率失败',
+	validator_vote_caption:'投票给验证人 {validator}',
+	validator_unvote_caption:'撤销对验证人 {validator} 的投票',
+	validator_props_caption:'参数',
+	validator_url_caption:'链接',
+	validator_votes_weight_caption:'投票权重',
+	validator_user_vote_weight_caption:'您的投票权重',
+	validator_node_version_caption:'节点版本：',
+	validator_hardfork_vote_caption:'对新硬分叉的投票：',
+	validator_hardfork_vote_starting_caption:' 截至 {date}',
+	validator_penalty_caption:'跳过区块的惩罚：',
+	validator_show_inactive_link:'显示已停用的验证人',
+	validator_set_props_button:'设置参数',
+	validator_set_props_success:'参数设置成功',
+	validator_set_props_error:'错误：请检查修改的字段',
+	validator_save_signing_key:'，请保存签名私钥：',
+	validator_was_disabled:'，验证人已停用',
+	validator_sharing_rate_caption:'奖励分享：',
+	validator_reward_sharing_success:'分享率设置成功',
+	validator_reward_sharing_error:'错误：设置分享率失败',
 
 	/* Delegations */
 	social_capital_own_adaptive_caption:'自有：',
@@ -2226,10 +2226,10 @@ var ltmp_zh_arr = {
 	bsa_accounts_not_on_sale:'此子账户不可购买',
 
 	/* Validator params */
-	account_not_witness:'该账户未声明为验证人',
-	witness_keys_dont_match:'私钥和公钥不匹配',
-	witness_url_is_needed:'请填写验证人声明链接字段',
-	witness_props_captions:{
+	account_not_validator:'该账户未声明为验证人',
+	validator_keys_dont_match:'私钥和公钥不匹配',
+	validator_url_is_needed:'请填写验证人声明链接字段',
+	validator_props_captions:{
 		account_creation_fee:'创建账户时的收费',
 		create_account_delegation_ratio:'创建账户时的委托系数',
 		create_account_delegation_time:'账户创建时的委托期限（秒）',
@@ -2304,7 +2304,7 @@ var ltmp_zh_arr = {
 	},
 
 	/* Validator props order on manage page*/
-	witness_props_order:[
+	validator_props_order:[
 		'maximum_block_size',
 		'account_creation_fee',
 		'create_account_delegation_ratio',
@@ -2485,7 +2485,7 @@ var ltmp_zh_arr = {
 	transfer_memo_not_match_template:'附言与模板格式不匹配',
 	withdraw_success:'确认提取资本',
 	stop_withdraw_error:'停止操作出错',
-	setted_witness_proxy:'投票权已代理给账户 {account}',
+	setted_validator_proxy:'投票权已代理给账户 {account}',
 
 	/* Market menu */
 	create_paid_subscribe_caption:'创建',
