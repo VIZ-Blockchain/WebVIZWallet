@@ -964,6 +964,7 @@ function wallet_unlock_overlay(onSuccess){
 		wallet_decrypt_vault(blob,pass).then(function(obj){
 			users=obj; wallet_pass=pass;
 			ov.remove();
+			wallet_after_unlock();
 			onSuccess();
 		}).catch(function(e){ ov.find('.wallet-unlock-error').html(ltmp_arr.enc_wrong||'Wrong passphrase.'); });
 	};
@@ -993,6 +994,15 @@ function render_wallet_security(){
 	}
 	else{
 		h+='<p class="red small">'+(ltmp_arr.enc_state_on||'Encryption is ON (keys stored in an encrypted container).')+'</p>';
+		// change passphrase
+		h+='<h4 class="captions">'+(ltmp_arr.enc_change||'Change passphrase')+'</h4>';
+		h+='<p><input type="password" name="encc-cur" class="simple-rounded" autocomplete="off" placeholder="'+(ltmp_arr.enc_pass_current||'Current passphrase')+'"></p>';
+		h+='<p><input type="password" name="encc-new1" class="simple-rounded" autocomplete="new-password" placeholder="'+(ltmp_arr.enc_pass_new||'New passphrase')+'"></p>';
+		h+='<p><input type="password" name="encc-new2" class="simple-rounded" autocomplete="new-password" placeholder="'+(ltmp_arr.enc_pass_repeat||'Repeat passphrase')+'"></p>';
+		h+='<div class="wide-buttons captions"><a class="wide-button color-red enc-change">'+(ltmp_arr.enc_change||'Change passphrase')+'</a></div>';
+		h+='<p class="red encc-error"></p><p class="green encc-success"></p>';
+		// disable
+		h+='<h4 class="captions">'+(ltmp_arr.enc_disable||'Disable encryption')+'</h4>';
 		h+='<p><input type="password" name="enc-pass-cur" class="simple-rounded" autocomplete="off" placeholder="'+(ltmp_arr.enc_pass||'Passphrase')+'"></p>';
 		h+='<div class="wide-buttons captions"><a class="wide-button color-red enc-disable">'+(ltmp_arr.enc_disable||'Disable encryption')+'</a></div>';
 	}
@@ -1000,6 +1010,7 @@ function render_wallet_security(){
 	box.html(h);
 	box.find('.enc-enable').on('click',wallet_enable_encryption);
 	box.find('.enc-disable').on('click',wallet_disable_encryption);
+	box.find('.enc-change').on('click',wallet_change_pass);
 }
 function wallet_enable_encryption(){
 	let box=$('.view-settings .page-security .security-box');
@@ -1013,6 +1024,7 @@ function wallet_enable_encryption(){
 		localStorage.setItem('wallet_encrypted','1');
 		localStorage.removeItem('users');
 		wallet_pass=p1;
+		wallet_after_unlock();
 		box.find('.enc-success').html(ltmp_arr.enc_enabled||'Encryption enabled.');
 		render_wallet_security();
 	}).catch(function(e){ box.find('.enc-error').html((ltmp_arr.enc_fail||'Encryption failed')+': '+escape_html(''+(e.message||e))); console.log(e); });
@@ -1027,10 +1039,58 @@ function wallet_disable_encryption(){
 		users=obj; wallet_pass=null;
 		localStorage.setItem('users',JSON.stringify(users));
 		localStorage.removeItem('users_vault'); localStorage.removeItem('wallet_encrypted');
+		wallet_update_lock_btn();
 		box.find('.enc-success').html(ltmp_arr.enc_disabled||'Encryption disabled.');
 		render_wallet_security();
 	}).catch(function(e){ box.find('.enc-error').html(ltmp_arr.enc_wrong||'Wrong passphrase.'); });
 }
+
+// ── Lock / auto-lock / change passphrase ───────────────────────────────────────
+var wallet_last_activity=Date.now();
+var WALLET_IDLE_MS=10*60*1000;   // auto-lock after 10 min of inactivity (owner 2026-07-11)
+function wallet_mark_activity(){ wallet_last_activity=Date.now(); }
+// Lock: drop the decrypted keys from memory (vault stays on disk) and reload → unlock overlay.
+function wallet_lock(){
+	if(!wallet_is_encrypted()){ return; }   // nothing to lock unless an encrypted vault exists
+	wallet_pass=null; users={}; current_user='';
+	try{ localStorage.removeItem('users'); }catch(e){}   // ensure no plaintext lingers
+	location.reload();
+}
+// show/hide the header quick-lock button: visible only when encrypted AND unlocked
+function wallet_update_lock_btn(){
+	if(wallet_is_encrypted() && wallet_pass){ $('.wallet-lock-btn').css('display',''); }
+	else{ $('.wallet-lock-btn').css('display','none'); }
+}
+function wallet_after_unlock(){ wallet_mark_activity(); wallet_update_lock_btn(); }
+// change passphrase: verify current (decrypt), re-encrypt the container with the new one
+function wallet_change_pass(){
+	let box=$('.view-settings .page-security .security-box');
+	box.find('.encc-error').html(''); box.find('.encc-success').html('');
+	let cur=''+box.find('input[name=encc-cur]').val();
+	let n1=''+box.find('input[name=encc-new1]').val(), n2=''+box.find('input[name=encc-new2]').val();
+	if(n1.length<4){ box.find('.encc-error').html(ltmp_arr.enc_too_short||'Passphrase is too short.'); return; }
+	if(n1!==n2){ box.find('.encc-error').html(ltmp_arr.enc_mismatch||'Passphrases do not match.'); return; }
+	if(n1.length<7 && !confirm(ltmp_arr.enc_short_confirm||'Short passphrase (more than 6 characters is recommended). Continue?')){ return; }
+	let blob=null; try{ blob=JSON.parse(localStorage.getItem('users_vault')); }catch(e){ blob=null; }
+	if(!blob){ box.find('.encc-error').html(ltmp_arr.enc_fail||'No vault.'); return; }
+	wallet_decrypt_vault(blob,cur).then(function(obj){
+		return wallet_encrypt_vault(obj,n1).then(function(nb){
+			localStorage.setItem('users_vault',JSON.stringify(nb));
+			wallet_pass=n1;
+			box.find('.encc-success').html(ltmp_arr.enc_pass_changed||'Passphrase changed.');
+			box.find('input[name=encc-cur],input[name=encc-new1],input[name=encc-new2]').val('');
+		});
+	}).catch(function(e){ box.find('.encc-error').html(ltmp_arr.enc_wrong||'Wrong passphrase.'); });
+}
+// one-time setup: track activity + poll for idle auto-lock; wire the header quick-lock button
+$(function(){
+	$(document).on('mousemove.walllock keydown.walllock click.walllock touchstart.walllock', wallet_mark_activity);
+	setInterval(function(){
+		if(wallet_is_encrypted() && wallet_pass && (Date.now()-wallet_last_activity)>WALLET_IDLE_MS){ wallet_lock(); }
+	}, 30000);
+	$('body').on('click','.wallet-lock-btn',function(e){ e.preventDefault(); wallet_lock(); });
+	wallet_update_lock_btn();
+});
 
 function remove_user(login,location=''){
 	if(login!=current_user){

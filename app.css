@@ -254,6 +254,19 @@ a:hover{
 .security-box .simple-rounded{
 	margin-bottom:6px;
 }
+.header .user-buttons .wallet-lock-btn{
+	display:inline-block;
+	vertical-align:middle;
+	cursor:pointer;
+	font-size:18px;
+	line-height:1;
+	margin-right:8px;
+	opacity:.75;
+	text-decoration:none;
+}
+.header .user-buttons .wallet-lock-btn:hover{
+	opacity:1;
+}
 .header .user-menu{
 	display:inline-block;
 	font-size:22px;

@@ -32,6 +32,7 @@
 		<div class="user-menu">
 			<div class="login">&hellip;</div>
 			<div class="user-buttons">
+				<a class="wallet-lock-btn" title="Lock wallet" style="display:none">&#128274;</a>
 				<img class="drop-down" src="/icons/drop-down.svg">
 				<div class="users-drop-down"></div>
 				<img class="add-account" src="/icons/circle-plus.svg">
