@@ -575,6 +575,13 @@ var ltmp_en_arr={
 							<a class="wide-button color-green" data-href="/assets/checks/">Checks</a>
 						</div>
 					</div>
+					<div class="column column-3 shadow grid">
+						<h4 class="center captions">Prediction markets</h4>
+						<div class="wide-buttons captions">
+							<a class="wide-button color-green" data-href="/pm/">Markets</a>
+							<a class="wide-button color-green" data-href="/pm/completed/">My completed</a>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -575,6 +575,13 @@ var ltmp_ru_arr={
 							<a class="wide-button color-green" data-href="/assets/checks/">Чеки</a>
 						</div>
 					</div>
+					<div class="column column-3 shadow grid">
+						<h4 class="center captions">Рынки предсказаний</h4>
+						<div class="wide-buttons captions">
+							<a class="wide-button color-green" data-href="/pm/">Рынки</a>
+							<a class="wide-button color-green" data-href="/pm/completed/">Мои завершённые</a>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
