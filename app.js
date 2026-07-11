@@ -3740,17 +3740,20 @@ function pm_market_bettable(m){
 	let be=parseInt(new Date((''+m.betting_expiration)+'Z').getTime()/1000);
 	return (0==be)||(be>parseInt(Date.now()/1000));
 }
+//standard shadow-grid card wrapper (same component as the markets list) for the market detail sections
+function pm_card(inner){ return '<div class="columns-view"><div class="column column-1 shadow grid">'+inner+'</div></div>'; }
 function load_pm_market(id){
 	id=parseInt(id);
 	$('.view-pm .page-market .pm-market-detail').html('<p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p>');
 	viz.api.getMarket(id,function(err,m){
 		if(err||!m){ $('.view-pm .page-market .pm-market-detail').html('<p class="red">'+ltmp_arr.default_node_error+'</p>'); if(err){console.log(err);} return; }
-		let data='';
-		if(m.image){ data+='<div><img class="pm-market-image" style="max-height:120px" src="'+escape_html(''+m.image)+'" onerror="this.style.display=\'none\'"></div>'; }
-		data+='<h3>'+escape_html(''+m.title)+'</h3>';
-		data+='<div class="small grey">'+escape_html(''+(m.category||''))+' &middot; '+pm_market_status_label(m)+'</div>';
-		data+='<div class="small">'+(ltmp_arr.pm_betting_until||'Betting until')+': '+show_date(m.betting_expiration,true)+ltmp_arr.default_date_utc+'</div>';
-		if(m.url){ data+='<p><a class="inline-button red small" href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_source||'Source')+' &#8599;</a></p>'; }
+		let hdr='';
+		if(m.image){ hdr+='<div class="center"><img style="max-height:120px" src="'+escape_html(''+m.image)+'" onerror="this.style.display=\'none\'"></div>'; }
+		hdr+='<div class="bold">'+escape_html(''+m.title)+'</div>';
+		hdr+='<div class="small grey">'+escape_html(''+(m.category||''))+' &middot; '+pm_market_status_label(m)+'</div>';
+		hdr+='<div class="small">'+(ltmp_arr.pm_betting_until||'Betting until')+': '+show_date(m.betting_expiration,true)+ltmp_arr.default_date_utc+'</div>';
+		if(m.url){ hdr+='<p><a class="inline-button small" href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_source||'Source')+' &#8599;</a></p>'; }
+		let data=pm_card(hdr);
 		data+='<div class="pm-bet-box"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>';
 		data+='<div class="pm-positions-box"></div>';
 		data+='<div class="pm-dispute-box"></div>';
@@ -3760,7 +3763,7 @@ function load_pm_market(id){
 			let ocs=(oerr||!outcomes)?[]:outcomes;
 			let box=$('.view-pm .page-market .pm-bet-box');
 			if(!ocs.length){ box.html(''); if(oerr){console.log(oerr);} }
-			else if(!bettable){ box.html('<p class="grey small">'+(ltmp_arr.pm_betting_closed||'Betting is closed for this market.')+'</p>'); }
+			else if(!bettable){ box.html(pm_card('<p class="grey small">'+(ltmp_arr.pm_betting_closed||'Betting is closed for this market.')+'</p>')); }
 			else{
 				let bd='<h4 class="captions">'+(ltmp_arr.pm_place_bet||'Place a bet')+'</h4>';
 				bd+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_amount||'Amount')+':</span><input type="text" name="pm-bet-amount" class="simple-rounded" placeholder="0.000 VIZ"></label></p>';
@@ -3773,7 +3776,7 @@ function load_pm_market(id){
 					bd+='<a class="wide-button pm-bet-btn" data-market="'+id+'" data-side="'+side+'" data-oindex="'+oidx+'">'+escape_html(''+o.label)+'</a>';
 				}
 				bd+='</div><p class="red pm-bet-error"></p><p class="green pm-bet-success"></p>';
-				box.html(bd);
+				box.html(pm_card(bd));
 				box.find('.pm-bet-btn').off('click.pmbet').on('click.pmbet',function(){ pm_place_bet_action($(this)); });
 			}
 			load_pm_positions(id,m,ocs);
@@ -3837,7 +3840,7 @@ function load_pm_positions(market_id,m,ocs){
 				+'</div>';
 		}
 		h+='</div><div class="pm-xfer-form" style="display:none"></div>';
-		box.html(h);
+		box.html(pm_card(h));
 		box.find('.pm-xfer-btn').off('click.pmx').on('click.pmx',function(){ pm_transfer_form($(this).attr('data-bet'),parseInt($(this).attr('data-shares'))||0,market_id); });
 	});
 }
@@ -3885,7 +3888,7 @@ function render_pm_dispute(market_id,m,ocs,bettable){
 	h+='<div class="wide-buttons size2 captions"><a class="wide-button pm-dispute-open">'+(ltmp_arr.pm_dispute_create||'Open dispute')+'</a>'
 		+'<a class="wide-button pm-dispute-vote-open">'+(ltmp_arr.pm_dispute_vote||'Vote in dispute')+'</a></div>';
 	h+='<div class="pm-dispute-form" style="display:none"></div>';
-	box.html(h);
+	box.html(pm_card(h));
 	box.find('.pm-dispute-open').off('click.pmd').on('click.pmd',function(){ pm_dispute_create_form(market_id,ocs); });
 	box.find('.pm-dispute-vote-open').off('click.pmdv').on('click.pmdv',function(){ pm_dispute_vote_form(market_id,ocs); });
 }
