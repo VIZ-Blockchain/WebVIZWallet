@@ -1679,6 +1679,34 @@ var ltmp_ru_arr={
 			</div>
 		</div>
 		`,
+	preset_view_pm_title:'Рынки прогнозов',
+	preset_view_pm:`
+		<div class="page page-index">
+			<div class="card transparent">
+				<h3 class="adaptive-show-block captions">Рынки прогнозов</h3>
+				<div class="wide-buttons size2 captions">
+					<a class="wide-button color-red" data-href="/pm/">Рынки</a>
+					<a class="wide-button color-red" data-href="/pm/completed/">Мои завершённые</a>
+				</div>
+				<p><input type="text" name="pm-filter" class="simple-rounded" placeholder="Фильтр по названию"></p>
+				<div class="pm-markets-list"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
+				<div class="pm-markets-footer center"></div>
+			</div>
+		</div>
+		<div class="page page-market">
+			<div class="card transparent">
+				<p><a class="inline-button grey small" data-href="/pm/">&larr; Рынки</a></p>
+				<div class="pm-market-detail"></div>
+			</div>
+		</div>
+		<div class="page page-completed">
+			<div class="card transparent">
+				<p><a class="inline-button grey small" data-href="/pm/">&larr; Рынки</a></p>
+				<h3 class="captions">Мои завершённые рынки</h3>
+				<div class="pm-completed-list"></div>
+			</div>
+		</div>
+	`,
 	preset_view_market:`
 		<div class="page page-index">
 			<div class="card transparent">

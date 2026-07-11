@@ -3373,6 +3373,90 @@ function update_validator_props(props){
 		el.html(data);
 	}
 }
+//Prediction markets (#/pm) — simple viewer/actions (cel #52)
+function view_pm(path,params,title){
+	if(''==current_user){
+		if(standalone){
+			parse_standalone_fullpath();
+			change_state('/login/?back='+standalone_path+encodeURIComponent(standalone_search),{},true);
+		}
+		else{
+			change_state('/login/?back='+document.location.pathname+encodeURIComponent(document.location.search),{},true);
+		}
+		return false;
+	}
+	$('.view').css('display','none');
+	$('.view-pm').css('display','block');
+	$('.view-pm .page').css('display','none');
+	let sub=(typeof path[2]!=='undefined'&&''!=path[2])?path[2]:'index';
+	if('market'==sub){
+		$('.view-pm .page-market').css('display','block');
+		load_pm_market(path[3]);
+	}
+	else if('completed'==sub){
+		$('.view-pm .page-completed').css('display','block');
+		load_pm_completed();
+	}
+	else{
+		$('.view-pm .page-index').css('display','block');
+		load_pm_markets(true);
+		$('.view-pm .page-index input[name=pm-filter]').off('input.pm').on('input.pm',function(){ load_pm_markets(true); });
+		$('.view-pm .page-index .pm-markets-footer').off('click.pm').on('click.pm','.pm-load-more',function(){ pm_markets_page++; load_pm_markets(false); });
+	}
+}
+function pm_market_status_label(m){
+	if(1==m.status){
+		let bet_exp=parseInt(new Date((''+m.betting_expiration)+'Z').getTime()/1000);
+		if(bet_exp>0 && bet_exp<parseInt(Date.now()/1000)){ return (ltmp_arr.pm_status_awaiting||'Awaiting resolution'); }
+		return (ltmp_arr.pm_status_active||'Active');
+	}
+	if(-1!=m.resolved_outcome){ return (ltmp_arr.pm_status_resolved||'Resolved'); }
+	return (ltmp_arr.pm_status_closed||'Closed');
+}
+var pm_markets_page=0;
+function load_pm_markets(reset){
+	reset=typeof reset==='undefined'?true:reset;
+	if(reset){ pm_markets_page=0; }
+	let per_page=20;
+	let from=pm_markets_page*per_page;
+	viz.api.listMarkets(1,from,per_page,true,'',function(err,markets){
+		if(err||!markets){ $('.view-pm .page-index .pm-markets-list').html('<p class="red">'+ltmp_arr.default_node_error+'</p>'); if(err){console.log(err);} return; }
+		let filter=(''+($('.view-pm .page-index input[name=pm-filter]').val()||'')).toLowerCase().trim();
+		let data='';
+		for(let i in markets){
+			let m=markets[i];
+			if(''!=filter && (''+m.title).toLowerCase().indexOf(filter)===-1){ continue; }
+			data+='<div class="columns-view pm-market-card"><div class="column-view column-flex">';
+			if(m.image){ data+='<div><img class="pm-market-image" style="max-height:80px" src="'+escape_html(''+m.image)+'" onerror="this.style.display=\'none\'"></div>'; }
+			data+='<div class="bold">'+escape_html(''+m.title)+'</div>';
+			data+='<div class="small grey">'+escape_html(''+(m.category||''))+' &middot; '+pm_market_status_label(m)+'</div>';
+			data+='<div class="small">'+(ltmp_arr.pm_betting_until||'Betting until')+': '+show_date(m.betting_expiration,true)+ltmp_arr.default_date_utc+'</div>';
+			data+='<div class="wide-buttons captions"><a class="wide-button color-red" data-href="/pm/market/'+m.id+'/">'+(ltmp_arr.pm_open||'Open')+'</a>';
+			if(m.url){ data+=' <a class="inline-button red small" href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_source||'Source')+' &#8599;</a>'; }
+			data+='</div></div></div>';
+		}
+		if(reset){ $('.view-pm .page-index .pm-markets-list').html(data||('<p>'+ltmp_arr.default_no_items+'</p>')); }
+		else{ $('.view-pm .page-index .pm-markets-list').append(data); }
+		$('.view-pm .page-index .pm-markets-footer').html((markets.length>=per_page)?('<a class="inline-button red pm-load-more">'+(ltmp_arr.pm_load_more||'Load more')+'</a>'):'');
+	});
+}
+function load_pm_market(id){
+	$('.view-pm .page-market .pm-market-detail').html('<p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p>');
+	viz.api.getMarket(parseInt(id),function(err,m){
+		if(err||!m){ $('.view-pm .page-market .pm-market-detail').html('<p class="red">'+ltmp_arr.default_node_error+'</p>'); if(err){console.log(err);} return; }
+		let data='';
+		if(m.image){ data+='<div><img class="pm-market-image" style="max-height:120px" src="'+escape_html(''+m.image)+'" onerror="this.style.display=\'none\'"></div>'; }
+		data+='<h3>'+escape_html(''+m.title)+'</h3>';
+		data+='<div class="small grey">'+escape_html(''+(m.category||''))+' &middot; '+pm_market_status_label(m)+'</div>';
+		data+='<div class="small">'+(ltmp_arr.pm_betting_until||'Betting until')+': '+show_date(m.betting_expiration,true)+ltmp_arr.default_date_utc+'</div>';
+		if(m.url){ data+='<p><a class="inline-button red small" href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_source||'Source')+' &#8599;</a></p>'; }
+		data+='<p class="grey small">'+(ltmp_arr.pm_ops_soon||'Betting, transfer and dispute actions are being added.')+'</p>';
+		$('.view-pm .page-market .pm-market-detail').html(data);
+	});
+}
+function load_pm_completed(){
+	$('.view-pm .page-completed .pm-completed-list').html('<p class="grey small">'+(ltmp_arr.pm_ops_soon||'Coming soon.')+'</p>');
+}
 function update_fund_request(id,votes,votes_update){
 	votes=typeof votes==='undefined'?false:votes;
 	votes_update=typeof votes_update==='undefined'?false:votes_update;
@@ -7327,7 +7411,7 @@ function preset_template(callback){
 	}
 	let select_lang=ltmp(ltmp_arr.select_lang,{items:available_langs_str});
 	$('.menu-bg').html(ltmp(ltmp_arr.menu_preset));
-	let preset_view=['index','portable','login','memo','settings','assets','dao','account','market'];
+	let preset_view=['index','portable','login','memo','settings','assets','dao','account','market','pm'];
 	for(let i in preset_view){
 		let view_name=preset_view[i];
 		if(typeof ltmp_arr['preset_view_'+view_name] !== 'undefined'){
