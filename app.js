@@ -3457,24 +3457,31 @@ function load_pm_market(id){
 		data+='<div class="small">'+(ltmp_arr.pm_betting_until||'Betting until')+': '+show_date(m.betting_expiration,true)+ltmp_arr.default_date_utc+'</div>';
 		if(m.url){ data+='<p><a class="inline-button red small" href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_source||'Source')+' &#8599;</a></p>'; }
 		data+='<div class="pm-bet-box"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>';
+		data+='<div class="pm-positions-box"></div>';
+		data+='<div class="pm-dispute-box"></div>';
 		$('.view-pm .page-market .pm-market-detail').html(data);
 		let bettable=pm_market_bettable(m);
 		viz.api.getMarketOutcomes(id,function(oerr,outcomes){
+			let ocs=(oerr||!outcomes)?[]:outcomes;
 			let box=$('.view-pm .page-market .pm-bet-box');
-			if(oerr||!outcomes||!outcomes.length){ box.html(''); if(oerr){console.log(oerr);} return; }
-			if(!bettable){ box.html('<p class="grey small">'+(ltmp_arr.pm_betting_closed||'Betting is closed for this market.')+'</p>'); return; }
-			let bd='<h4 class="captions">'+(ltmp_arr.pm_place_bet||'Place a bet')+'</h4>';
-			bd+='<p><input type="text" name="pm-bet-amount" class="simple-rounded" placeholder="0.000 VIZ"></p>';
-			bd+='<div class="wide-buttons captions">';
-			for(let i in outcomes){
-				let o=outcomes[i];
-				let side=(0==m.market_type)?o.outcome_index:-1;
-				let oidx=(0==m.market_type)?-1:o.outcome_index;
-				bd+='<a class="wide-button color-red pm-bet-btn" data-market="'+id+'" data-side="'+side+'" data-oindex="'+oidx+'">'+escape_html(''+o.label)+'</a>';
+			if(!ocs.length){ box.html(''); if(oerr){console.log(oerr);} }
+			else if(!bettable){ box.html('<p class="grey small">'+(ltmp_arr.pm_betting_closed||'Betting is closed for this market.')+'</p>'); }
+			else{
+				let bd='<h4 class="captions">'+(ltmp_arr.pm_place_bet||'Place a bet')+'</h4>';
+				bd+='<p><input type="text" name="pm-bet-amount" class="simple-rounded" placeholder="0.000 VIZ"></p>';
+				bd+='<div class="wide-buttons captions">';
+				for(let i in ocs){
+					let o=ocs[i];
+					let side=(0==m.market_type)?o.outcome_index:-1;
+					let oidx=(0==m.market_type)?-1:o.outcome_index;
+					bd+='<a class="wide-button color-red pm-bet-btn" data-market="'+id+'" data-side="'+side+'" data-oindex="'+oidx+'">'+escape_html(''+o.label)+'</a>';
+				}
+				bd+='</div><p class="red pm-bet-error"></p><p class="green pm-bet-success"></p>';
+				box.html(bd);
+				box.find('.pm-bet-btn').off('click.pmbet').on('click.pmbet',function(){ pm_place_bet_action($(this)); });
 			}
-			bd+='</div><p class="red pm-bet-error"></p><p class="green pm-bet-success"></p>';
-			box.html(bd);
-			box.find('.pm-bet-btn').off('click.pmbet').on('click.pmbet',function(){ pm_place_bet_action($(this)); });
+			load_pm_positions(id,m,ocs);
+			render_pm_dispute(id,m,ocs,bettable);
 		});
 	});
 }
@@ -3495,8 +3502,140 @@ function pm_place_bet_action(btn){
 		setTimeout(function(){ load_pm_market(market_id); },1200);
 	});
 }
+// ── PM helpers (shares/positions) ──────────────────────────────────────────────
+// get_account_positions returns raw shares (×1000); display divides by 1000. Transfer
+// takes raw shares (uint). vote_percent is basis points (100% → 10000).
+function pm_fmt_shares(raw){ return (parseInt(raw||0)/1000).toFixed(3); }
+function pm_fmt_viz(raw){ return (parseInt(raw||0)/1000).toFixed(3)+' VIZ'; }
+function pm_to_bp(pct){ return Math.round((parseFloat(pct)||0)*100); }
+// transferable position balance = bet.weight (parimutuel shares, raw ×1000); amount = VIZ staked
+function pm_pos_shares(p){ return parseInt(p.weight!=null?p.weight:(p.tokens!=null?p.tokens:(p.shares||0))); }
+function pm_norm_position(p){
+	if(p&&typeof p.bet!=='undefined'&&p.bet){ let b=$.extend({},p.bet); b.expected_payout=p.expected_payout; b.market_status=p.market_status; b.resolved_outcome=p.resolved_outcome; return b; }
+	return p;
+}
+function pm_pos_market_id(p){ return (p.market_id!=null?p.market_id:p.market); }
+function pm_pos_outcome_label(p,ocs){
+	let idx=(p.outcome_index!=null&&p.outcome_index>=0)?p.outcome_index:(p.side!=null?p.side:-1);
+	for(let i in ocs){ if(parseInt(ocs[i].outcome_index)===parseInt(idx)) return ''+ocs[i].label; }
+	return idx>=0?('#'+idx):'—';
+}
+// My positions on this market → transfer_position (op 71, active auth). shares are raw ×1000.
+function load_pm_positions(market_id,m,ocs){
+	let box=$('.view-pm .page-market .pm-positions-box'); if(!box.length){ return; }
+	box.html('');
+	viz.api.getAccountPositions(current_user,0,200,function(err,list){
+		if(err||!list||!list.length){ if(err){console.log(err);} return; }
+		let mine=[];
+		for(let i in list){ let p=pm_norm_position(list[i]); if(parseInt(pm_pos_market_id(p))===parseInt(market_id)) mine.push(p); }
+		if(!mine.length){ return; }
+		let h='<h4 class="captions">'+(ltmp_arr.pm_my_positions||'My positions')+'</h4>';
+		h+='<table class="wide-table captions"><tr><th>'+(ltmp_arr.pm_outcome||'Outcome')+'</th><th>'+(ltmp_arr.pm_amount||'Amount')+'</th><th>'+(ltmp_arr.pm_shares||'Shares')+'</th><th></th></tr>';
+		for(let i in mine){
+			let p=mine[i];
+			let bid=(p.id!=null?p.id:p.bet_id);
+			let shares=pm_pos_shares(p);
+			h+='<tr><td>'+escape_html(pm_pos_outcome_label(p,ocs))+'</td><td>'+pm_fmt_viz(p.amount||p.stake||0)+'</td><td>'+pm_fmt_shares(shares)+'</td>'
+				+'<td><a class="inline-button red small pm-xfer-btn" data-bet="'+escape_html(''+bid)+'" data-shares="'+shares+'">'+(ltmp_arr.pm_transfer||'Transfer')+'</a></td></tr>';
+		}
+		h+='</table><div class="pm-xfer-form" style="display:none"></div>';
+		box.html(h);
+		box.find('.pm-xfer-btn').off('click.pmx').on('click.pmx',function(){ pm_transfer_form($(this).attr('data-bet'),parseInt($(this).attr('data-shares'))||0,market_id); });
+	});
+}
+function pm_transfer_form(bet_id,have_shares,market_id){
+	let f=$('.view-pm .page-market .pm-xfer-form');
+	let html='<h4 class="captions">'+(ltmp_arr.pm_transfer_title||'Transfer position')+' #'+escape_html(''+bet_id)+'</h4>';
+	html+='<p><input type="text" name="pm-xfer-to" class="simple-rounded" placeholder="'+(ltmp_arr.pm_to_account||'To account')+'"></p>';
+	html+='<p><input type="text" name="pm-xfer-shares" class="simple-rounded" value="'+pm_fmt_shares(have_shares)+'"></p>';
+	html+='<p class="small grey">'+(ltmp_arr.pm_you_have||'You have')+': '+pm_fmt_shares(have_shares)+'</p>';
+	html+='<p><input type="text" name="pm-xfer-memo" class="simple-rounded" placeholder="'+(ltmp_arr.pm_memo||'Memo (optional)')+'"></p>';
+	html+='<div class="wide-buttons captions"><a class="wide-button color-red pm-xfer-send" data-bet="'+escape_html(''+bet_id)+'" data-market="'+market_id+'">'+(ltmp_arr.pm_transfer_send||'Send')+'</a></div>';
+	html+='<p class="red pm-xfer-error"></p><p class="green pm-xfer-success"></p>';
+	f.html(html).css('display','block');
+	f.find('.pm-xfer-send').off('click.pmxs').on('click.pmxs',function(){ pm_transfer_action($(this)); });
+}
+function pm_transfer_action(btn){
+	let f=$('.view-pm .page-market .pm-xfer-form');
+	f.find('.pm-xfer-error').html(''); f.find('.pm-xfer-success').html('');
+	let market_id=parseInt(btn.attr('data-market'));
+	let bet_id=parseInt(btn.attr('data-bet'));
+	let to=(''+f.find('input[name=pm-xfer-to]').val()).trim().toLowerCase();
+	let shares_disp=parseFloat((''+f.find('input[name=pm-xfer-shares]').val()).replace(',','.').trim());
+	let amount=Math.round((shares_disp||0)*1000); // display shares → raw ×1000
+	let memo=(''+f.find('input[name=pm-xfer-memo]').val());
+	if(!to||!(amount>0)){ f.find('.pm-xfer-error').html(ltmp_arr.pm_transfer_fill||'Enter recipient and shares.'); return; }
+	btn.attr('disabled','disabled');
+	viz.broadcast.pmTransferPosition(users[current_user].active_key,current_user,bet_id,to,amount,memo,[],function(err,result){
+		btn.removeAttr('disabled');
+		if(err){ f.find('.pm-xfer-error').html((ltmp_arr.pm_transfer_error||'Transfer failed')+': '+escape_html((''+(err.message||JSON.stringify(err))).slice(0,160))); console.log(err); return; }
+		f.find('.pm-xfer-success').html(ltmp_arr.pm_transfer_success||'Position transferred!');
+		setTimeout(function(){ load_pm_market(market_id); },1200);
+	});
+}
+// Dispute create (op 74, active auth). Shown once betting is closed (dispute applies to resolution).
+// Note: dispute_vote (op 75) needs REGULAR auth — the wallet stores only the active key, so voting
+// is intentionally omitted here (see #52 note / owner question).
+function render_pm_dispute(market_id,m,ocs,bettable){
+	let box=$('.view-pm .page-market .pm-dispute-box'); if(!box.length){ return; }
+	if(bettable){ box.html(''); return; } // dispute only meaningful after betting closes
+	let h='<h4 class="captions">'+(ltmp_arr.pm_dispute||'Dispute')+'</h4>';
+	h+='<p class="small grey">'+(ltmp_arr.pm_dispute_hint||'Open a dispute if you disagree with how this market resolves.')+'</p>';
+	h+='<div class="wide-buttons captions"><a class="wide-button color-red pm-dispute-open">'+(ltmp_arr.pm_dispute_create||'Open dispute')+'</a></div>';
+	h+='<div class="pm-dispute-form" style="display:none"></div>';
+	box.html(h);
+	box.find('.pm-dispute-open').off('click.pmd').on('click.pmd',function(){ pm_dispute_create_form(market_id,ocs); });
+}
+function pm_dispute_create_form(market_id,ocs){
+	let f=$('.view-pm .page-market .pm-dispute-form');
+	let opts='<option value="-1">'+(ltmp_arr.pm_dispute_void||'Void / no contest')+'</option>';
+	for(let i in ocs){ opts+='<option value="'+parseInt(ocs[i].outcome_index)+'">'+escape_html(''+ocs[i].label)+'</option>'; }
+	let html='<h4 class="captions">'+(ltmp_arr.pm_dispute_create||'Open dispute')+'</h4>';
+	html+='<p>'+(ltmp_arr.pm_dispute_proposed||'Proposed outcome')+': <select name="pm-dispute-oc" class="simple-rounded">'+opts+'</select></p>';
+	html+='<p><textarea name="pm-dispute-reason" class="simple-rounded" placeholder="'+(ltmp_arr.pm_dispute_reason||'Reason / evidence')+'"></textarea></p>';
+	html+='<div class="wide-buttons captions"><a class="wide-button color-red pm-dispute-send" data-market="'+market_id+'">'+(ltmp_arr.pm_submit||'Submit')+'</a></div>';
+	html+='<p class="red pm-dispute-error"></p><p class="green pm-dispute-success"></p>';
+	f.html(html).css('display','block');
+	f.find('.pm-dispute-send').off('click.pmds').on('click.pmds',function(){ pm_dispute_create_action($(this)); });
+}
+function pm_dispute_create_action(btn){
+	let f=$('.view-pm .page-market .pm-dispute-form');
+	f.find('.pm-dispute-error').html(''); f.find('.pm-dispute-success').html('');
+	let market_id=parseInt(btn.attr('data-market'));
+	let oc=parseInt(f.find('select[name=pm-dispute-oc]').val());
+	let reason=(''+f.find('textarea[name=pm-dispute-reason]').val());
+	btn.attr('disabled','disabled');
+	viz.broadcast.pmDisputeCreate(users[current_user].active_key,current_user,market_id,oc,reason,[],function(err,result){
+		btn.removeAttr('disabled');
+		if(err){ f.find('.pm-dispute-error').html((ltmp_arr.pm_dispute_error||'Dispute failed')+': '+escape_html((''+(err.message||JSON.stringify(err))).slice(0,160))); console.log(err); return; }
+		f.find('.pm-dispute-success').html(ltmp_arr.pm_dispute_success||'Dispute opened!');
+		setTimeout(function(){ load_pm_market(market_id); },1500);
+	});
+}
+// My completed (resolved) positions — read-only summary with payout.
 function load_pm_completed(){
-	$('.view-pm .page-completed .pm-completed-list').html('<p class="grey small">'+(ltmp_arr.pm_ops_soon||'Coming soon.')+'</p>');
+	let box=$('.view-pm .page-completed .pm-completed-list');
+	box.html('<p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p>');
+	viz.api.getAccountPositions(current_user,0,300,function(err,list){
+		if(err||!list){ box.html('<p class="red">'+ltmp_arr.default_node_error+'</p>'); if(err){console.log(err);} return; }
+		let rows='';
+		for(let i in list){
+			let p=pm_norm_position(list[i]);
+			let ms=(p.market_status!=null)?parseInt(p.market_status):null;
+			let ro=(p.resolved_outcome!=null)?parseInt(p.resolved_outcome):null;
+			// resolved = market no longer active (status != 1) or a resolved_outcome is set
+			let resolved=(ms!=null && ms!==1) || (ro!=null && ro>=0);
+			if(!resolved){ continue; }
+			let payout=pm_fmt_viz(p.expected_payout||p.payout||0);
+			let mid=pm_pos_market_id(p);
+			let ocl=pm_pos_outcome_label(p,[]);
+			rows+='<div class="columns-view pm-completed-card"><div class="column-view column-flex">';
+			rows+='<div class="small"><a data-href="/pm/market/'+escape_html(''+mid)+'/">#'+escape_html(''+mid)+'</a> <span class="grey">'+escape_html(''+ocl)+'</span></div>';
+			rows+='<div class="small grey">'+(ltmp_arr.pm_payout||'Payout')+': '+escape_html(''+payout)+'</div>';
+			rows+='</div></div>';
+		}
+		box.html(rows||('<p class="grey small">'+(ltmp_arr.pm_no_completed||'No completed positions yet.')+'</p>'));
+	});
 }
 function update_fund_request(id,votes,votes_update){
 	votes=typeof votes==='undefined'?false:votes;
