@@ -1,3 +1,43 @@
+/* jQuery→cash.js compat shim (#49). cash covers selectors/DOM/events/namespaces/offset 1:1; it lacks
+   only the four jQuery APIs this app uses: $.ajax, $.extend, $.fn.animate({scrollTop}), $.fn.scrollTop.
+   Shimming them here keeps every call site (~1300) byte-identical and drops jQuery (~87KB → cash ~16KB). */
+(function($){
+	if(typeof $==='undefined'||$.ajax) return;                 // no-op under real jQuery
+	window.jQuery=window.jQuery||$;                            // some code / plugins use the jQuery global by name
+	$.extend=$.extend||Object.assign;
+	$.ajax=function(o){
+		o=o||{};
+		var m=(o.type||o.method||'GET').toUpperCase();
+		var q=new URLSearchParams();
+		if(o.data) for(var k in o.data){ var v=o.data[k]; if(v!==undefined&&v!==null) q.append(k,v); }
+		var url=o.url||'', opt={method:m,headers:{}};
+		if(m==='GET'){ if(q.toString()) url+=(url.indexOf('?')<0?'?':'&')+q.toString(); }
+		else { opt.body=q.toString(); opt.headers['Content-Type']='application/x-www-form-urlencoded; charset=UTF-8'; }
+		fetch(url,opt).then(function(r){return r.text();})
+			.then(function(t){ if(o.success)o.success(t); })
+			.catch(function(e){ if(o.error)o.error(e); else if(window.console)console.log('ajax',e); });
+		return {};                                             // jqXHR placeholder — no call site chains it
+	};
+	if($.fn){
+		$.fn.scrollTop=$.fn.scrollTop||function(v){ if(v===undefined)return window.pageYOffset; window.scrollTo(0,v); return this; };
+		$.fn.animate=$.fn.animate||function(props,ms){ if(props&&'scrollTop'in props) window.scrollTo({top:props.scrollTop,behavior:(ms>0?'smooth':'auto')}); return this; };
+		$.fn.ready=$.fn.ready||function(fn){ if(document.readyState!=='loading')fn(); else document.addEventListener('DOMContentLoaded',fn); return this; };
+		// jQuery shorthand event methods (cash has none): with a handler → bind; no-arg → trigger, using the
+		// native method (focus/blur/select/click/submit) where it has a real side-effect, else a bubbling Event.
+		var NATIVE={focus:1,blur:1,select:1,click:1,submit:1};
+		['resize','scroll','click','dblclick','change','focus','blur','keyup','keydown','keypress','input','select','submit','load'].forEach(function(ev){
+			if($.fn[ev]) return;
+			$.fn[ev]=function(fn){
+				if(typeof fn==='function') return this.on(ev,fn);
+				return this.each(function(i,el){
+					if(NATIVE[ev]&&typeof el[ev]==='function') el[ev]();
+					else if(el.dispatchEvent) el.dispatchEvent(new Event(ev,{bubbles:true}));
+				});
+			};
+		});
+	}
+})(window.$);
+
 var api_nodes=[
 	'https://api.viz.world/',
 	'https://node.viz.cx/',
