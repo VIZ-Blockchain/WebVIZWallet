@@ -3745,12 +3745,136 @@ function view_pm(path,params,title){
 		$('.view-pm .page-completed').css('display','block');
 		load_pm_completed();
 	}
+	else if('pool'==sub){
+		$('.view-pm .page-pool').css('display','block');
+		load_pm_pool();
+	}
 	else{
 		$('.view-pm .page-index').css('display','block');
 		load_pm_markets(true);
 		$('.view-pm .page-index input[name=pm-filter]').off('input.pm').on('input.pm',function(){ load_pm_markets(true); });
 		$('.view-pm .page-index .table-footer').off('click.pm').on('click.pm','.pm-load-more-action',function(){ pm_markets_page++; load_pm_markets(false); });
 	}
+}
+// Lazy liquidity pool (#/pm/pool/) — deposit / withdraw + state. Amounts are raw ×1000 (pm_fmt_viz/shares).
+function pm_chain_time(v){
+	if(v==null){ return 0; }
+	if(typeof v==='number'){ return v; }
+	let s=(''+v).trim();
+	if(/^\d+$/.test(s)){ return parseInt(s); }
+	return parseInt(new Date(s+(/Z$/.test(s)?'':'Z')).getTime()/1000)||0;
+}
+function load_pm_pool(){
+	let box=$('.view-pm .page-pool .pm-pool-box');
+	if(!box.length){ return; }
+	box.html('<p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p>');
+	let pool=null,dep=null,props=null,wallet_free=0,done=0;
+	function ready(){ if(++done<4){ return; } render_pm_pool(box,pool,dep,props,wallet_free); }
+	viz.api.getLazyPool(function(err,r){ if(!err){ pool=r; } ready(); });
+	viz.api.getLazyDeposit(current_user,function(err,r){ if(!err){ dep=r; } ready(); });
+	viz.api.getPmChainProperties(function(err,r){ if(!err){ props=r; } ready(); });
+	viz.api.getAccounts([current_user],function(err,r){ if(!err&&r&&r[0]){ wallet_free=parseFloat(r[0].balance)||0; } ready(); });
+}
+function render_pm_pool(box,pool,dep,props,wallet_free){
+	let L=ltmp_arr;
+	let n=function(v){ return v==null?0:(parseInt(v)||0); };
+	let free=n(pool&&pool.free_balance), alloc=n(pool&&pool.allocated_balance), earned=n(pool&&pool.earned_balance);
+	let rps=(pool&&pool.reward_per_share!=null)?Number(pool.reward_per_share):0;
+	let total_value=free+alloc;
+	let pen_bp=(props&&props.pm_lazy_emergency_penalty_percent!=null)?parseInt(props.pm_lazy_emergency_penalty_percent):5000; // bps
+	let lock_sec=(props&&props.pm_lazy_lock_sec!=null)?parseInt(props.pm_lazy_lock_sec):604800;
+	let enabled=!(props&&props.pm_lazy_pool_enabled===false);
+	let now=parseInt(Date.now()/1000);
+	let shares=n(dep&&dep.shares), principal=n(dep&&dep.principal), pending=n(dep&&dep.pending_rewards);
+	let snap=(dep&&dep.reward_snapshot!=null)?Number(dep.reward_snapshot):null;
+	// MasterChef accrual: live unsettled + carried pending; value = principal + accrued
+	let live=(snap!=null&&shares>0)?((rps-snap)*shares/1e9):0; if(!(live>0)){ live=0; }
+	let accrued=live+pending, value=principal+accrued;
+	let unlock=pm_chain_time(dep&&dep.unlock_time);
+	let locked=unlock>0 && now<unlock, has_pos=shares>0;
+	let penalty=locked?parseInt(accrued*(pen_bp/10000)):0, emergency_out=value-penalty;
+
+	let data='';
+	if(!enabled){ data+='<p class="red">'+(L.pm_pool_disabled||'The liquidity pool is disabled on-chain right now.')+'</p>'; }
+	data+='<h4 class="captions">'+(L.pm_pool_state||'Pool state')+'</h4>';
+	data+='<div class="small">'+(L.pm_pool_total||'Total value')+': <b>'+pm_fmt_viz(total_value)+'</b></div>';
+	data+='<div class="small grey">'+(L.pm_pool_free||'Free')+': '+pm_fmt_viz(free)+' &middot; '+(L.pm_pool_allocated||'Deployed')+': '+pm_fmt_viz(alloc)+'</div>';
+	data+='<div class="small grey">'+(L.pm_pool_earned||'Earned fees')+': '+pm_fmt_viz(earned)+'</div>';
+	data+='<div class="small grey">'+(L.pm_pool_lock||'Lock period')+': '+Math.round(lock_sec/86400)+' '+(L.pm_pool_days||'d')+' &middot; '+(L.pm_pool_penalty||'Emergency penalty on rewards')+': '+(pen_bp/100)+'%</div>';
+
+	data+='<hr><h4 class="captions">'+(L.pm_pool_your||'Your position')+'</h4>';
+	if(!has_pos){ data+='<p class="grey small">'+(L.pm_pool_no_position||'You have no position in the pool yet.')+'</p>'; }
+	else{
+		data+='<div class="small">'+(L.pm_pool_shares||'Shares')+': '+pm_fmt_shares(shares)+'</div>';
+		data+='<div class="small">'+(L.pm_pool_principal||'Principal')+': '+pm_fmt_viz(principal)+'</div>';
+		data+='<div class="small">'+(L.pm_pool_value||'Current value')+': <b>'+pm_fmt_viz(value)+'</b></div>';
+		data+='<div class="small">'+(L.pm_pool_status||'Status')+': '+(locked
+			?('<span class="red">'+(L.pm_pool_locked_until||'Locked until')+' '+escape_html(new Date(unlock*1000).toLocaleString())+'</span>')
+			:('<span class="green">'+(L.pm_pool_unlocked||'Unlocked')+'</span>'))+'</div>';
+		if(locked){ data+='<div class="small grey">'+(L.pm_pool_emergency_now||'Emergency exit now')+': '+pm_fmt_viz(emergency_out)+' ('+(L.pm_pool_penalty_short||'penalty')+' '+pm_fmt_viz(penalty)+')</div>'; }
+	}
+
+	if(enabled){
+		data+='<hr><h4 class="captions">'+(L.pm_pool_deposit||'Deposit')+'</h4>';
+		data+='<p><label class="input-descr"><span class="input-caption">'+(L.pm_pool_amount||'Amount (VIZ)')+':</span><input type="text" name="pm-pool-amount" class="simple-rounded" placeholder="0.000"></label></p>';
+		data+='<p class="small pm-pool-avail" style="cursor:pointer">'+(L.pm_pool_available||'Available')+': <b>'+wallet_free.toFixed(3)+' VIZ</b></p>';
+		data+='<div class="wide-buttons captions"><a class="wide-button pm-pool-deposit-action">'+(L.pm_pool_deposit_btn||'Deposit')+'</a></div>';
+		if(has_pos){
+			data+='<hr><h4 class="captions">'+(L.pm_pool_withdraw||'Withdraw')+'</h4>';
+			if(!locked){
+				data+='<p><label class="input-descr"><span class="input-caption">'+(L.pm_pool_wd_shares||'Shares (0 = all)')+':</span><input type="text" name="pm-pool-wd-shares" class="simple-rounded" value="0"></label></p>';
+				data+='<p class="small grey">'+(L.pm_pool_you_have||'You have')+': '+pm_fmt_shares(shares)+'</p>';
+				data+='<div class="wide-buttons captions"><a class="wide-button pm-pool-withdraw-action">'+(L.pm_pool_withdraw_btn||'Withdraw')+'</a></div>';
+			}
+			else{
+				data+='<p class="small grey">'+(L.pm_pool_locked_hint||'Your deposit is locked. You can exit everything now via emergency withdraw; a penalty applies to accrued rewards only (never to principal).')+'</p>';
+				data+='<div class="wide-buttons captions"><a class="wide-button color-red pm-pool-emergency-action">'+(L.pm_pool_emergency_btn||'Emergency withdraw')+'</a></div>';
+			}
+		}
+	}
+	data+='<p class="red pm-pool-error"></p><p class="green pm-pool-success"></p>';
+	box.html(pm_wrap(data));
+
+	box.find('.pm-pool-avail').off('click.pmpool').on('click.pmpool',function(){ box.find('input[name=pm-pool-amount]').val(wallet_free.toFixed(3)); });
+	box.find('.pm-pool-deposit-action').off('click.pmpool').on('click.pmpool',function(){ pm_pool_deposit_action(box,wallet_free); });
+	box.find('.pm-pool-withdraw-action').off('click.pmpool').on('click.pmpool',function(){ pm_pool_withdraw_action(box); });
+	box.find('.pm-pool-emergency-action').off('click.pmpool').on('click.pmpool',function(){ pm_pool_emergency_action(box); });
+}
+function pm_pool_err(box,err){ box.find('.pm-pool-error').html((ltmp_arr.pm_pool_error||'Operation failed')+': '+escape_html((''+((err&&err.message)||JSON.stringify(err))).slice(0,180))); console.log(err); }
+function pm_pool_deposit_action(box,wallet_free){
+	box.find('.pm-pool-error').html(''); box.find('.pm-pool-success').html('');
+	let amount=parseFloat((''+box.find('input[name=pm-pool-amount]').val()).replace(',','.').replace(/[^0-9.]/g,'').trim());
+	if(!(amount>0)){ box.find('.pm-pool-error').html(ltmp_arr.pm_pool_amount_invalid||'Enter a valid amount.'); return; }
+	if(amount>wallet_free){ box.find('.pm-pool-error').html((ltmp_arr.pm_pool_available||'Available')+': '+wallet_free.toFixed(3)+' VIZ'); return; }
+	let btn=box.find('.pm-pool-deposit-action'); btn.attr('disabled','disabled');
+	viz.broadcast.pmLazyDeposit(users[current_user].active_key,current_user,amount.toFixed(3)+' VIZ',[],function(err,result){
+		btn.removeAttr('disabled');
+		if(err){ pm_pool_err(box,err); return; }
+		box.find('.pm-pool-success').html(ltmp_arr.pm_pool_deposit_ok||'Deposited into the pool.');
+		setTimeout(load_pm_pool,1300);
+	});
+}
+function pm_pool_withdraw_action(box){
+	box.find('.pm-pool-error').html(''); box.find('.pm-pool-success').html('');
+	let sh=Math.max(0,Math.round((parseFloat((''+box.find('input[name=pm-pool-wd-shares]').val()).replace(',','.').trim())||0)*1000)); // display → raw ×1000; 0 = all
+	let btn=box.find('.pm-pool-withdraw-action'); btn.attr('disabled','disabled');
+	viz.broadcast.pmLazyWithdraw(users[current_user].active_key,current_user,sh,false,[],function(err,result){
+		btn.removeAttr('disabled');
+		if(err){ pm_pool_err(box,err); return; }
+		box.find('.pm-pool-success').html(ltmp_arr.pm_pool_withdraw_ok||'Withdrawal submitted.');
+		setTimeout(load_pm_pool,1300);
+	});
+}
+function pm_pool_emergency_action(box){
+	if(!confirm(ltmp_arr.pm_pool_emergency_confirm||'Emergency withdraw now? A penalty applies to accrued rewards (not to your principal).')){ return; }
+	box.find('.pm-pool-error').html(''); box.find('.pm-pool-success').html('');
+	let btn=box.find('.pm-pool-emergency-action'); btn.attr('disabled','disabled');
+	viz.broadcast.pmLazyWithdraw(users[current_user].active_key,current_user,0,true,[],function(err,result){
+		btn.removeAttr('disabled');
+		if(err){ pm_pool_err(box,err); return; }
+		box.find('.pm-pool-success').html(ltmp_arr.pm_pool_withdraw_ok||'Withdrawal submitted.');
+		setTimeout(load_pm_pool,1300);
+	});
 }
 function pm_market_status_label(m){
 	if(1==m.status){

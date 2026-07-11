@@ -583,6 +583,7 @@ var ltmp_zh_arr = {
 						<div class="wide-buttons captions">
 							<a class="wide-button color-green" data-href="/pm/">市场</a>
 							<a class="wide-button color-green" data-href="/pm/completed/">我的已完成</a>
+						<a class="wide-button color-green" data-href="/pm/pool/">流动性资金池</a>
 						</div>
 					</div>
 				</div>
@@ -1791,6 +1792,40 @@ var ltmp_zh_arr = {
 	pm_my_positions:'我的持仓',
 	pm_no_completed:'暂无已完成持仓。',
 	pm_open:'打开',
+	pm_pool_disabled:'流动性资金池目前在链上已停用。',
+	pm_pool_state:'资金池状态',
+	pm_pool_total:'总价值',
+	pm_pool_free:'空闲',
+	pm_pool_allocated:'已部署',
+	pm_pool_earned:'已赚手续费',
+	pm_pool_lock:'锁定期',
+	pm_pool_days:'天',
+	pm_pool_penalty:'紧急提取罚金（针对收益）',
+	pm_pool_your:'您的仓位',
+	pm_pool_no_position:'您在资金池中暂无仓位。',
+	pm_pool_shares:'份额',
+	pm_pool_principal:'本金',
+	pm_pool_value:'当前价值',
+	pm_pool_status:'状态',
+	pm_pool_locked_until:'锁定至',
+	pm_pool_unlocked:'已解锁',
+	pm_pool_emergency_now:'立即紧急退出',
+	pm_pool_penalty_short:'罚金',
+	pm_pool_deposit:'存入',
+	pm_pool_amount:'金额 (VIZ)',
+	pm_pool_available:'可用',
+	pm_pool_deposit_btn:'存入',
+	pm_pool_withdraw:'提取',
+	pm_pool_wd_shares:'份额（0 = 全部）',
+	pm_pool_you_have:'您拥有',
+	pm_pool_withdraw_btn:'提取',
+	pm_pool_locked_hint:'您的存款已锁定。可通过紧急提取立即取回全部；罚金仅针对已累积收益（绝不触及本金）。',
+	pm_pool_emergency_btn:'紧急提取',
+	pm_pool_error:'操作失败',
+	pm_pool_amount_invalid:'请输入有效金额。',
+	pm_pool_deposit_ok:'已存入资金池。',
+	pm_pool_withdraw_ok:'提取已提交。',
+	pm_pool_emergency_confirm:'现在紧急提取？罚金将针对已累积收益（不影响本金）。',
 	pm_outcome:'结果',
 	pm_payout:'赔付',
 	pm_place_bet:'下注',
@@ -1866,6 +1901,20 @@ var ltmp_zh_arr = {
 					</div>
 					<div class="table-data pm-completed-list"></div>
 				</div>
+				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-pool">
+			<div class="card">
+				<h3 class="captions">流动性资金池</h3>
+				<p class="small grey">将 VIZ 存入共享的惰性流动性池。您的资金为各预测市场提供做市流动性，并赚取交易手续费与杠杆利息的份额。</p>
+				<ul class="small grey">
+					<li>收益持续累积并计入您的仓位价值。</li>
+					<li>存款会锁定一段固定期限（见下方）；解锁后可进行计划提取。</li>
+					<li>解锁前的紧急提取会立即取回全部资金，但会对已累积收益收取罚金——绝不触及本金。</li>
+					<li>池内资金承担做市风险，收益不作保证。</li>
+				</ul>
+				<div class="pm-pool-box"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
 				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>

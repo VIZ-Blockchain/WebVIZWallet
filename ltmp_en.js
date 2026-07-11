@@ -582,6 +582,7 @@ var ltmp_en_arr={
 						<div class="wide-buttons captions">
 							<a class="wide-button color-green" data-href="/pm/">Markets</a>
 							<a class="wide-button color-green" data-href="/pm/completed/">My completed</a>
+						<a class="wide-button color-green" data-href="/pm/pool/">Liquidity pool</a>
 						</div>
 					</div>
 				</div>
@@ -1790,6 +1791,40 @@ var ltmp_en_arr={
 	pm_my_positions:'My positions',
 	pm_no_completed:'No completed positions yet.',
 	pm_open:'Open',
+	pm_pool_disabled:'The liquidity pool is disabled on-chain right now.',
+	pm_pool_state:'Pool state',
+	pm_pool_total:'Total value',
+	pm_pool_free:'Free',
+	pm_pool_allocated:'Deployed',
+	pm_pool_earned:'Earned fees',
+	pm_pool_lock:'Lock period',
+	pm_pool_days:'d',
+	pm_pool_penalty:'Emergency penalty on rewards',
+	pm_pool_your:'Your position',
+	pm_pool_no_position:'You have no position in the pool yet.',
+	pm_pool_shares:'Shares',
+	pm_pool_principal:'Principal',
+	pm_pool_value:'Current value',
+	pm_pool_status:'Status',
+	pm_pool_locked_until:'Locked until',
+	pm_pool_unlocked:'Unlocked',
+	pm_pool_emergency_now:'Emergency exit now',
+	pm_pool_penalty_short:'penalty',
+	pm_pool_deposit:'Deposit',
+	pm_pool_amount:'Amount (VIZ)',
+	pm_pool_available:'Available',
+	pm_pool_deposit_btn:'Deposit',
+	pm_pool_withdraw:'Withdraw',
+	pm_pool_wd_shares:'Shares (0 = all)',
+	pm_pool_you_have:'You have',
+	pm_pool_withdraw_btn:'Withdraw',
+	pm_pool_locked_hint:'Your deposit is locked. You can exit everything now via emergency withdraw; a penalty applies to accrued rewards only (never to principal).',
+	pm_pool_emergency_btn:'Emergency withdraw',
+	pm_pool_error:'Operation failed',
+	pm_pool_amount_invalid:'Enter a valid amount.',
+	pm_pool_deposit_ok:'Deposited into the pool.',
+	pm_pool_withdraw_ok:'Withdrawal submitted.',
+	pm_pool_emergency_confirm:'Emergency withdraw now? A penalty applies to accrued rewards (not to your principal).',
 	pm_outcome:'Outcome',
 	pm_payout:'Payout',
 	pm_place_bet:'Place a bet',
@@ -1870,6 +1905,20 @@ var ltmp_en_arr={
 					</div>
 					<div class="table-data pm-completed-list"></div>
 				</div>
+				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-pool">
+			<div class="card">
+				<h3 class="captions">Liquidity pool</h3>
+				<p class="small grey">Deposit VIZ into the shared lazy-liquidity pool. Your capital provides market-making liquidity across prediction markets and earns a share of trading fees and leverage interest.</p>
+				<ul class="small grey">
+					<li>Rewards accrue continuously and are added to your position value.</li>
+					<li>Deposits are locked for a fixed period (shown below); planned withdrawal is available once unlocked.</li>
+					<li>Emergency withdrawal before unlock returns everything now, but a penalty applies to accrued rewards &mdash; never to your principal.</li>
+					<li>Pooled capital is at market-making risk; returns are not guaranteed.</li>
+				</ul>
+				<div class="pm-pool-box"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
 				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>

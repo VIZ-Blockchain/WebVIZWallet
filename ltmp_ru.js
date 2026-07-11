@@ -582,6 +582,7 @@ var ltmp_ru_arr={
 						<div class="wide-buttons captions">
 							<a class="wide-button color-green" data-href="/pm/">Рынки</a>
 							<a class="wide-button color-green" data-href="/pm/completed/">Мои завершённые</a>
+						<a class="wide-button color-green" data-href="/pm/pool/">Пул ликвидности</a>
 						</div>
 					</div>
 				</div>
@@ -1791,6 +1792,40 @@ var ltmp_ru_arr={
 	pm_my_positions:'Мои позиции',
 	pm_no_completed:'Завершённых позиций пока нет.',
 	pm_open:'Открыть',
+	pm_pool_disabled:'Пул ликвидности сейчас отключён на цепи.',
+	pm_pool_state:'Состояние пула',
+	pm_pool_total:'Общая стоимость',
+	pm_pool_free:'Свободно',
+	pm_pool_allocated:'Размещено',
+	pm_pool_earned:'Начислено комиссий',
+	pm_pool_lock:'Срок блокировки',
+	pm_pool_days:'дн',
+	pm_pool_penalty:'Штраф за экстренный вывод (с наград)',
+	pm_pool_your:'Ваша позиция',
+	pm_pool_no_position:'У вас пока нет позиции в пуле.',
+	pm_pool_shares:'Доли',
+	pm_pool_principal:'Тело депозита',
+	pm_pool_value:'Текущая стоимость',
+	pm_pool_status:'Статус',
+	pm_pool_locked_until:'Заблокировано до',
+	pm_pool_unlocked:'Разблокировано',
+	pm_pool_emergency_now:'Экстренный выход сейчас',
+	pm_pool_penalty_short:'штраф',
+	pm_pool_deposit:'Внести',
+	pm_pool_amount:'Сумма (VIZ)',
+	pm_pool_available:'Доступно',
+	pm_pool_deposit_btn:'Внести',
+	pm_pool_withdraw:'Вывести',
+	pm_pool_wd_shares:'Доли (0 = все)',
+	pm_pool_you_have:'У вас',
+	pm_pool_withdraw_btn:'Вывести',
+	pm_pool_locked_hint:'Депозит заблокирован. Можно вывести всё сейчас через экстренный вывод; штраф применяется только к начисленным наградам (никогда к телу депозита).',
+	pm_pool_emergency_btn:'Экстренный вывод',
+	pm_pool_error:'Операция не удалась',
+	pm_pool_amount_invalid:'Введите корректную сумму.',
+	pm_pool_deposit_ok:'Внесено в пул.',
+	pm_pool_withdraw_ok:'Вывод отправлен.',
+	pm_pool_emergency_confirm:'Вывести экстренно сейчас? Штраф применится к начисленным наградам (не к телу депозита).',
 	pm_outcome:'Исход',
 	pm_payout:'Выплата',
 	pm_place_bet:'Сделать ставку',
@@ -1866,6 +1901,20 @@ var ltmp_ru_arr={
 					</div>
 					<div class="table-data pm-completed-list"></div>
 				</div>
+				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-pool">
+			<div class="card">
+				<h3 class="captions">Пул ликвидности</h3>
+				<p class="small grey">Внесите VIZ в общий пул «ленивой» ликвидности. Ваш капитал обеспечивает маркет-мейкинг на рынках прогнозов и приносит долю торговых комиссий и процентов по кредитному плечу.</p>
+				<ul class="small grey">
+					<li>Награды начисляются непрерывно и увеличивают стоимость вашей позиции.</li>
+					<li>Депозит блокируется на фиксированный срок (см. ниже); плановый вывод доступен после разблокировки.</li>
+					<li>Экстренный вывод до разблокировки вернёт всё сразу, но штраф применяется к начисленным наградам &mdash; никогда к телу депозита.</li>
+					<li>Капитал в пуле несёт риск маркет-мейкинга; доходность не гарантирована.</li>
+				</ul>
+				<div class="pm-pool-box"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
 				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>
