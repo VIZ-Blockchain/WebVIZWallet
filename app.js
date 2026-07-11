@@ -55,12 +55,30 @@ console.log('using node',default_api_node);
 viz.config.set('websocket',default_api_node);
 start_node_down_check();
 
+// Testnet indicator: if the active node URL looks like a testnet, mark the header so users can
+// visually tell they are NOT on the real chain (owner 2026-07-11). Called on load + node switch.
+function update_testnet_badge(){
+	var testnet=/testnet/i.test(''+default_api_node);
+	if(testnet){
+		$('.testnet-badge').css('display','');
+		$('.header').addClass('testnet-mode');
+		$('body').addClass('testnet-mode');
+	}
+	else{
+		$('.testnet-badge').css('display','none');
+		$('.header').removeClass('testnet-mode');
+		$('body').removeClass('testnet-mode');
+	}
+}
+$(function(){ update_testnet_badge(); });
+
 function select_api_node(node){
 	node=typeof node==='undefined'?api_nodes[0]:node;
 	default_api_node=node;
 	api_nodes_addon.default=default_api_node;
 	console.log('using node',default_api_node);
 	viz.config.set('websocket',default_api_node);
+	update_testnet_badge();
 	save_session();
 	hide_node_down_notice();
 	start_node_down_check();
@@ -85,6 +103,7 @@ function approved_api_node(node,latency){
 	default_api_node=node;
 	api_nodes_addon.default=default_api_node;
 	viz.config.set('websocket',default_api_node);
+	update_testnet_badge();
 	save_session();
 	hide_node_down_notice();
 	start_node_down_check();
@@ -297,6 +316,7 @@ function remove_api_node(node){
 		}
 		api_nodes_addon.default=default_api_node;
 		viz.config.set('websocket',default_api_node);
+		update_testnet_badge();
 		save_session();
 		if(standalone){
 			parse_standalone_fullpath();

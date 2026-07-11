@@ -27,7 +27,7 @@
 	<div class="horizontal-view">
 		<div class="menu-button menu-button-action"><img class="menu-button-action" src="/icons/menu.svg"></div>
 		<div class="logo">
-			<a data-href="/" class="prefix">wallet</a><a href="https://promo.viz.world/"><img src="/icons/logo-viz-simple.svg" alt="VIZ World"></a>
+			<a data-href="/" class="prefix">wallet</a><a href="https://promo.viz.world/"><img src="/icons/logo-viz-simple.svg" alt="VIZ World"></a><span class="testnet-badge" style="display:none">testnet</span>
 		</div>
 		<div class="user-menu">
 			<div class="login">&hellip;</div>
