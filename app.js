@@ -3440,9 +3440,15 @@ function load_pm_markets(reset){
 		$('.view-pm .page-index .pm-markets-footer').html((markets.length>=per_page)?('<a class="inline-button red pm-load-more">'+(ltmp_arr.pm_load_more||'Load more')+'</a>'):'');
 	});
 }
+function pm_market_bettable(m){
+	if(1!=m.status){ return false; }
+	let be=parseInt(new Date((''+m.betting_expiration)+'Z').getTime()/1000);
+	return (0==be)||(be>parseInt(Date.now()/1000));
+}
 function load_pm_market(id){
+	id=parseInt(id);
 	$('.view-pm .page-market .pm-market-detail').html('<p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p>');
-	viz.api.getMarket(parseInt(id),function(err,m){
+	viz.api.getMarket(id,function(err,m){
 		if(err||!m){ $('.view-pm .page-market .pm-market-detail').html('<p class="red">'+ltmp_arr.default_node_error+'</p>'); if(err){console.log(err);} return; }
 		let data='';
 		if(m.image){ data+='<div><img class="pm-market-image" style="max-height:120px" src="'+escape_html(''+m.image)+'" onerror="this.style.display=\'none\'"></div>'; }
@@ -3450,8 +3456,43 @@ function load_pm_market(id){
 		data+='<div class="small grey">'+escape_html(''+(m.category||''))+' &middot; '+pm_market_status_label(m)+'</div>';
 		data+='<div class="small">'+(ltmp_arr.pm_betting_until||'Betting until')+': '+show_date(m.betting_expiration,true)+ltmp_arr.default_date_utc+'</div>';
 		if(m.url){ data+='<p><a class="inline-button red small" href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_source||'Source')+' &#8599;</a></p>'; }
-		data+='<p class="grey small">'+(ltmp_arr.pm_ops_soon||'Betting, transfer and dispute actions are being added.')+'</p>';
+		data+='<div class="pm-bet-box"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>';
 		$('.view-pm .page-market .pm-market-detail').html(data);
+		let bettable=pm_market_bettable(m);
+		viz.api.getMarketOutcomes(id,function(oerr,outcomes){
+			let box=$('.view-pm .page-market .pm-bet-box');
+			if(oerr||!outcomes||!outcomes.length){ box.html(''); if(oerr){console.log(oerr);} return; }
+			if(!bettable){ box.html('<p class="grey small">'+(ltmp_arr.pm_betting_closed||'Betting is closed for this market.')+'</p>'); return; }
+			let bd='<h4 class="captions">'+(ltmp_arr.pm_place_bet||'Place a bet')+'</h4>';
+			bd+='<p><input type="text" name="pm-bet-amount" class="simple-rounded" placeholder="0.000 VIZ"></p>';
+			bd+='<div class="wide-buttons captions">';
+			for(let i in outcomes){
+				let o=outcomes[i];
+				let side=(0==m.market_type)?o.outcome_index:-1;
+				let oidx=(0==m.market_type)?-1:o.outcome_index;
+				bd+='<a class="wide-button color-red pm-bet-btn" data-market="'+id+'" data-side="'+side+'" data-oindex="'+oidx+'">'+escape_html(''+o.label)+'</a>';
+			}
+			bd+='</div><p class="red pm-bet-error"></p><p class="green pm-bet-success"></p>';
+			box.html(bd);
+			box.find('.pm-bet-btn').off('click.pmbet').on('click.pmbet',function(){ pm_place_bet_action($(this)); });
+		});
+	});
+}
+function pm_place_bet_action(btn){
+	let box=$('.view-pm .page-market .pm-bet-box');
+	box.find('.pm-bet-error').html(''); box.find('.pm-bet-success').html('');
+	let market_id=parseInt(btn.attr('data-market'));
+	let side=parseInt(btn.attr('data-side'));
+	let oindex=parseInt(btn.attr('data-oindex'));
+	let amount=parseFloat((''+box.find('input[name=pm-bet-amount]').val()).replace(',','.').trim());
+	if(!(amount>0)){ box.find('.pm-bet-error').html(ltmp_arr.pm_bet_amount_invalid||'Enter a valid amount.'); return; }
+	let amount_str=amount.toFixed(3)+' VIZ';
+	box.find('.pm-bet-btn').attr('disabled','disabled');
+	viz.broadcast.pmPlaceBet(users[current_user].active_key,current_user,market_id,side,oindex,amount_str,0,0,[],function(err,result){
+		box.find('.pm-bet-btn').removeAttr('disabled');
+		if(err){ box.find('.pm-bet-error').html((ltmp_arr.pm_bet_error||'Bet failed')+': '+escape_html((''+(err.message||JSON.stringify(err))).slice(0,160))); console.log(err); return; }
+		box.find('.pm-bet-success').html(ltmp_arr.pm_bet_success||'Bet placed!');
+		setTimeout(function(){ load_pm_market(market_id); },1200);
 	});
 }
 function load_pm_completed(){
