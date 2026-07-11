@@ -3768,17 +3768,22 @@ function load_pm_pool(){
 	let box=$('.view-pm .page-pool .pm-pool-box');
 	if(!box.length){ return; }
 	box.html('<p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p>');
-	let pool=null,dep=null,props=null,wallet_free=0,done=0;
-	function ready(){ if(++done<4){ return; } render_pm_pool(box,pool,dep,props,wallet_free); }
+	let pool=null,dep=null,props=null,wallet_free=0,my_req=[],done=0;
+	function ready(){ if(++done<5){ return; } render_pm_pool(box,pool,dep,props,wallet_free,my_req); }
 	viz.api.getLazyPool(function(err,r){ if(!err){ pool=r; } ready(); });
 	viz.api.getLazyDeposit(current_user,function(err,r){ if(!err){ dep=r; } ready(); });
 	viz.api.getPmChainProperties(function(err,r){ if(!err){ props=r; } ready(); });
 	viz.api.getAccounts([current_user],function(err,r){ if(!err&&r&&r[0]){ wallet_free=parseFloat(r[0].balance)||0; } ready(); });
+	// get_lazy_withdraw_requests is newer than the vendored viz.min.js → direct JSON-RPC to the node.
+	fetch(default_api_node,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:'call',params:['prediction_market_api','get_lazy_withdraw_requests',[current_user]],id:1})})
+		.then(function(r){return r.json();}).then(function(j){ if(j&&Array.isArray(j.result)){ my_req=j.result; } ready(); }).catch(function(){ ready(); });
 }
-function render_pm_pool(box,pool,dep,props,wallet_free){
+function render_pm_pool(box,pool,dep,props,wallet_free,my_req){
 	let L=ltmp_arr;
 	let n=function(v){ return v==null?0:(parseInt(v)||0); };
 	let free=n(pool&&pool.free_balance), alloc=n(pool&&pool.allocated_balance), earned=n(pool&&pool.earned_balance);
+	let pending_wd=n(pool&&pool.pending_withdrawals);
+	let my_queued=0; if(Array.isArray(my_req)){ my_req.forEach(function(r){ my_queued+=n(r&&r.amount); }); }
 	let rps=(pool&&pool.reward_per_share!=null)?Number(pool.reward_per_share):0;
 	let total_value=free+alloc;
 	let pen_bp=(props&&props.pm_lazy_emergency_penalty_percent!=null)?parseInt(props.pm_lazy_emergency_penalty_percent):5000; // bps
@@ -3801,6 +3806,8 @@ function render_pm_pool(box,pool,dep,props,wallet_free){
 	data+='<div class="small grey">'+(L.pm_pool_free||'Free')+': '+pm_fmt_viz(free)+' &middot; '+(L.pm_pool_allocated||'Deployed')+': '+pm_fmt_viz(alloc)+'</div>';
 	data+='<div class="small grey">'+(L.pm_pool_earned||'Earned fees')+': '+pm_fmt_viz(earned)+'</div>';
 	data+='<div class="small grey">'+(L.pm_pool_lock||'Lock period')+': '+Math.round(lock_sec/86400)+' '+(L.pm_pool_days||'d')+' &middot; '+(L.pm_pool_penalty||'Emergency penalty on rewards')+': '+(pen_bp/100)+'%</div>';
+	if(pending_wd>0){ data+='<div class="small grey">'+(L.pm_pool_pending||'Awaiting withdrawal')+': '+pm_fmt_viz(pending_wd)+'</div>'; }
+	if(my_queued>0){ data+='<p class="orange">'+(L.pm_pool_queued_notice||'You have a queued withdrawal of')+' '+pm_fmt_viz(my_queued)+' &mdash; '+(L.pm_pool_queued_tail||'paid automatically (FIFO) as capital returns to the pool.')+'</p>'; }
 
 	data+='<hr><h4 class="captions">'+(L.pm_pool_your||'Your position')+'</h4>';
 	if(!has_pos){ data+='<p class="grey small">'+(L.pm_pool_no_position||'You have no position in the pool yet.')+'</p>'; }
@@ -3821,13 +3828,16 @@ function render_pm_pool(box,pool,dep,props,wallet_free){
 		data+='<div class="wide-buttons captions"><a class="wide-button pm-pool-deposit-action">'+(L.pm_pool_deposit_btn||'Deposit')+'</a></div>';
 		if(has_pos){
 			data+='<hr><h4 class="captions">'+(L.pm_pool_withdraw||'Withdraw')+'</h4>';
+			data+='<p class="small grey">'+(L.pm_pool_queue_note||'If the pool has no free balance right now, your withdrawal is queued and paid in parts as capital returns from markets — the pool never pays out more than it holds.')+'</p>';
 			if(!locked){
 				data+='<p><label class="input-descr"><span class="input-caption">'+(L.pm_pool_wd_shares||'Shares (0 = all)')+':</span><input type="text" name="pm-pool-wd-shares" class="simple-rounded" value="0"></label></p>';
 				data+='<p class="small grey">'+(L.pm_pool_you_have||'You have')+': '+pm_fmt_shares(shares)+'</p>';
 				data+='<div class="wide-buttons captions"><a class="wide-button pm-pool-withdraw-action">'+(L.pm_pool_withdraw_btn||'Withdraw')+'</a></div>';
 			}
 			else{
-				data+='<p class="small grey">'+(L.pm_pool_locked_hint||'Your deposit is locked. You can exit everything now via emergency withdraw; a penalty applies to accrued rewards only (never to principal).')+'</p>';
+				data+='<p class="small grey">'+(L.pm_pool_emergency_warn||'Emergency exit before unlock. The penalty applies to accrued rewards only, never to your principal. Enter shares to exit (0 = all).')+'</p>';
+				data+='<p><label class="input-descr"><span class="input-caption">'+(L.pm_pool_wd_shares||'Shares (0 = all)')+':</span><input type="text" name="pm-pool-em-shares" class="simple-rounded" value="0"></label></p>';
+				data+='<p class="small grey">'+(L.pm_pool_you_have||'You have')+': '+pm_fmt_shares(shares)+'</p>';
 				data+='<div class="wide-buttons captions"><a class="wide-button color-red pm-pool-emergency-action">'+(L.pm_pool_emergency_btn||'Emergency withdraw')+'</a></div>';
 			}
 		}
@@ -3866,10 +3876,11 @@ function pm_pool_withdraw_action(box){
 	});
 }
 function pm_pool_emergency_action(box){
-	if(!confirm(ltmp_arr.pm_pool_emergency_confirm||'Emergency withdraw now? A penalty applies to accrued rewards (not to your principal).')){ return; }
+	if(!confirm(ltmp_arr.pm_pool_emergency_confirm||'Emergency withdraw now? A penalty applies to accrued rewards (not to your principal). If the pool has no free balance, the payout is queued and paid as capital returns.')){ return; }
 	box.find('.pm-pool-error').html(''); box.find('.pm-pool-success').html('');
+	let sh=Math.max(0,Math.round((parseFloat((''+box.find('input[name=pm-pool-em-shares]').val()).replace(',','.').trim())||0)*1000)); // display → raw ×1000; 0 = all
 	let btn=box.find('.pm-pool-emergency-action'); btn.attr('disabled','disabled');
-	viz.broadcast.pmLazyWithdraw(users[current_user].active_key,current_user,0,true,[],function(err,result){
+	viz.broadcast.pmLazyWithdraw(users[current_user].active_key,current_user,sh,true,[],function(err,result){
 		btn.removeAttr('disabled');
 		if(err){ pm_pool_err(box,err); return; }
 		box.find('.pm-pool-success').html(ltmp_arr.pm_pool_withdraw_ok||'Withdrawal submitted.');
