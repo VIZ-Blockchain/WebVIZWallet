@@ -576,7 +576,9 @@ var ltmp_zh_arr = {
 							<a class="wide-button color-green" data-href="/assets/checks/">支票</a>
 						</div>
 					</div>
-					<div class="column column-3 shadow grid">
+				</div>
+				<div class="columns-view">
+					<div class="column column-1 shadow grid">
 						<h4 class="center captions">预测市场</h4>
 						<div class="wide-buttons captions">
 							<a class="wide-button color-green" data-href="/pm/">市场</a>
