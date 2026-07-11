@@ -1679,6 +1679,79 @@ var ltmp_en_arr={
 			</div>
 		</div>
 	`,
+	preset_view_pm_title:'Prediction markets',
+	// PM section (#52) strings
+	pm_amount:'Amount',
+	pm_bet_amount_invalid:'Enter a valid amount.',
+	pm_bet_error:'Bet failed',
+	pm_bet_success:'Bet placed!',
+	pm_betting_closed:'Betting is closed for this market.',
+	pm_betting_until:'Betting until',
+	pm_dispute:'Dispute',
+	pm_dispute_create:'Open dispute',
+	pm_dispute_error:'Dispute failed',
+	pm_dispute_hint:'Open a dispute if you disagree with how this market resolves.',
+	pm_dispute_proposed:'Proposed outcome',
+	pm_dispute_reason:'Reason / evidence',
+	pm_dispute_success:'Dispute opened!',
+	pm_dispute_uphold:'Uphold original',
+	pm_dispute_void:'Void / no contest',
+	pm_dispute_vote:'Vote in dispute',
+	pm_dispute_vote_bad:'Enter a valid weight.',
+	pm_dispute_vote_error:'Vote failed',
+	pm_dispute_vote_outcome:'Vote outcome',
+	pm_dispute_vote_success:'Vote submitted!',
+	pm_dispute_vote_weight:'Weight %',
+	pm_load_more:'Load more',
+	pm_memo:'Memo (optional)',
+	pm_my_positions:'My positions',
+	pm_no_completed:'No completed positions yet.',
+	pm_open:'Open',
+	pm_outcome:'Outcome',
+	pm_payout:'Payout',
+	pm_place_bet:'Place a bet',
+	pm_shares:'Shares',
+	pm_source:'Source',
+	pm_status_active:'Active',
+	pm_status_awaiting:'Awaiting resolution',
+	pm_status_closed:'Closed',
+	pm_status_resolved:'Resolved',
+	pm_submit:'Submit',
+	pm_to_account:'To account',
+	pm_transfer:'Transfer',
+	pm_transfer_error:'Transfer failed',
+	pm_transfer_fill:'Enter recipient and shares.',
+	pm_transfer_send:'Send',
+	pm_transfer_success:'Position transferred!',
+	pm_transfer_title:'Transfer position',
+	pm_you_have:'You have',
+	preset_view_pm:`
+		<div class="page page-index">
+			<div class="card transparent">
+				<h3 class="adaptive-show-block captions">Prediction markets</h3>
+				<div class="wide-buttons size2 captions">
+					<a class="wide-button color-red" data-href="/pm/">Markets</a>
+					<a class="wide-button color-red" data-href="/pm/completed/">My completed</a>
+				</div>
+				<p><input type="text" name="pm-filter" class="simple-rounded" placeholder="Filter by title"></p>
+				<div class="pm-markets-list"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
+				<div class="pm-markets-footer center"></div>
+			</div>
+		</div>
+		<div class="page page-market">
+			<div class="card transparent">
+				<p><a class="inline-button grey small" data-href="/pm/">&larr; Markets</a></p>
+				<div class="pm-market-detail"></div>
+			</div>
+		</div>
+		<div class="page page-completed">
+			<div class="card transparent">
+				<p><a class="inline-button grey small" data-href="/pm/">&larr; Markets</a></p>
+				<h3 class="captions">My completed markets</h3>
+				<div class="pm-completed-list"></div>
+			</div>
+		</div>
+	`,
 	preset_view_market:`
 		<div class="page page-index">
 			<div class="card transparent">

@@ -57,6 +57,7 @@
 			<div class="view view-dao"></div>
 			<div class="view view-account"></div>
 			<div class="view view-market"></div>
+			<div class="view view-pm"></div>
 		</div>
 	</div>
 </div>

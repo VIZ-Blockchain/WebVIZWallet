@@ -1679,6 +1679,79 @@ var ltmp_ru_arr={
 			</div>
 		</div>
 		`,
+	preset_view_pm_title:'Рынки прогнозов',
+	// PM section (#52) strings
+	pm_amount:'Сумма',
+	pm_bet_amount_invalid:'Введите корректную сумму.',
+	pm_bet_error:'Ставка не прошла',
+	pm_bet_success:'Ставка принята!',
+	pm_betting_closed:'Приём ставок по этому рынку закрыт.',
+	pm_betting_until:'Ставки до',
+	pm_dispute:'Спор',
+	pm_dispute_create:'Открыть спор',
+	pm_dispute_error:'Спор не создан',
+	pm_dispute_hint:'Откройте спор, если не согласны с тем, как разрешается рынок.',
+	pm_dispute_proposed:'Предлагаемый исход',
+	pm_dispute_reason:'Причина / доказательства',
+	pm_dispute_success:'Спор открыт!',
+	pm_dispute_uphold:'Поддержать исходный',
+	pm_dispute_void:'Аннулировать / нет результата',
+	pm_dispute_vote:'Голосовать в споре',
+	pm_dispute_vote_bad:'Введите корректный вес.',
+	pm_dispute_vote_error:'Голос не прошёл',
+	pm_dispute_vote_outcome:'Исход голоса',
+	pm_dispute_vote_success:'Голос отправлен!',
+	pm_dispute_vote_weight:'Вес %',
+	pm_load_more:'Загрузить ещё',
+	pm_memo:'Заметка (опц.)',
+	pm_my_positions:'Мои позиции',
+	pm_no_completed:'Завершённых позиций пока нет.',
+	pm_open:'Открыть',
+	pm_outcome:'Исход',
+	pm_payout:'Выплата',
+	pm_place_bet:'Сделать ставку',
+	pm_shares:'Доли',
+	pm_source:'Источник',
+	pm_status_active:'Активен',
+	pm_status_awaiting:'Ожидает резолва',
+	pm_status_closed:'Закрыт',
+	pm_status_resolved:'Разрешён',
+	pm_submit:'Отправить',
+	pm_to_account:'Получатель',
+	pm_transfer:'Передать',
+	pm_transfer_error:'Передача не прошла',
+	pm_transfer_fill:'Укажите получателя и доли.',
+	pm_transfer_send:'Отправить',
+	pm_transfer_success:'Позиция передана!',
+	pm_transfer_title:'Передать позицию',
+	pm_you_have:'У вас',
+	preset_view_pm:`
+		<div class="page page-index">
+			<div class="card transparent">
+				<h3 class="adaptive-show-block captions">Рынки прогнозов</h3>
+				<div class="wide-buttons size2 captions">
+					<a class="wide-button color-red" data-href="/pm/">Рынки</a>
+					<a class="wide-button color-red" data-href="/pm/completed/">Мои завершённые</a>
+				</div>
+				<p><input type="text" name="pm-filter" class="simple-rounded" placeholder="Фильтр по названию"></p>
+				<div class="pm-markets-list"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
+				<div class="pm-markets-footer center"></div>
+			</div>
+		</div>
+		<div class="page page-market">
+			<div class="card transparent">
+				<p><a class="inline-button grey small" data-href="/pm/">&larr; Рынки</a></p>
+				<div class="pm-market-detail"></div>
+			</div>
+		</div>
+		<div class="page page-completed">
+			<div class="card transparent">
+				<p><a class="inline-button grey small" data-href="/pm/">&larr; Рынки</a></p>
+				<h3 class="captions">Мои завершённые рынки</h3>
+				<div class="pm-completed-list"></div>
+			</div>
+		</div>
+	`,
 	preset_view_market:`
 		<div class="page page-index">
 			<div class="card transparent">

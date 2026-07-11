@@ -1679,6 +1679,79 @@ var ltmp_zh_arr = {
 			</div>
 		</div>
 	`,
+	preset_view_pm_title:'预测市场',
+	// PM section (#52) strings
+	pm_amount:'金额',
+	pm_bet_amount_invalid:'请输入有效金额。',
+	pm_bet_error:'下注失败',
+	pm_bet_success:'下注成功！',
+	pm_betting_closed:'该市场已停止下注。',
+	pm_betting_until:'下注截止',
+	pm_dispute:'争议',
+	pm_dispute_create:'发起争议',
+	pm_dispute_error:'争议失败',
+	pm_dispute_hint:'如果您不同意市场的结算方式，可发起争议。',
+	pm_dispute_proposed:'提议结果',
+	pm_dispute_reason:'理由 / 证据',
+	pm_dispute_success:'争议已发起！',
+	pm_dispute_uphold:'维持原结果',
+	pm_dispute_void:'作废 / 无效',
+	pm_dispute_vote:'争议投票',
+	pm_dispute_vote_bad:'请输入有效权重。',
+	pm_dispute_vote_error:'投票失败',
+	pm_dispute_vote_outcome:'投票结果',
+	pm_dispute_vote_success:'投票已提交！',
+	pm_dispute_vote_weight:'权重 %',
+	pm_load_more:'加载更多',
+	pm_memo:'备注（可选）',
+	pm_my_positions:'我的持仓',
+	pm_no_completed:'暂无已完成持仓。',
+	pm_open:'打开',
+	pm_outcome:'结果',
+	pm_payout:'赔付',
+	pm_place_bet:'下注',
+	pm_shares:'份额',
+	pm_source:'来源',
+	pm_status_active:'进行中',
+	pm_status_awaiting:'等待结算',
+	pm_status_closed:'已关闭',
+	pm_status_resolved:'已结算',
+	pm_submit:'提交',
+	pm_to_account:'接收账户',
+	pm_transfer:'转移',
+	pm_transfer_error:'转移失败',
+	pm_transfer_fill:'请填写接收方和份额。',
+	pm_transfer_send:'发送',
+	pm_transfer_success:'持仓已转移！',
+	pm_transfer_title:'转移持仓',
+	pm_you_have:'您拥有',
+	preset_view_pm:`
+		<div class="page page-index">
+			<div class="card transparent">
+				<h3 class="adaptive-show-block captions">预测市场</h3>
+				<div class="wide-buttons size2 captions">
+					<a class="wide-button color-red" data-href="/pm/">市场</a>
+					<a class="wide-button color-red" data-href="/pm/completed/">我的已完成</a>
+				</div>
+				<p><input type="text" name="pm-filter" class="simple-rounded" placeholder="按标题筛选"></p>
+				<div class="pm-markets-list"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
+				<div class="pm-markets-footer center"></div>
+			</div>
+		</div>
+		<div class="page page-market">
+			<div class="card transparent">
+				<p><a class="inline-button grey small" data-href="/pm/">&larr; 市场</a></p>
+				<div class="pm-market-detail"></div>
+			</div>
+		</div>
+		<div class="page page-completed">
+			<div class="card transparent">
+				<p><a class="inline-button grey small" data-href="/pm/">&larr; 市场</a></p>
+				<h3 class="captions">我的已完成市场</h3>
+				<div class="pm-completed-list"></div>
+			</div>
+		</div>
+	`,
 	preset_view_market:`
 		<div class="page page-index">
 			<div class="card transparent">
