@@ -154,11 +154,48 @@ var ltmp_zh_arr = {
 			</div>
 		</div>
 		<div class="page page-security" data-title="加密">
-				<div class="card transparent">
-					<p><a class="inline-button grey small" data-href="/settings/">&larr; </a></p>
-					<div class="security-box"></div>
+			<div class="card">
+				<h3>钱包加密</h3>
+				<p class="grey">可选择用口令把您的密钥和账户加密到加密容器中（任意字符，建议超过 6 位）。口令仅保存在内存中，并在加载时询问。请备份您的密钥——遗失的口令无法找回。</p>
+				<div class="security-enable">
+					<p class="green">加密已关闭（密钥以明文形式存储在此设备上）。</p>
+					<p><label class="input-descr"><span class="input-caption">口令：</span><input type="password" name="enc-pass1" class="simple-rounded" autocomplete="new-password"></label></p>
+					<p><label class="input-descr"><span class="input-caption">重复口令：</span><input type="password" name="enc-pass2" class="simple-rounded" autocomplete="new-password"></label></p>
+					<p class="red enc-error"></p>
+					<p class="green enc-success"></p>
+					<p>
+						<input class="enc-enable-action blue-button captions" type="button" value="启用加密">
+						<span class="submit-button-ring"></span>
+						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+					</p>
 				</div>
+				<div class="security-manage">
+					<p class="red">加密已开启（密钥存储在加密容器中）。</p>
+					<h3>更改口令</h3>
+					<p><label class="input-descr"><span class="input-caption">当前口令：</span><input type="password" name="encc-cur" class="simple-rounded" autocomplete="off"></label></p>
+					<p><label class="input-descr"><span class="input-caption">新口令：</span><input type="password" name="encc-new1" class="simple-rounded" autocomplete="new-password"></label></p>
+					<p><label class="input-descr"><span class="input-caption">重复新口令：</span><input type="password" name="encc-new2" class="simple-rounded" autocomplete="new-password"></label></p>
+					<p class="red encc-error"></p>
+					<p class="green encc-success"></p>
+					<p>
+						<input class="enc-change-action blue-button captions" type="button" value="更改口令">
+						<span class="submit-button-ring"></span>
+						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+					</p>
+					<h3>关闭加密</h3>
+					<p><label class="input-descr"><span class="input-caption">口令：</span><input type="password" name="encd-cur" class="simple-rounded" autocomplete="off"></label></p>
+					<p class="red encd-error"></p>
+					<p class="green encd-success"></p>
+					<p>
+						<input class="enc-disable-action blue-button captions" type="button" value="关闭加密">
+						<span class="submit-button-ring"></span>
+						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+					</p>
+				</div>
+				<p class="green enc-note"></p>
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
+		</div>
 			<div class="page page-reset-access" data-title="重置密钥">
 			<div class="card">
 				<h3>重置密钥</h3>
@@ -1772,15 +1809,15 @@ var ltmp_zh_arr = {
 		</div>
 		<div class="page page-market">
 			<div class="card transparent">
-				<p><a class="inline-button grey small" data-href="/pm/">&larr; 市场</a></p>
 				<div class="pm-market-detail"></div>
+				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>
 		<div class="page page-completed">
 			<div class="card transparent">
-				<p><a class="inline-button grey small" data-href="/pm/">&larr; 市场</a></p>
 				<h3 class="captions">我的已完成市场</h3>
 				<div class="pm-completed-list"></div>
+				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>
 	`,

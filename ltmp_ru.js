@@ -153,11 +153,48 @@ var ltmp_ru_arr={
 			</div>
 		</div>
 		<div class="page page-security" data-title="Шифрование">
-				<div class="card transparent">
-					<p><a class="inline-button grey small" data-href="/settings/">&larr; </a></p>
-					<div class="security-box"></div>
+			<div class="card">
+				<h3>Шифрование кошелька</h3>
+				<p class="grey">По желанию можно зашифровать ваши ключи и аккаунты в крипто-контейнере под парольной фразой (любые символы, рекомендуется больше 6). Фраза хранится только в памяти и спрашивается при загрузке. Держите резервную копию ключей — забытую фразу восстановить нельзя.</p>
+				<div class="security-enable">
+					<p class="green">Шифрование выключено (ключи хранятся на этом устройстве в открытом виде).</p>
+					<p><label class="input-descr"><span class="input-caption">Парольная фраза:</span><input type="password" name="enc-pass1" class="simple-rounded" autocomplete="new-password"></label></p>
+					<p><label class="input-descr"><span class="input-caption">Повторите фразу:</span><input type="password" name="enc-pass2" class="simple-rounded" autocomplete="new-password"></label></p>
+					<p class="red enc-error"></p>
+					<p class="green enc-success"></p>
+					<p>
+						<input class="enc-enable-action blue-button captions" type="button" value="Включить шифрование">
+						<span class="submit-button-ring"></span>
+						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+					</p>
 				</div>
+				<div class="security-manage">
+					<p class="red">Шифрование включено (ключи хранятся в зашифрованном контейнере).</p>
+					<h3>Смена парольной фразы</h3>
+					<p><label class="input-descr"><span class="input-caption">Текущая фраза:</span><input type="password" name="encc-cur" class="simple-rounded" autocomplete="off"></label></p>
+					<p><label class="input-descr"><span class="input-caption">Новая фраза:</span><input type="password" name="encc-new1" class="simple-rounded" autocomplete="new-password"></label></p>
+					<p><label class="input-descr"><span class="input-caption">Повторите новую фразу:</span><input type="password" name="encc-new2" class="simple-rounded" autocomplete="new-password"></label></p>
+					<p class="red encc-error"></p>
+					<p class="green encc-success"></p>
+					<p>
+						<input class="enc-change-action blue-button captions" type="button" value="Сменить фразу">
+						<span class="submit-button-ring"></span>
+						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+					</p>
+					<h3>Отключение шифрования</h3>
+					<p><label class="input-descr"><span class="input-caption">Парольная фраза:</span><input type="password" name="encd-cur" class="simple-rounded" autocomplete="off"></label></p>
+					<p class="red encd-error"></p>
+					<p class="green encd-success"></p>
+					<p>
+						<input class="enc-disable-action blue-button captions" type="button" value="Отключить шифрование">
+						<span class="submit-button-ring"></span>
+						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+					</p>
+				</div>
+				<p class="green enc-note"></p>
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
+		</div>
 			<div class="page page-reset-access" data-title="Сброс ключей">
 			<div class="card">
 				<h3>Сброс ключей</h3>
@@ -1772,15 +1809,15 @@ var ltmp_ru_arr={
 		</div>
 		<div class="page page-market">
 			<div class="card transparent">
-				<p><a class="inline-button grey small" data-href="/pm/">&larr; Рынки</a></p>
 				<div class="pm-market-detail"></div>
+				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>
 		<div class="page page-completed">
 			<div class="card transparent">
-				<p><a class="inline-button grey small" data-href="/pm/">&larr; Рынки</a></p>
 				<h3 class="captions">Мои завершённые рынки</h3>
 				<div class="pm-completed-list"></div>
+				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>
 	`,

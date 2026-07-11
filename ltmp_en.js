@@ -154,11 +154,48 @@ var ltmp_en_arr={
 			</div>
 		</div>
 		<div class="page page-security" data-title="Encryption">
-				<div class="card transparent">
-					<p><a class="inline-button grey small" data-href="/settings/">&larr; </a></p>
-					<div class="security-box"></div>
+			<div class="card">
+				<h3>Wallet encryption</h3>
+				<p class="grey">Optionally encrypt your keys and accounts in a crypto container behind a passphrase (any characters, more than 6 recommended). The passphrase is kept only in memory and is asked on load. Keep a backup of your keys — a lost passphrase cannot be recovered.</p>
+				<div class="security-enable">
+					<p class="green">Encryption is off (keys are stored as plain text on this device).</p>
+					<p><label class="input-descr"><span class="input-caption">Passphrase:</span><input type="password" name="enc-pass1" class="simple-rounded" autocomplete="new-password"></label></p>
+					<p><label class="input-descr"><span class="input-caption">Repeat passphrase:</span><input type="password" name="enc-pass2" class="simple-rounded" autocomplete="new-password"></label></p>
+					<p class="red enc-error"></p>
+					<p class="green enc-success"></p>
+					<p>
+						<input class="enc-enable-action blue-button captions" type="button" value="Enable encryption">
+						<span class="submit-button-ring"></span>
+						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+					</p>
 				</div>
+				<div class="security-manage">
+					<p class="red">Encryption is on (keys are stored in an encrypted container).</p>
+					<h3>Change passphrase</h3>
+					<p><label class="input-descr"><span class="input-caption">Current passphrase:</span><input type="password" name="encc-cur" class="simple-rounded" autocomplete="off"></label></p>
+					<p><label class="input-descr"><span class="input-caption">New passphrase:</span><input type="password" name="encc-new1" class="simple-rounded" autocomplete="new-password"></label></p>
+					<p><label class="input-descr"><span class="input-caption">Repeat new passphrase:</span><input type="password" name="encc-new2" class="simple-rounded" autocomplete="new-password"></label></p>
+					<p class="red encc-error"></p>
+					<p class="green encc-success"></p>
+					<p>
+						<input class="enc-change-action blue-button captions" type="button" value="Change passphrase">
+						<span class="submit-button-ring"></span>
+						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+					</p>
+					<h3>Disable encryption</h3>
+					<p><label class="input-descr"><span class="input-caption">Passphrase:</span><input type="password" name="encd-cur" class="simple-rounded" autocomplete="off"></label></p>
+					<p class="red encd-error"></p>
+					<p class="green encd-success"></p>
+					<p>
+						<input class="enc-disable-action blue-button captions" type="button" value="Disable encryption">
+						<span class="submit-button-ring"></span>
+						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+					</p>
+				</div>
+				<p class="green enc-note"></p>
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
+		</div>
 			<div class="page page-reset-access" data-title="Reset keys">
 			<div class="card">
 				<h3>Reset keys</h3>
@@ -1772,15 +1809,15 @@ var ltmp_en_arr={
 		</div>
 		<div class="page page-market">
 			<div class="card transparent">
-				<p><a class="inline-button grey small" data-href="/pm/">&larr; Markets</a></p>
 				<div class="pm-market-detail"></div>
+				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>
 		<div class="page page-completed">
 			<div class="card transparent">
-				<p><a class="inline-button grey small" data-href="/pm/">&larr; Markets</a></p>
 				<h3 class="captions">My completed markets</h3>
 				<div class="pm-completed-list"></div>
+				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>
 	`,

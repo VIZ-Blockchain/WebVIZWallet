@@ -948,13 +948,13 @@ function save_session(){
 function wallet_unlock_overlay(onSuccess){
 	let blob=null; try{ blob=JSON.parse(localStorage.getItem('users_vault')); }catch(e){ blob=null; }
 	if(!blob){ onSuccess(); return; }
-	let h='<div class="wallet-unlock-overlay"><div class="wallet-unlock-box">'
+	let h='<div class="wallet-unlock-overlay"><div class="card">'
 		+'<h3>'+(ltmp_arr.enc_unlock_title||'Wallet is encrypted')+'</h3>'
-		+'<p class="small grey">'+(ltmp_arr.enc_unlock_hint||'Enter your passphrase to unlock your accounts.')+'</p>'
-		+'<p><input type="password" class="simple-rounded" name="wallet-unlock-pass" autocomplete="off" placeholder="'+(ltmp_arr.enc_pass||'Passphrase')+'"></p>'
-		+'<div class="wide-buttons captions"><a class="wide-button color-red wallet-unlock-go">'+(ltmp_arr.enc_unlock||'Unlock')+'</a></div>'
+		+'<p class="grey">'+(ltmp_arr.enc_unlock_hint||'Enter your passphrase to unlock your accounts.')+'</p>'
+		+'<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.enc_pass||'Passphrase')+':</span><input type="password" class="simple-rounded" name="wallet-unlock-pass" autocomplete="off"></label></p>'
 		+'<p class="red wallet-unlock-error"></p>'
-		+'<p class="small"><a class="wallet-unlock-forget grey">'+(ltmp_arr.enc_forget||'Forget wallet (erase encrypted data)')+'</a></p>'
+		+'<p><input class="wallet-unlock-go blue-button captions" type="button" value="'+(ltmp_arr.enc_unlock||'Unlock')+'"></p>'
+		+'<p><hr><a class="wallet-unlock-forget grey">'+(ltmp_arr.enc_forget||'Forget wallet (erase encrypted data)')+'</a></p>'
 		+'</div></div>';
 	$('body').append(h);
 	let ov=$('.wallet-unlock-overlay');
@@ -980,44 +980,23 @@ function wallet_unlock_overlay(onSuccess){
 	setTimeout(function(){ ov.find('input[name=wallet-unlock-pass]').focus(); },50);
 }
 
-// Settings → Security page renderer: enable/disable encryption of the wallet container.
-function render_wallet_security(){
-	let box=$('.view-settings .page-security .security-box'); if(!box.length){ return; }
+// Settings → Encryption page: toggle enable/manage sections and clear inputs on entry.
+// Markup lives in the preset (page-security) with the app's standard classes; this only wires state.
+function setup_wallet_security(){
+	let page=$('.view-settings .page-security'); if(!page.length){ return; }
 	let enc=wallet_is_encrypted();
-	let h='<h3 class="captions">'+(ltmp_arr.enc_title||'Wallet encryption')+'</h3>';
-	h+='<p class="small grey">'+(ltmp_arr.enc_info||'Optionally encrypt your keys and accounts in a crypto container behind a passphrase (any characters, recommended more than 6). The passphrase is stored only in memory and asked on load. Keep a backup of your keys — a lost passphrase cannot be recovered.')+'</p>';
-	if(!enc){
-		h+='<p class="green small">'+(ltmp_arr.enc_state_off||'Encryption is OFF (keys stored in plain text on this device).')+'</p>';
-		h+='<p><input type="password" name="enc-pass1" class="simple-rounded" autocomplete="new-password" placeholder="'+(ltmp_arr.enc_pass||'Passphrase')+'"></p>';
-		h+='<p><input type="password" name="enc-pass2" class="simple-rounded" autocomplete="new-password" placeholder="'+(ltmp_arr.enc_pass_repeat||'Repeat passphrase')+'"></p>';
-		h+='<div class="wide-buttons captions"><a class="wide-button color-red enc-enable">'+(ltmp_arr.enc_enable||'Enable encryption')+'</a></div>';
-	}
-	else{
-		h+='<p class="red small">'+(ltmp_arr.enc_state_on||'Encryption is ON (keys stored in an encrypted container).')+'</p>';
-		// change passphrase
-		h+='<h4 class="captions">'+(ltmp_arr.enc_change||'Change passphrase')+'</h4>';
-		h+='<p><input type="password" name="encc-cur" class="simple-rounded" autocomplete="off" placeholder="'+(ltmp_arr.enc_pass_current||'Current passphrase')+'"></p>';
-		h+='<p><input type="password" name="encc-new1" class="simple-rounded" autocomplete="new-password" placeholder="'+(ltmp_arr.enc_pass_new||'New passphrase')+'"></p>';
-		h+='<p><input type="password" name="encc-new2" class="simple-rounded" autocomplete="new-password" placeholder="'+(ltmp_arr.enc_pass_repeat||'Repeat passphrase')+'"></p>';
-		h+='<div class="wide-buttons captions"><a class="wide-button color-red enc-change">'+(ltmp_arr.enc_change||'Change passphrase')+'</a></div>';
-		h+='<p class="red encc-error"></p><p class="green encc-success"></p>';
-		// disable
-		h+='<h4 class="captions">'+(ltmp_arr.enc_disable||'Disable encryption')+'</h4>';
-		h+='<p><input type="password" name="enc-pass-cur" class="simple-rounded" autocomplete="off" placeholder="'+(ltmp_arr.enc_pass||'Passphrase')+'"></p>';
-		h+='<div class="wide-buttons captions"><a class="wide-button color-red enc-disable">'+(ltmp_arr.enc_disable||'Disable encryption')+'</a></div>';
-	}
-	h+='<p class="red enc-error"></p><p class="green enc-success"></p>';
-	box.html(h);
-	box.find('.enc-enable').on('click',wallet_enable_encryption);
-	box.find('.enc-disable').on('click',wallet_disable_encryption);
-	box.find('.enc-change').on('click',wallet_change_pass);
+	page.find('.security-enable').css('display',enc?'none':'block');
+	page.find('.security-manage').css('display',enc?'block':'none');
+	page.find('input[type=password]').val('');
+	page.find('.enc-error,.enc-success,.encc-error,.encc-success,.encd-error,.enc-note').html('');
+	page.find('.icon-check').addClass('hidden');
 }
 function wallet_enable_encryption(){
-	let box=$('.view-settings .page-security .security-box');
-	box.find('.enc-error').html(''); box.find('.enc-success').html('');
-	let p1=''+box.find('input[name=enc-pass1]').val(), p2=''+box.find('input[name=enc-pass2]').val();
-	if(p1.length<4){ box.find('.enc-error').html(ltmp_arr.enc_too_short||'Passphrase is too short.'); return; }
-	if(p1!==p2){ box.find('.enc-error').html(ltmp_arr.enc_mismatch||'Passphrases do not match.'); return; }
+	let page=$('.view-settings .page-security');
+	page.find('.enc-error').html(''); page.find('.enc-note').html('');
+	let p1=''+page.find('input[name=enc-pass1]').val(), p2=''+page.find('input[name=enc-pass2]').val();
+	if(p1.length<4){ page.find('.enc-error').html(ltmp_arr.enc_too_short||'Passphrase is too short.'); return; }
+	if(p1!==p2){ page.find('.enc-error').html(ltmp_arr.enc_mismatch||'Passphrases do not match.'); return; }
 	if(p1.length<7 && !confirm(ltmp_arr.enc_short_confirm||'Short passphrase (more than 6 characters is recommended). Continue?')){ return; }
 	wallet_encrypt_vault(users,p1).then(function(blob){
 		localStorage.setItem('users_vault',JSON.stringify(blob));
@@ -1025,24 +1004,24 @@ function wallet_enable_encryption(){
 		localStorage.removeItem('users');
 		wallet_pass=p1;
 		wallet_after_unlock();
-		box.find('.enc-success').html(ltmp_arr.enc_enabled||'Encryption enabled.');
-		render_wallet_security();
-	}).catch(function(e){ box.find('.enc-error').html((ltmp_arr.enc_fail||'Encryption failed')+': '+escape_html(''+(e.message||e))); console.log(e); });
+		setup_wallet_security();
+		page.find('.enc-note').html(ltmp_arr.enc_enabled||'Encryption enabled.');
+	}).catch(function(e){ page.find('.enc-error').html((ltmp_arr.enc_fail||'Encryption failed')+': '+escape_html(''+(e.message||e))); console.log(e); });
 }
 function wallet_disable_encryption(){
-	let box=$('.view-settings .page-security .security-box');
-	box.find('.enc-error').html(''); box.find('.enc-success').html('');
-	let pass=''+box.find('input[name=enc-pass-cur]').val();
+	let page=$('.view-settings .page-security');
+	page.find('.encd-error').html(''); page.find('.enc-note').html('');
+	let pass=''+page.find('input[name=encd-cur]').val();
 	let blob=null; try{ blob=JSON.parse(localStorage.getItem('users_vault')); }catch(e){ blob=null; }
-	if(!blob){ box.find('.enc-error').html(ltmp_arr.enc_fail||'No vault.'); return; }
+	if(!blob){ page.find('.encd-error').html(ltmp_arr.enc_fail||'No vault.'); return; }
 	wallet_decrypt_vault(blob,pass).then(function(obj){
 		users=obj; wallet_pass=null;
 		localStorage.setItem('users',JSON.stringify(users));
 		localStorage.removeItem('users_vault'); localStorage.removeItem('wallet_encrypted');
 		wallet_update_lock_btn();
-		box.find('.enc-success').html(ltmp_arr.enc_disabled||'Encryption disabled.');
-		render_wallet_security();
-	}).catch(function(e){ box.find('.enc-error').html(ltmp_arr.enc_wrong||'Wrong passphrase.'); });
+		setup_wallet_security();
+		page.find('.enc-note').html(ltmp_arr.enc_disabled||'Encryption disabled.');
+	}).catch(function(e){ page.find('.encd-error').html(ltmp_arr.enc_wrong||'Wrong passphrase.'); });
 }
 
 // ── Lock / auto-lock / change passphrase ───────────────────────────────────────
@@ -1064,23 +1043,23 @@ function wallet_update_lock_btn(){
 function wallet_after_unlock(){ wallet_mark_activity(); wallet_update_lock_btn(); }
 // change passphrase: verify current (decrypt), re-encrypt the container with the new one
 function wallet_change_pass(){
-	let box=$('.view-settings .page-security .security-box');
-	box.find('.encc-error').html(''); box.find('.encc-success').html('');
-	let cur=''+box.find('input[name=encc-cur]').val();
-	let n1=''+box.find('input[name=encc-new1]').val(), n2=''+box.find('input[name=encc-new2]').val();
-	if(n1.length<4){ box.find('.encc-error').html(ltmp_arr.enc_too_short||'Passphrase is too short.'); return; }
-	if(n1!==n2){ box.find('.encc-error').html(ltmp_arr.enc_mismatch||'Passphrases do not match.'); return; }
+	let page=$('.view-settings .page-security');
+	page.find('.encc-error').html(''); page.find('.encc-success').html('');
+	let cur=''+page.find('input[name=encc-cur]').val();
+	let n1=''+page.find('input[name=encc-new1]').val(), n2=''+page.find('input[name=encc-new2]').val();
+	if(n1.length<4){ page.find('.encc-error').html(ltmp_arr.enc_too_short||'Passphrase is too short.'); return; }
+	if(n1!==n2){ page.find('.encc-error').html(ltmp_arr.enc_mismatch||'Passphrases do not match.'); return; }
 	if(n1.length<7 && !confirm(ltmp_arr.enc_short_confirm||'Short passphrase (more than 6 characters is recommended). Continue?')){ return; }
 	let blob=null; try{ blob=JSON.parse(localStorage.getItem('users_vault')); }catch(e){ blob=null; }
-	if(!blob){ box.find('.encc-error').html(ltmp_arr.enc_fail||'No vault.'); return; }
+	if(!blob){ page.find('.encc-error').html(ltmp_arr.enc_fail||'No vault.'); return; }
 	wallet_decrypt_vault(blob,cur).then(function(obj){
 		return wallet_encrypt_vault(obj,n1).then(function(nb){
 			localStorage.setItem('users_vault',JSON.stringify(nb));
 			wallet_pass=n1;
-			box.find('.encc-success').html(ltmp_arr.enc_pass_changed||'Passphrase changed.');
-			box.find('input[name=encc-cur],input[name=encc-new1],input[name=encc-new2]').val('');
+			page.find('.encc-success').html(ltmp_arr.enc_pass_changed||'Passphrase changed.');
+			page.find('input[name=encc-cur],input[name=encc-new1],input[name=encc-new2]').val('');
 		});
-	}).catch(function(e){ box.find('.encc-error').html(ltmp_arr.enc_wrong||'Wrong passphrase.'); });
+	}).catch(function(e){ page.find('.encc-error').html(ltmp_arr.enc_wrong||'Wrong passphrase.'); });
 }
 // one-time setup: track activity + poll for idle auto-lock; wire the header quick-lock button
 $(function(){
@@ -2661,7 +2640,7 @@ function view_settings(path,params,title){
 					update_balances($('.view-'+path[1]+' .page-'+path[2]+' .account-balance'));
 				}
 
-				if('security'==path[2]){ render_wallet_security(); }
+				if('security'==path[2]){ setup_wallet_security(); }
 					if('profile'==path[2]){
 					$('.page-profile input[name=manage-profile-nickname]').val('');
 					$('.page-profile input[name=manage-profile-about]').val('');
@@ -7317,6 +7296,9 @@ function app_mouse(e){
 		let master_key=$('.page-reset-access input[name=reset-access-master-key]').val().trim();
 		reset_access(account,master_key,$('.page-reset-access'));
 	}
+	if($(target).hasClass('enc-enable-action')){ wallet_enable_encryption(); }
+	if($(target).hasClass('enc-change-action')){ wallet_change_pass(); }
+	if($(target).hasClass('enc-disable-action')){ wallet_disable_encryption(); }
 	if($(target).hasClass('manage-access-preload-action')){
 		let account=$('.page-access input[name=manage-access-login]').val().toLowerCase().trim();
 		manage_access_preload(account,$('.page-access'));

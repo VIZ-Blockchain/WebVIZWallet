@@ -240,19 +240,10 @@ a:hover{
 	justify-content:center;
 	padding:16px;
 }
-.wallet-unlock-overlay .wallet-unlock-box{
-	background:#fff;
-	border-radius:10px;
-	padding:22px;
-	max-width:360px;
+.wallet-unlock-overlay .card{
+	max-width:380px;
 	width:100%;
 	box-shadow:0 8px 30px rgba(0,0,0,.35);
-}
-.wallet-unlock-overlay .wallet-unlock-box h3{
-	margin:0 0 10px;
-}
-.security-box .simple-rounded{
-	margin-bottom:6px;
 }
 .header .user-buttons .wallet-lock-btn{
 	display:inline-block;
