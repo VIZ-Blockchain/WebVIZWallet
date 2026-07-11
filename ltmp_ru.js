@@ -1794,6 +1794,7 @@ var ltmp_ru_arr={
 	pm_outcome:'Исход',
 	pm_payout:'Выплата',
 	pm_place_bet:'Сделать ставку',
+	pm_pick_outcome:'Выберите исход для ставки:',
 	pm_shares:'Доли',
 	pm_source:'Источник',
 	pm_status_active:'Активен',
@@ -1839,10 +1840,10 @@ var ltmp_ru_arr={
 			<div class="card transparent">
 				<h3 class="adaptive-show-block captions">Рынки прогнозов</h3>
 				<div class="wide-buttons size2 captions">
-					<a class="wide-button color-red" data-href="/pm/">Рынки</a>
-					<a class="wide-button color-red" data-href="/pm/completed/">Мои завершённые</a>
+					<a class="wide-button" data-href="/pm/">Рынки</a>
+					<a class="wide-button" data-href="/pm/completed/">Мои завершённые</a>
 				</div>
-				<p><input type="text" name="pm-filter" class="simple-rounded" placeholder="Фильтр по названию"></p>
+				<p><label class="input-descr"><span class="input-caption">Фильтр:</span><input type="text" name="pm-filter" class="simple-rounded wide" placeholder="Фильтр по названию"></label></p>
 				<div class="pm-markets-list"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
 				<div class="pm-markets-footer center"></div>
 			</div>

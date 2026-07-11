@@ -1793,6 +1793,7 @@ var ltmp_en_arr={
 	pm_outcome:'Outcome',
 	pm_payout:'Payout',
 	pm_place_bet:'Place a bet',
+	pm_pick_outcome:'Pick an outcome to bet on:',
 	pm_shares:'Shares',
 	pm_source:'Source',
 	pm_status_active:'Active',
@@ -1838,10 +1839,15 @@ var ltmp_en_arr={
 			<div class="card transparent">
 				<h3 class="adaptive-show-block captions">Prediction markets</h3>
 				<div class="wide-buttons size2 captions">
-					<a class="wide-button color-red" data-href="/pm/">Markets</a>
-					<a class="wide-button color-red" data-href="/pm/completed/">My completed</a>
+					<a class="wide-button" data-href="/pm/">Markets</a>
+					<a class="wide-button" data-href="/pm/completed/">My completed</a>
 				</div>
-				<p><input type="text" name="pm-filter" class="simple-rounded" placeholder="Filter by title"></p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Filter:</span>
+						<input type="text" name="pm-filter" class="simple-rounded wide" placeholder="Filter by title">
+					</label>
+				</p>
 				<div class="pm-markets-list"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
 				<div class="pm-markets-footer center"></div>
 			</div>

@@ -1794,6 +1794,7 @@ var ltmp_zh_arr = {
 	pm_outcome:'结果',
 	pm_payout:'赔付',
 	pm_place_bet:'下注',
+	pm_pick_outcome:'选择下注的结果：',
 	pm_shares:'份额',
 	pm_source:'来源',
 	pm_status_active:'进行中',
@@ -1839,10 +1840,10 @@ var ltmp_zh_arr = {
 			<div class="card transparent">
 				<h3 class="adaptive-show-block captions">预测市场</h3>
 				<div class="wide-buttons size2 captions">
-					<a class="wide-button color-red" data-href="/pm/">市场</a>
-					<a class="wide-button color-red" data-href="/pm/completed/">我的已完成</a>
+					<a class="wide-button" data-href="/pm/">市场</a>
+					<a class="wide-button" data-href="/pm/completed/">我的已完成</a>
 				</div>
-				<p><input type="text" name="pm-filter" class="simple-rounded" placeholder="按标题筛选"></p>
+				<p><label class="input-descr"><span class="input-caption">筛选：</span><input type="text" name="pm-filter" class="simple-rounded wide" placeholder="按标题筛选"></label></p>
 				<div class="pm-markets-list"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
 				<div class="pm-markets-footer center"></div>
 			</div>

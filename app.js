@@ -3709,18 +3709,18 @@ function load_pm_markets(reset){
 		for(let i in markets){
 			let m=markets[i];
 			if(''!=filter && (''+m.title).toLowerCase().indexOf(filter)===-1){ continue; }
-			data+='<div class="columns-view pm-market-card"><div class="column-view column-flex">';
-			if(m.image){ data+='<div><img class="pm-market-image" style="max-height:80px" src="'+escape_html(''+m.image)+'" onerror="this.style.display=\'none\'"></div>'; }
+			data+='<div class="columns-view"><div class="column column-1 shadow grid pm-market-card">';
+			if(m.image){ data+='<div class="center"><img style="max-height:80px" src="'+escape_html(''+m.image)+'" onerror="this.style.display=\'none\'"></div>'; }
 			data+='<div class="bold">'+escape_html(''+m.title)+'</div>';
 			data+='<div class="small grey">'+escape_html(''+(m.category||''))+' &middot; '+pm_market_status_label(m)+'</div>';
 			data+='<div class="small">'+(ltmp_arr.pm_betting_until||'Betting until')+': '+show_date(m.betting_expiration,true)+ltmp_arr.default_date_utc+'</div>';
-			data+='<div class="wide-buttons captions"><a class="wide-button color-red" data-href="/pm/market/'+m.id+'/">'+(ltmp_arr.pm_open||'Open')+'</a>';
-			if(m.url){ data+=' <a class="inline-button red small" href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_source||'Source')+' &#8599;</a>'; }
+			data+='<div class="wide-buttons captions"><a class="wide-button" data-href="/pm/market/'+m.id+'/">'+(ltmp_arr.pm_open||'Open')+'</a>';
+			if(m.url){ data+='<a class="wide-button" href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_source||'Source')+' &#8599;</a>'; }
 			data+='</div></div></div>';
 		}
 		if(reset){ $('.view-pm .page-index .pm-markets-list').html(data||('<p>'+ltmp_arr.default_no_items+'</p>')); }
 		else{ $('.view-pm .page-index .pm-markets-list').append(data); }
-		$('.view-pm .page-index .pm-markets-footer').html((markets.length>=per_page)?('<a class="inline-button red pm-load-more">'+(ltmp_arr.pm_load_more||'Load more')+'</a>'):'');
+		$('.view-pm .page-index .pm-markets-footer').html((markets.length>=per_page)?('<div class="wide-buttons captions"><a class="wide-button pm-load-more">'+(ltmp_arr.pm_load_more||'Load more')+'</a></div>'):'');
 	});
 }
 function pm_market_bettable(m){
@@ -3751,13 +3751,14 @@ function load_pm_market(id){
 			else if(!bettable){ box.html('<p class="grey small">'+(ltmp_arr.pm_betting_closed||'Betting is closed for this market.')+'</p>'); }
 			else{
 				let bd='<h4 class="captions">'+(ltmp_arr.pm_place_bet||'Place a bet')+'</h4>';
-				bd+='<p><input type="text" name="pm-bet-amount" class="simple-rounded" placeholder="0.000 VIZ"></p>';
+				bd+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_amount||'Amount')+':</span><input type="text" name="pm-bet-amount" class="simple-rounded" placeholder="0.000 VIZ"></label></p>';
+				bd+='<p class="small grey">'+(ltmp_arr.pm_pick_outcome||'Pick an outcome to bet on:')+'</p>';
 				bd+='<div class="wide-buttons captions">';
 				for(let i in ocs){
 					let o=ocs[i];
 					let side=(0==m.market_type)?o.outcome_index:-1;
 					let oidx=(0==m.market_type)?-1:o.outcome_index;
-					bd+='<a class="wide-button color-red pm-bet-btn" data-market="'+id+'" data-side="'+side+'" data-oindex="'+oidx+'">'+escape_html(''+o.label)+'</a>';
+					bd+='<a class="wide-button pm-bet-btn" data-market="'+id+'" data-side="'+side+'" data-oindex="'+oidx+'">'+escape_html(''+o.label)+'</a>';
 				}
 				bd+='</div><p class="red pm-bet-error"></p><p class="green pm-bet-success"></p>';
 				box.html(bd);
@@ -3813,15 +3814,17 @@ function load_pm_positions(market_id,m,ocs){
 		for(let i in list){ let p=pm_norm_position(list[i]); if(parseInt(pm_pos_market_id(p))===parseInt(market_id)) mine.push(p); }
 		if(!mine.length){ return; }
 		let h='<h4 class="captions">'+(ltmp_arr.pm_my_positions||'My positions')+'</h4>';
-		h+='<table class="wide-table captions"><tr><th>'+(ltmp_arr.pm_outcome||'Outcome')+'</th><th>'+(ltmp_arr.pm_amount||'Amount')+'</th><th>'+(ltmp_arr.pm_shares||'Shares')+'</th><th></th></tr>';
+		h+='<div class="table-view captions">';
 		for(let i in mine){
 			let p=mine[i];
 			let bid=(p.id!=null?p.id:p.bet_id);
 			let shares=pm_pos_shares(p);
-			h+='<tr><td>'+escape_html(pm_pos_outcome_label(p,ocs))+'</td><td>'+pm_fmt_viz(p.amount||p.stake||0)+'</td><td>'+pm_fmt_shares(shares)+'</td>'
-				+'<td><a class="inline-button red small pm-xfer-btn" data-bet="'+escape_html(''+bid)+'" data-shares="'+shares+'">'+(ltmp_arr.pm_transfer||'Transfer')+'</a></td></tr>';
+			h+='<div class="columns-view">'
+				+'<div class="column-view column-flex"><span class="bold">'+escape_html(pm_pos_outcome_label(p,ocs))+'</span><br><span class="small grey">'+(ltmp_arr.pm_shares||'Shares')+': '+pm_fmt_shares(shares)+'</span></div>'
+				+'<div class="column-view"><a class="inline-button pm-xfer-btn" data-bet="'+escape_html(''+bid)+'" data-shares="'+shares+'">'+(ltmp_arr.pm_transfer||'Transfer')+'</a></div>'
+				+'</div>';
 		}
-		h+='</table><div class="pm-xfer-form" style="display:none"></div>';
+		h+='</div><div class="pm-xfer-form" style="display:none"></div>';
 		box.html(h);
 		box.find('.pm-xfer-btn').off('click.pmx').on('click.pmx',function(){ pm_transfer_form($(this).attr('data-bet'),parseInt($(this).attr('data-shares'))||0,market_id); });
 	});
@@ -3829,12 +3832,12 @@ function load_pm_positions(market_id,m,ocs){
 function pm_transfer_form(bet_id,have_shares,market_id){
 	let f=$('.view-pm .page-market .pm-xfer-form');
 	let html='<h4 class="captions">'+(ltmp_arr.pm_transfer_title||'Transfer position')+' #'+escape_html(''+bet_id)+'</h4>';
-	html+='<p><input type="text" name="pm-xfer-to" class="simple-rounded" placeholder="'+(ltmp_arr.pm_to_account||'To account')+'"></p>';
-	html+='<p><input type="text" name="pm-xfer-shares" class="simple-rounded" value="'+pm_fmt_shares(have_shares)+'"></p>';
+	html+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_to_account||'To account')+':</span><input type="text" name="pm-xfer-to" class="simple-rounded"></label></p>';
+	html+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_shares||'Shares')+':</span><input type="text" name="pm-xfer-shares" class="simple-rounded" value="'+pm_fmt_shares(have_shares)+'"></label></p>';
 	html+='<p class="small grey">'+(ltmp_arr.pm_you_have||'You have')+': '+pm_fmt_shares(have_shares)+'</p>';
-	html+='<p><input type="text" name="pm-xfer-memo" class="simple-rounded" placeholder="'+(ltmp_arr.pm_memo||'Memo (optional)')+'"></p>';
-	html+='<div class="wide-buttons captions"><a class="wide-button color-red pm-xfer-send" data-bet="'+escape_html(''+bet_id)+'" data-market="'+market_id+'">'+(ltmp_arr.pm_transfer_send||'Send')+'</a></div>';
+	html+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_memo||'Memo (optional)')+':</span><input type="text" name="pm-xfer-memo" class="simple-rounded"></label></p>';
 	html+='<p class="red pm-xfer-error"></p><p class="green pm-xfer-success"></p>';
+	html+='<p><input class="pm-xfer-send blue-button captions" type="button" value="'+(ltmp_arr.pm_transfer_send||'Send')+'" data-bet="'+escape_html(''+bet_id)+'" data-market="'+market_id+'"><span class="submit-button-ring"></span><span class="icon icon-margin hidden icon-color-blue icon-check"></span></p>';
 	f.html(html).css('display','block');
 	f.find('.pm-xfer-send').off('click.pmxs').on('click.pmxs',function(){ pm_transfer_action($(this)); });
 }
@@ -3849,9 +3852,11 @@ function pm_transfer_action(btn){
 	let memo=(''+f.find('input[name=pm-xfer-memo]').val());
 	if(!to||!(amount>0)){ f.find('.pm-xfer-error').html(ltmp_arr.pm_transfer_fill||'Enter recipient and shares.'); return; }
 	btn.attr('disabled','disabled');
+	f.find('.icon-check').css('display','none'); f.find('.submit-button-ring').css('display','inline-block');
 	viz.broadcast.pmTransferPosition(users[current_user].active_key,current_user,bet_id,to,amount,memo,[],function(err,result){
-		btn.removeAttr('disabled');
+		btn.removeAttr('disabled'); f.find('.submit-button-ring').css('display','none');
 		if(err){ f.find('.pm-xfer-error').html((ltmp_arr.pm_transfer_error||'Transfer failed')+': '+escape_html((''+(err.message||JSON.stringify(err))).slice(0,160))); console.log(err); return; }
+		f.find('.icon-check').css('display','inline-block');
 		f.find('.pm-xfer-success').html(ltmp_arr.pm_transfer_success||'Position transferred!');
 		setTimeout(function(){ load_pm_market(market_id); },1200);
 	});
@@ -3865,8 +3870,8 @@ function render_pm_dispute(market_id,m,ocs,bettable){
 	if(bettable){ box.html(''); return; } // dispute only meaningful after betting closes
 	let h='<h4 class="captions">'+(ltmp_arr.pm_dispute||'Dispute')+'</h4>';
 	h+='<p class="small grey">'+(ltmp_arr.pm_dispute_hint||'Open a dispute if you disagree with how this market resolves.')+'</p>';
-	h+='<div class="wide-buttons size2 captions"><a class="wide-button color-red pm-dispute-open">'+(ltmp_arr.pm_dispute_create||'Open dispute')+'</a>'
-		+'<a class="wide-button color-red pm-dispute-vote-open">'+(ltmp_arr.pm_dispute_vote||'Vote in dispute')+'</a></div>';
+	h+='<div class="wide-buttons size2 captions"><a class="wide-button pm-dispute-open">'+(ltmp_arr.pm_dispute_create||'Open dispute')+'</a>'
+		+'<a class="wide-button pm-dispute-vote-open">'+(ltmp_arr.pm_dispute_vote||'Vote in dispute')+'</a></div>';
 	h+='<div class="pm-dispute-form" style="display:none"></div>';
 	box.html(h);
 	box.find('.pm-dispute-open').off('click.pmd').on('click.pmd',function(){ pm_dispute_create_form(market_id,ocs); });
@@ -3877,10 +3882,10 @@ function pm_dispute_create_form(market_id,ocs){
 	let opts='<option value="-1">'+(ltmp_arr.pm_dispute_void||'Void / no contest')+'</option>';
 	for(let i in ocs){ opts+='<option value="'+parseInt(ocs[i].outcome_index)+'">'+escape_html(''+ocs[i].label)+'</option>'; }
 	let html='<h4 class="captions">'+(ltmp_arr.pm_dispute_create||'Open dispute')+'</h4>';
-	html+='<p>'+(ltmp_arr.pm_dispute_proposed||'Proposed outcome')+': <select name="pm-dispute-oc" class="simple-rounded">'+opts+'</select></p>';
-	html+='<p><textarea name="pm-dispute-reason" class="simple-rounded" placeholder="'+(ltmp_arr.pm_dispute_reason||'Reason / evidence')+'"></textarea></p>';
-	html+='<div class="wide-buttons captions"><a class="wide-button color-red pm-dispute-send" data-market="'+market_id+'">'+(ltmp_arr.pm_submit||'Submit')+'</a></div>';
+	html+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_dispute_proposed||'Proposed outcome')+':</span><select name="pm-dispute-oc" class="simple-rounded simple-rounded-size">'+opts+'</select></label></p>';
+	html+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_dispute_reason||'Reason / evidence')+':</span><textarea name="pm-dispute-reason" class="simple-rounded wide"></textarea></label></p>';
 	html+='<p class="red pm-dispute-error"></p><p class="green pm-dispute-success"></p>';
+	html+='<p><input class="pm-dispute-send blue-button captions" type="button" value="'+(ltmp_arr.pm_submit||'Submit')+'" data-market="'+market_id+'"><span class="submit-button-ring"></span><span class="icon icon-margin hidden icon-color-blue icon-check"></span></p>';
 	f.html(html).css('display','block');
 	f.find('.pm-dispute-send').off('click.pmds').on('click.pmds',function(){ pm_dispute_create_action($(this)); });
 }
@@ -3891,9 +3896,11 @@ function pm_dispute_create_action(btn){
 	let oc=parseInt(f.find('select[name=pm-dispute-oc]').val());
 	let reason=(''+f.find('textarea[name=pm-dispute-reason]').val());
 	btn.attr('disabled','disabled');
+	f.find('.icon-check').css('display','none'); f.find('.submit-button-ring').css('display','inline-block');
 	viz.broadcast.pmDisputeCreate(users[current_user].active_key,current_user,market_id,oc,reason,[],function(err,result){
-		btn.removeAttr('disabled');
+		btn.removeAttr('disabled'); f.find('.submit-button-ring').css('display','none');
 		if(err){ f.find('.pm-dispute-error').html((ltmp_arr.pm_dispute_error||'Dispute failed')+': '+escape_html((''+(err.message||JSON.stringify(err))).slice(0,160))); console.log(err); return; }
+		f.find('.icon-check').css('display','inline-block');
 		f.find('.pm-dispute-success').html(ltmp_arr.pm_dispute_success||'Dispute opened!');
 		setTimeout(function(){ load_pm_market(market_id); },1500);
 	});
@@ -3905,10 +3912,10 @@ function pm_dispute_vote_form(market_id,ocs){
 	let opts='<option value="-1">'+(ltmp_arr.pm_dispute_uphold||'Uphold original')+'</option>';
 	for(let i in ocs){ opts+='<option value="'+parseInt(ocs[i].outcome_index)+'">'+escape_html(''+ocs[i].label)+'</option>'; }
 	let html='<h4 class="captions">'+(ltmp_arr.pm_dispute_vote||'Vote in dispute')+'</h4>';
-	html+='<p>'+(ltmp_arr.pm_dispute_vote_outcome||'Vote outcome')+': <select name="pm-dvote-oc" class="simple-rounded">'+opts+'</select></p>';
-	html+='<p>'+(ltmp_arr.pm_dispute_vote_weight||'Weight %')+': <input type="text" name="pm-dvote-pct" class="simple-rounded" value="100"></p>';
-	html+='<div class="wide-buttons captions"><a class="wide-button color-red pm-dvote-send" data-market="'+market_id+'">'+(ltmp_arr.pm_dispute_vote||'Vote')+'</a></div>';
+	html+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_dispute_vote_outcome||'Vote outcome')+':</span><select name="pm-dvote-oc" class="simple-rounded simple-rounded-size">'+opts+'</select></label></p>';
+	html+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_dispute_vote_weight||'Weight %')+':</span><input type="text" name="pm-dvote-pct" class="simple-rounded" value="100"></label></p>';
 	html+='<p class="red pm-dvote-error"></p><p class="green pm-dvote-success"></p>';
+	html+='<p><input class="pm-dvote-send blue-button captions" type="button" value="'+(ltmp_arr.pm_dispute_vote||'Vote')+'" data-market="'+market_id+'"><span class="submit-button-ring"></span><span class="icon icon-margin hidden icon-color-blue icon-check"></span></p>';
 	f.html(html).css('display','block');
 	f.find('.pm-dvote-send').off('click.pmdvs').on('click.pmdvs',function(){ pm_dispute_vote_action($(this)); });
 }
@@ -3920,9 +3927,11 @@ function pm_dispute_vote_action(btn){
 	let pct=pm_to_bp(f.find('input[name=pm-dvote-pct]').val());
 	if(!(pct>0)){ f.find('.pm-dvote-error').html(ltmp_arr.pm_dispute_vote_bad||'Enter a valid weight.'); return; }
 	btn.attr('disabled','disabled');
+	f.find('.icon-check').css('display','none'); f.find('.submit-button-ring').css('display','inline-block');
 	viz.broadcast.pmDisputeVote(users[current_user].active_key,current_user,market_id,oc,pct,[],function(err,result){
-		btn.removeAttr('disabled');
+		btn.removeAttr('disabled'); f.find('.submit-button-ring').css('display','none');
 		if(err){ f.find('.pm-dvote-error').html((ltmp_arr.pm_dispute_vote_error||'Vote failed')+': '+escape_html((''+(err.message||JSON.stringify(err))).slice(0,160))); console.log(err); return; }
+		f.find('.icon-check').css('display','inline-block');
 		f.find('.pm-dvote-success').html(ltmp_arr.pm_dispute_vote_success||'Vote submitted!');
 		setTimeout(function(){ load_pm_market(market_id); },1500);
 	});
@@ -3944,12 +3953,12 @@ function load_pm_completed(){
 			let payout=pm_fmt_viz(p.expected_payout||p.payout||0);
 			let mid=pm_pos_market_id(p);
 			let ocl=pm_pos_outcome_label(p,[]);
-			rows+='<div class="columns-view pm-completed-card"><div class="column-view column-flex">';
-			rows+='<div class="small"><a data-href="/pm/market/'+escape_html(''+mid)+'/">#'+escape_html(''+mid)+'</a> <span class="grey">'+escape_html(''+ocl)+'</span></div>';
-			rows+='<div class="small grey">'+(ltmp_arr.pm_payout||'Payout')+': '+escape_html(''+payout)+'</div>';
-			rows+='</div></div>';
+			rows+='<div class="columns-view">'
+				+'<div class="column-view column-flex"><a data-href="/pm/market/'+escape_html(''+mid)+'/">#'+escape_html(''+mid)+'</a> <span class="grey">'+escape_html(''+ocl)+'</span></div>'
+				+'<div class="column-view small grey">'+(ltmp_arr.pm_payout||'Payout')+': '+escape_html(''+payout)+'</div>'
+				+'</div>';
 		}
-		box.html(rows||('<p class="grey small">'+(ltmp_arr.pm_no_completed||'No completed positions yet.')+'</p>'));
+		box.html(rows?('<div class="table-view captions">'+rows+'</div>'):('<p class="grey small">'+(ltmp_arr.pm_no_completed||'No completed positions yet.')+'</p>'));
 	});
 }
 function update_fund_request(id,votes,votes_update){
