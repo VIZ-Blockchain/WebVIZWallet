@@ -1898,7 +1898,7 @@ var ltmp_en_arr={
 		</div>
 		<div class="page page-market">
 			<div class="card">
-				<div class="pm-market-detail"></div>
+				<div class="pm-market-detail captions"></div>
 				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -1916,14 +1916,13 @@ var ltmp_en_arr={
 		<div class="page page-pool">
 			<div class="card">
 				<h3 class="captions">Liquidity pool</h3>
-				<p class="small grey">Deposit VIZ into the shared lazy-liquidity pool. Your capital provides market-making liquidity across prediction markets and earns a share of trading fees and leverage interest.</p>
-				<ul class="small grey">
-					<li>Rewards accrue continuously and are added to your position value.</li>
-					<li>Deposits are locked for a fixed period (shown below); planned withdrawal is available once unlocked.</li>
-					<li>Emergency withdrawal before unlock returns everything now, but a penalty applies to accrued rewards &mdash; never to your principal.</li>
-					<li>Pooled capital is at market-making risk; returns are not guaranteed.</li>
-				</ul>
-				<div class="pm-pool-box"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
+				<div class="addon captions">
+					<h3>Hint</h3>
+					<p>Deposit VIZ into the shared lazy-liquidity pool. Your capital provides market-making liquidity across prediction markets and earns a share of trading fees and leverage interest.</p>
+					<p>Rewards accrue continuously and are added to your position value. Deposits are locked for a fixed period; planned withdrawal is available once unlocked.</p>
+					<p>Emergency withdrawal before unlock returns funds now, but a penalty applies to accrued rewards &mdash; never to your principal. Pooled capital is at market-making risk; returns are not guaranteed.</p>
+				</div>
+				<div class="pm-pool-box captions"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
 				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>

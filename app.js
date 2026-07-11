@@ -3578,7 +3578,7 @@ function update_validators_list(){
 							}
 							item+=' <a href="'+item_arr.url+'" target="_blank" class="inline-button color-orange small">'+ltmp_arr.validator_url_caption+'</a>';
 							*/
-							item+=' <span class="small" style="width:110px;text-align:right;display:inline-block;" title="'+ltmp_arr.validator_votes_weight_caption+'">'+number_thousands(Math.round(parseInt(item_arr.votes/1000000)/100)/10)+'k</span>';
+							item+=' <span class="text-small" style="width:110px;text-align:right;display:inline-block;" title="'+ltmp_arr.validator_votes_weight_caption+'">'+number_thousands(Math.round(parseInt(item_arr.votes/1000000)/100)/10)+'k</span>';
 							if(-1!=user_votes.indexOf(validator_account)){
 								item+=' <span class="/*inline-button color-green*/ small vote-shares-value" title="'+ltmp_arr.validator_user_vote_weight_caption+'">+'+number_thousands(Math.round(parseInt(user_shares / user_votes.length)/100)/10)+'k</span>';
 							}
@@ -3802,48 +3802,48 @@ function render_pm_pool(box,pool,dep,props,wallet_free,my_req){
 	let data='';
 	if(!enabled){ data+='<p class="red">'+(L.pm_pool_disabled||'The liquidity pool is disabled on-chain right now.')+'</p>'; }
 	data+='<h4 class="captions">'+(L.pm_pool_state||'Pool state')+'</h4>';
-	data+='<div class="small">'+(L.pm_pool_total||'Total value')+': <b>'+pm_fmt_viz(total_value)+'</b></div>';
-	data+='<div class="small grey">'+(L.pm_pool_free||'Free')+': '+pm_fmt_viz(free)+' &middot; '+(L.pm_pool_allocated||'Deployed')+': '+pm_fmt_viz(alloc)+'</div>';
-	data+='<div class="small grey">'+(L.pm_pool_earned||'Earned fees')+': '+pm_fmt_viz(earned)+'</div>';
-	data+='<div class="small grey">'+(L.pm_pool_lock||'Lock period')+': '+Math.round(lock_sec/86400)+' '+(L.pm_pool_days||'d')+' &middot; '+(L.pm_pool_penalty||'Emergency penalty on rewards')+': '+(pen_bp/100)+'%</div>';
-	if(pending_wd>0){ data+='<div class="small grey">'+(L.pm_pool_pending||'Awaiting withdrawal')+': '+pm_fmt_viz(pending_wd)+'</div>'; }
-	if(my_queued>0){ data+='<p class="orange">'+(L.pm_pool_queued_notice||'You have a queued withdrawal of')+' '+pm_fmt_viz(my_queued)+' &mdash; '+(L.pm_pool_queued_tail||'paid automatically (FIFO) as capital returns to the pool.')+'</p>'; }
+	data+='<div class="text-small">'+(L.pm_pool_total||'Total value')+': <b>'+pm_fmt_viz(total_value)+'</b></div>';
+	data+='<div class="text-small grey">'+(L.pm_pool_free||'Free')+': '+pm_fmt_viz(free)+' &middot; '+(L.pm_pool_allocated||'Deployed')+': '+pm_fmt_viz(alloc)+'</div>';
+	data+='<div class="text-small grey">'+(L.pm_pool_earned||'Earned fees')+': '+pm_fmt_viz(earned)+'</div>';
+	data+='<div class="text-small grey">'+(L.pm_pool_lock||'Lock period')+': '+Math.round(lock_sec/86400)+' '+(L.pm_pool_days||'d')+' &middot; '+(L.pm_pool_penalty||'Emergency penalty on rewards')+': '+(pen_bp/100)+'%</div>';
+	if(pending_wd>0){ data+='<div class="text-small grey">'+(L.pm_pool_pending||'Awaiting withdrawal')+': '+pm_fmt_viz(pending_wd)+'</div>'; }
+	if(my_queued>0){ data+='<div class="addon captions"><h3>'+(L.pm_pool_pending||'Awaiting withdrawal')+'</h3><p>'+(L.pm_pool_queued_notice||'You have a queued withdrawal of')+' <b>'+pm_fmt_viz(my_queued)+'</b> &mdash; '+(L.pm_pool_queued_tail||'paid automatically (FIFO) as capital returns to the pool.')+'</p></div>'; }
 
 	data+='<hr><h4 class="captions">'+(L.pm_pool_your||'Your position')+'</h4>';
-	if(!has_pos){ data+='<p class="grey small">'+(L.pm_pool_no_position||'You have no position in the pool yet.')+'</p>'; }
+	if(!has_pos){ data+='<p class="grey text-small">'+(L.pm_pool_no_position||'You have no position in the pool yet.')+'</p>'; }
 	else{
-		data+='<div class="small">'+(L.pm_pool_shares||'Shares')+': '+pm_fmt_shares(shares)+'</div>';
-		data+='<div class="small">'+(L.pm_pool_principal||'Principal')+': '+pm_fmt_viz(principal)+'</div>';
-		data+='<div class="small">'+(L.pm_pool_value||'Current value')+': <b>'+pm_fmt_viz(value)+'</b></div>';
-		data+='<div class="small">'+(L.pm_pool_status||'Status')+': '+(locked
+		data+='<div class="text-small">'+(L.pm_pool_shares||'Shares')+': '+pm_fmt_shares(shares)+'</div>';
+		data+='<div class="text-small">'+(L.pm_pool_principal||'Principal')+': '+pm_fmt_viz(principal)+'</div>';
+		data+='<div class="text-small">'+(L.pm_pool_value||'Current value')+': <b>'+pm_fmt_viz(value)+'</b></div>';
+		data+='<div class="text-small">'+(L.pm_pool_status||'Status')+': '+(locked
 			?('<span class="red">'+(L.pm_pool_locked_until||'Locked until')+' '+escape_html(new Date(unlock*1000).toLocaleString())+'</span>')
 			:('<span class="green">'+(L.pm_pool_unlocked||'Unlocked')+'</span>'))+'</div>';
-		if(locked){ data+='<div class="small grey">'+(L.pm_pool_emergency_now||'Emergency exit now')+': '+pm_fmt_viz(emergency_out)+' ('+(L.pm_pool_penalty_short||'penalty')+' '+pm_fmt_viz(penalty)+')</div>'; }
+		if(locked){ data+='<div class="text-small grey">'+(L.pm_pool_emergency_now||'Emergency exit now')+': '+pm_fmt_viz(emergency_out)+' ('+(L.pm_pool_penalty_short||'penalty')+' '+pm_fmt_viz(penalty)+')</div>'; }
 	}
 
 	if(enabled){
 		data+='<hr><h4 class="captions">'+(L.pm_pool_deposit||'Deposit')+'</h4>';
 		data+='<p><label class="input-descr"><span class="input-caption">'+(L.pm_pool_amount||'Amount (VIZ)')+':</span><input type="text" name="pm-pool-amount" class="simple-rounded" placeholder="0.000"></label></p>';
-		data+='<p class="small pm-pool-avail" style="cursor:pointer">'+(L.pm_pool_available||'Available')+': <b>'+wallet_free.toFixed(3)+' VIZ</b></p>';
-		data+='<div class="wide-buttons captions"><a class="wide-button pm-pool-deposit-action">'+(L.pm_pool_deposit_btn||'Deposit')+'</a></div>';
+		data+='<p class="text-small pm-pool-avail" style="cursor:pointer">'+(L.pm_pool_available||'Available')+': <b>'+wallet_free.toFixed(3)+' VIZ</b></p>';
+		data+='<p><input class="pm-pool-deposit-action blue-button captions" type="button" value="'+escape_html(L.pm_pool_deposit_btn||'Deposit')+'"></p>';
 		if(has_pos){
 			data+='<hr><h4 class="captions">'+(L.pm_pool_withdraw||'Withdraw')+'</h4>';
-			data+='<p class="small grey">'+(L.pm_pool_queue_note||'If the pool has no free balance right now, your withdrawal is queued and paid in parts as capital returns from markets — the pool never pays out more than it holds.')+'</p>';
+			data+='<p class="text-small grey">'+(L.pm_pool_queue_note||'If the pool has no free balance right now, your withdrawal is queued and paid in parts as capital returns from markets — the pool never pays out more than it holds.')+'</p>';
 			if(!locked){
 				data+='<p><label class="input-descr"><span class="input-caption">'+(L.pm_pool_wd_shares||'Shares (0 = all)')+':</span><input type="text" name="pm-pool-wd-shares" class="simple-rounded" value="0"></label></p>';
-				data+='<p class="small grey">'+(L.pm_pool_you_have||'You have')+': '+pm_fmt_shares(shares)+'</p>';
-				data+='<div class="wide-buttons captions"><a class="wide-button pm-pool-withdraw-action">'+(L.pm_pool_withdraw_btn||'Withdraw')+'</a></div>';
+				data+='<p class="text-small grey">'+(L.pm_pool_you_have||'You have')+': '+pm_fmt_shares(shares)+'</p>';
+				data+='<p><input class="pm-pool-withdraw-action blue-button captions" type="button" value="'+escape_html(L.pm_pool_withdraw_btn||'Withdraw')+'"></p>';
 			}
 			else{
-				data+='<p class="small grey">'+(L.pm_pool_emergency_warn||'Emergency exit before unlock. The penalty applies to accrued rewards only, never to your principal. Enter shares to exit (0 = all).')+'</p>';
+				data+='<p class="text-small grey">'+(L.pm_pool_emergency_warn||'Emergency exit before unlock. The penalty applies to accrued rewards only, never to your principal. Enter shares to exit (0 = all).')+'</p>';
 				data+='<p><label class="input-descr"><span class="input-caption">'+(L.pm_pool_wd_shares||'Shares (0 = all)')+':</span><input type="text" name="pm-pool-em-shares" class="simple-rounded" value="0"></label></p>';
-				data+='<p class="small grey">'+(L.pm_pool_you_have||'You have')+': '+pm_fmt_shares(shares)+'</p>';
-				data+='<div class="wide-buttons captions"><a class="wide-button color-red pm-pool-emergency-action">'+(L.pm_pool_emergency_btn||'Emergency withdraw')+'</a></div>';
+				data+='<p class="text-small grey">'+(L.pm_pool_you_have||'You have')+': '+pm_fmt_shares(shares)+'</p>';
+				data+='<p><input class="pm-pool-emergency-action blue-button captions" type="button" value="'+escape_html(L.pm_pool_emergency_btn||'Emergency withdraw')+'"></p>';
 			}
 		}
 	}
 	data+='<p class="red pm-pool-error"></p><p class="green pm-pool-success"></p>';
-	box.html(pm_wrap(data));
+	box.html(data);   // pm-pool-box already carries `.captions` (sans-serif); no columns-view wrapper needed here
 
 	box.find('.pm-pool-avail').off('click.pmpool').on('click.pmpool',function(){ box.find('input[name=pm-pool-amount]').val(wallet_free.toFixed(3)); });
 	box.find('.pm-pool-deposit-action').off('click.pmpool').on('click.pmpool',function(){ pm_pool_deposit_action(box,wallet_free); });
@@ -3919,8 +3919,8 @@ function load_pm_markets(reset){
 			data+='<div class="columns-view"><div class="column column-1 shadow grid pm-market-card">';
 			if(m.image){ data+='<div class="center"><img style="max-height:80px" src="'+escape_html(''+m.image)+'" onerror="this.style.display=\'none\'"></div>'; }
 			data+='<div class="bold">'+escape_html(''+m.title)+'</div>';
-			data+='<div class="small grey">'+escape_html(''+(m.category||''))+' &middot; '+pm_market_status_label(m)+'</div>';
-			data+='<div class="small">'+(ltmp_arr.pm_betting_until||'Betting until')+': '+show_date(m.betting_expiration,true)+ltmp_arr.default_date_utc+'</div>';
+			data+='<div class="text-small grey">'+escape_html(''+(m.category||''))+' &middot; '+pm_market_status_label(m)+'</div>';
+			data+='<div class="text-small">'+(ltmp_arr.pm_betting_until||'Betting until')+': '+show_date(m.betting_expiration,true)+ltmp_arr.default_date_utc+'</div>';
 			data+='<div class="wide-buttons captions"><a class="wide-button" data-href="/pm/market/'+m.id+'/">'+(ltmp_arr.pm_open||'Open')+'</a>';
 			if(m.url){ data+='<a class="wide-button" href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_source||'Source')+' &#8599;</a>'; }
 			data+='</div></div></div>';
@@ -3937,14 +3937,14 @@ function pm_market_bettable(m){
 }
 // Seamless columns-view/column wrapper: a.wide-button is only styled inside `.columns-view .column`
 // (app.css). Plain column shares the card's white bg (no shadow/grid) so it adds no visible box.
-function pm_wrap(inner){ return '<div class="columns-view"><div class="column column-1">'+inner+'</div></div>'; }
+function pm_wrap(inner){ return '<div class="columns-view"><div class="column column-1 captions">'+inner+'</div></div>'; } // .wide-button is only styled inside .columns-view .column; captions = sans-serif
 // Current pool split. Binary: implied probability from CPMM collateral reserves (pA=reserve_a/(a+b),
 // same formula as Forecaster); multi: share by outcome weight/bets. Staked = VIZ bet on that outcome.
 function pm_dist_row(label,pct,staked){
-	return '<div class="small">'+escape_html(''+label)+' &mdash; <b>'+pct+'%</b> <span class="grey">('+pm_fmt_viz(staked)+')</span></div>';
+	return '<div class="text-small">'+escape_html(''+label)+' &mdash; <b>'+pct+'%</b> <span class="grey">('+pm_fmt_viz(staked)+')</span></div>';
 }
 function pm_distribution(m,ocs){
-	let out='<div class="small"><b>'+(ltmp_arr.pm_volume||'Betting volume')+':</b> '+pm_fmt_viz(m.bets_sum)+'</div>';
+	let out='<div class="text-small"><b>'+(ltmp_arr.pm_volume||'Betting volume')+':</b> '+pm_fmt_viz(m.bets_sum)+'</div>';
 	if(0==parseInt(m.market_type)){
 		let a=parseFloat(m.reserve_a)||0,b=parseFloat(m.reserve_b)||0,s=a+b;
 		let pY=s>0?Math.round(a/s*100):50, pN=100-pY;
@@ -3965,11 +3965,11 @@ function load_pm_market(id){
 		let data='';
 		if(m.image){ data+='<p class="center"><img style="max-height:120px" src="'+escape_html(''+m.image)+'" onerror="this.style.display=\'none\'"></p>'; }
 		data+='<h3>'+escape_html(''+m.title)+'</h3>';
-		data+='<div class="small grey">'+escape_html(''+(m.category||''))+' &middot; '+pm_market_status_label(m)+'</div>';
-		data+='<div class="small">'+(ltmp_arr.pm_betting_until||'Betting until')+': '+show_date(m.betting_expiration,true)+ltmp_arr.default_date_utc+'</div>';
+		data+='<div class="text-small grey">'+escape_html(''+(m.category||''))+' &middot; '+pm_market_status_label(m)+'</div>';
+		data+='<div class="text-small">'+(ltmp_arr.pm_betting_until||'Betting until')+': '+show_date(m.betting_expiration,true)+ltmp_arr.default_date_utc+'</div>';
 		let descr=(m.metadata&&m.metadata.description)?(''+m.metadata.description):'';
-		if(descr){ data+='<p class="small grey">'+escape_html(descr.length>320?descr.substr(0,320)+'…':descr)+'</p>'; }
-		if(m.url){ data+='<p class="small"><a href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_rules||'Rules')+' &#8599;</a></p>'; }
+		if(descr){ data+='<p class="text-small grey">'+escape_html(descr.length>320?descr.substr(0,320)+'…':descr)+'</p>'; }
+		if(m.url){ data+='<p class="text-small"><a href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_rules||'Rules')+' &#8599;</a></p>'; }
 		data+='<div class="pm-dist-box"></div>';
 		data+='<div class="pm-bet-box"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>';
 		data+='<div class="pm-positions-box"></div>';
@@ -3981,11 +3981,11 @@ function load_pm_market(id){
 			$('.view-pm .page-market .pm-dist-box').html('<hr>'+pm_distribution(m,ocs));
 			let box=$('.view-pm .page-market .pm-bet-box');
 			if(!ocs.length){ box.html(''); if(oerr){console.log(oerr);} }
-			else if(!bettable){ box.html('<hr><p class="grey small">'+(ltmp_arr.pm_betting_closed||'Betting is closed for this market.')+'</p>'); }
+			else if(!bettable){ box.html('<hr><p class="grey text-small">'+(ltmp_arr.pm_betting_closed||'Betting is closed for this market.')+'</p>'); }
 			else{
 				let bd='<h4 class="captions">'+(ltmp_arr.pm_place_bet||'Place a bet')+'</h4>';
 				bd+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_amount||'Amount')+':</span><input type="text" name="pm-bet-amount" class="simple-rounded" placeholder="0.000 VIZ"></label></p>';
-				bd+='<p class="small grey">'+(ltmp_arr.pm_pick_outcome||'Pick an outcome to bet on:')+'</p>';
+				bd+='<p class="text-small grey">'+(ltmp_arr.pm_pick_outcome||'Pick an outcome to bet on:')+'</p>';
 				bd+='<div class="wide-buttons captions">';
 				for(let i in ocs){
 					let o=ocs[i];
@@ -4053,7 +4053,7 @@ function load_pm_positions(market_id,m,ocs){
 			let bid=(p.id!=null?p.id:p.bet_id);
 			let shares=pm_pos_shares(p);
 			h+='<div class="columns-view">'
-				+'<div class="column-view column-flex"><span class="bold">'+escape_html(pm_pos_outcome_label(p,ocs))+'</span><br><span class="small grey">'+(ltmp_arr.pm_shares||'Shares')+': '+pm_fmt_shares(shares)+'</span></div>'
+				+'<div class="column-view column-flex"><span class="bold">'+escape_html(pm_pos_outcome_label(p,ocs))+'</span><br><span class="text-small grey">'+(ltmp_arr.pm_shares||'Shares')+': '+pm_fmt_shares(shares)+'</span></div>'
 				+'<div class="column-view"><a class="inline-button pm-xfer-btn" data-bet="'+escape_html(''+bid)+'" data-shares="'+shares+'">'+(ltmp_arr.pm_transfer||'Transfer')+'</a></div>'
 				+'</div>';
 		}
@@ -4067,7 +4067,7 @@ function pm_transfer_form(bet_id,have_shares,market_id){
 	let html='<h4 class="captions">'+(ltmp_arr.pm_transfer_title||'Transfer position')+' #'+escape_html(''+bet_id)+'</h4>';
 	html+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_to_account||'To account')+':</span><input type="text" name="pm-xfer-to" class="simple-rounded"></label></p>';
 	html+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_shares||'Shares')+':</span><input type="text" name="pm-xfer-shares" class="simple-rounded" value="'+pm_fmt_shares(have_shares)+'"></label></p>';
-	html+='<p class="small grey">'+(ltmp_arr.pm_you_have||'You have')+': '+pm_fmt_shares(have_shares)+'</p>';
+	html+='<p class="text-small grey">'+(ltmp_arr.pm_you_have||'You have')+': '+pm_fmt_shares(have_shares)+'</p>';
 	html+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_memo||'Memo (optional)')+':</span><input type="text" name="pm-xfer-memo" class="simple-rounded"></label></p>';
 	html+='<p class="red pm-xfer-error"></p><p class="green pm-xfer-success"></p>';
 	html+='<p><input class="pm-xfer-send blue-button captions" type="button" value="'+(ltmp_arr.pm_transfer_send||'Send')+'" data-bet="'+escape_html(''+bet_id)+'" data-market="'+market_id+'"><span class="submit-button-ring"></span><span class="icon icon-margin hidden icon-color-blue icon-check"></span></p>';
@@ -4102,7 +4102,7 @@ function render_pm_dispute(market_id,m,ocs,bettable){
 	let box=$('.view-pm .page-market .pm-dispute-box'); if(!box.length){ return; }
 	if(bettable){ box.html(''); return; } // dispute only meaningful after betting closes
 	let h='<h4 class="captions">'+(ltmp_arr.pm_dispute||'Dispute')+'</h4>';
-	h+='<p class="small grey">'+(ltmp_arr.pm_dispute_hint||'Open a dispute if you disagree with how this market resolves.')+'</p>';
+	h+='<p class="text-small grey">'+(ltmp_arr.pm_dispute_hint||'Open a dispute if you disagree with how this market resolves.')+'</p>';
 	h+='<div class="wide-buttons size2 captions"><a class="wide-button pm-dispute-open">'+(ltmp_arr.pm_dispute_create||'Open dispute')+'</a>'
 		+'<a class="wide-button pm-dispute-vote-open">'+(ltmp_arr.pm_dispute_vote||'Vote in dispute')+'</a></div>';
 	h+='<div class="pm-dispute-form" style="display:none"></div>';

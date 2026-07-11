@@ -1894,7 +1894,7 @@ var ltmp_zh_arr = {
 		</div>
 		<div class="page page-market">
 			<div class="card">
-				<div class="pm-market-detail"></div>
+				<div class="pm-market-detail captions"></div>
 				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -1912,14 +1912,13 @@ var ltmp_zh_arr = {
 		<div class="page page-pool">
 			<div class="card">
 				<h3 class="captions">流动性资金池</h3>
-				<p class="small grey">将 VIZ 存入共享的惰性流动性池。您的资金为各预测市场提供做市流动性，并赚取交易手续费与杠杆利息的份额。</p>
-				<ul class="small grey">
-					<li>收益持续累积并计入您的仓位价值。</li>
-					<li>存款会锁定一段固定期限（见下方）；解锁后可进行计划提取。</li>
-					<li>解锁前的紧急提取会立即取回全部资金，但会对已累积收益收取罚金——绝不触及本金。</li>
-					<li>池内资金承担做市风险，收益不作保证。</li>
-				</ul>
-				<div class="pm-pool-box"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
+				<div class="addon captions">
+					<h3>提示</h3>
+					<p>将 VIZ 存入共享的惰性流动性池。您的资金为各预测市场提供做市流动性，并赚取交易手续费与杠杆利息的份额。</p>
+					<p>收益持续累积并计入您的仓位价值。存款会锁定一段固定期限；解锁后可进行计划提取。</p>
+					<p>解锁前的紧急提取会立即取回资金，但会对已累积收益收取罚金——绝不触及本金。池内资金承担做市风险，收益不作保证。</p>
+				</div>
+				<div class="pm-pool-box captions"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
 				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>
