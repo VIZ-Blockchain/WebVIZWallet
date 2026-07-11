@@ -369,7 +369,11 @@ var validator_props_captions={
 	'withdraw_intervals':ltmp_arr.witness_props_captions.withdraw_intervals,
 	'distribution_epoch_length':ltmp_arr.witness_props_captions.distribution_epoch_length,
 };
-var validator_props_percent=['bandwidth_reserve_percent','committee_request_approve_min_percent','inflation_validator_percent','inflation_ratio_committee_vs_reward_fund','data_operations_cost_additional_bandwidth','validator_miss_penalty_percent'];
+var validator_props_percent=['bandwidth_reserve_percent','committee_request_approve_min_percent','inflation_validator_percent','inflation_ratio_committee_vs_reward_fund','data_operations_cost_additional_bandwidth','validator_miss_penalty_percent',
+	//HF14 prediction-market basis-point params (10000 = 100% on chain; shown/edited as %).
+	//Only params the node bounds by <=10000 belong here — NOT whole-percent (<=100) leverage/coverage
+	//params (rendered raw) nor ppm params, to keep display and re-broadcast byte-consistent with C++.
+	'pm_max_oracle_fee_percent','pm_default_time_penalty_percent','pm_dispute_approve_min_percent','pm_oracle_penalty_percent','pm_no_contest_penalty_percent','pm_commit_no_reveal_penalty_percent','pm_lazy_alloc_percent','pm_lazy_max_total_alloc_percent','pm_lazy_recall_step_percent','pm_lazy_emergency_penalty_percent','pm_lazy_min_liquidity_fee_percent','pm_leverage_max_per_position_bp'];
 var validator_props_hf13_defaults={'distribution_epoch_length':28800};
 var request_status_arr={
 	'0':ltmp_arr.request_status_arr['0'],
@@ -3641,9 +3645,10 @@ function update_validator_props(props){
 				data+='<p class="input-caption bold">'+(typeof ltmp_arr.witness_props_pm_group!=='undefined'?ltmp_arr.witness_props_pm_group:'Prediction market (HF14)')+'</p>';
 				pm_group_added=true;
 			}
-			let cap=(typeof validator_props_captions[k]!=='undefined')?validator_props_captions[k]:(''+k).replace(/_/g,' ');
+			let cap=(typeof validator_props_captions[k]!=='undefined')?validator_props_captions[k]:((typeof ltmp_arr.witness_props_captions[k]!=='undefined')?ltmp_arr.witness_props_captions[k]:(''+k).replace(/_/g,' '));
+			let is_pct=(-1!==validator_props_percent.indexOf(k));
 			data+='<p><label class="input-descr"><span class="input-caption">'+escape_html(cap)+':</span>';
-			data+='<input type="text" name="witness-set-props-'+k+'" class="simple-rounded" value="'+escape_html(''+props[k])+'">';
+			data+='<input type="text" name="witness-set-props-'+k+'" class="simple-rounded" placeholder="'+(is_pct?'0.00%':'')+'" value="'+(is_pct?((parseInt(props[k])/100)+'%'):escape_html(''+props[k]))+'">';
 			data+='</label></p>';
 		}
 		data+='<p class="red witness-set-props-error"></p>\
