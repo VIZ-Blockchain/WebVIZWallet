@@ -106,6 +106,24 @@
 		$main=str_replace('portable-version-card ','portable-version-card hidden ',$main);
 		//$main=preg_replace('~<div class="select-lang captions">(.*)</div>~','',$main);
 
+		// Inline /profile/* assets referenced from JS strings (avatars, social icons).
+		// These aren't part of the Pages artifact and their absolute "/profile/..." path
+		// breaks under a subpath deploy — so bake them into the standalone as data URIs.
+		if(is_dir('profile')){
+			$mimes=['svg'=>'image/svg+xml','png'=>'image/png','jpg'=>'image/jpeg','jpeg'=>'image/jpeg','gif'=>'image/gif','webp'=>'image/webp'];
+			foreach(scandir('profile') as $pf){
+				$path='profile/'.$pf;
+				if($pf==='.'||$pf==='..'||!is_file($path)){ continue; }
+				$needle='/profile/'.$pf;
+				if(false===strpos($main,$needle)){ continue; }
+				$ext=strtolower(pathinfo($pf,PATHINFO_EXTENSION));
+				$mime=isset($mimes[$ext])?$mimes[$ext]:'application/octet-stream';
+				$data='data:'.$mime.';base64,'.base64_encode(file_get_contents($path));
+				$main=str_replace($needle,$data,$main);
+				print '<div>+'.$path.' inlined in js ('.(round(filesize($path)/1024,2)).' Kb)</div>';
+			}
+		}
+
 		$main=str_replace('var standalone=false;','var standalone=true;',$main);
 
 		//remove external services js
