@@ -138,6 +138,7 @@ var ltmp_ru_arr={
 						<!--<div class="icon icon-wide icon-150px icon-color-blue icon-config-account"></div>-->
 						<div class="wide-buttons captions">
 							<a class="wide-button" data-href="/settings/profile/">Изменение профиля</a>
+							<a class="wide-button" data-href="/settings/ns/">NS-записи (VIZ DNS)</a>
 						</div>
 					</div>
 					<div class="column column-2 shadow grid">
@@ -360,6 +361,36 @@ var ltmp_ru_arr={
 
 				<div class="addon captions"><h3>Подсказка</h3><p>Все отправляемые данные будут записаны в блокчейн и не могут быть удалены, но вы можете их изменить в любой момент.</p></div>
 
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-ns" data-title="NS-записи">
+			<div class="card">
+				<h3>NS-записи (VIZ DNS)</h3>
+				<p class="grey">Храните DNS-записи для имени вашего аккаунта прямо в блокчейне: A-записи (IPv4, поддерживается round-robin) и хэш SSL-сертификата (SHA-256 от публичного ключа). Пишутся в метаданные аккаунта операцией account_metadata — поля профиля сохраняются.</p>
+				<p><span class="input-caption">A-записи (IPv4):</span></p>
+				<div class="ns-a-list"></div>
+				<p><a class="inline-button ns-add-a captions">+ Добавить A-запись</a></p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">SSL-хэш (SHA-256, необязательно):</span>
+						<input type="text" name="ns-ssl" placeholder="64 hex-символа" class="simple-rounded wide">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">TTL (секунды):</span>
+						<input type="text" name="ns-ttl" placeholder="28800" class="simple-rounded simple-rounded-size">
+					</label>
+				</p>
+				<p class="red ns-error"></p>
+				<p class="green ns-success"></p>
+				<p>
+					<input class="ns-save-action blue-button captions" type="button" value="Сохранить NS-записи">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<p><a class="inline-button grey ns-remove-action captions">Удалить все NS-записи</a></p>
 				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -2071,6 +2102,13 @@ var ltmp_ru_arr={
 
 	/* Manage Profile */
 	save_profile_success:'Профиль успешно сохранен',
+	ns_bad_ip:'Неверный IPv4-адрес:',
+	ns_bad_ssl:'SSL-хэш должен быть 64 hex-символа (SHA-256).',
+	ns_bad_ttl:'TTL должен быть положительным целым (секунды).',
+	ns_empty:'Добавьте хотя бы одну A-запись или SSL-хэш.',
+	ns_saved:'NS-записи сохранены в блокчейне.',
+	ns_removed:'NS-записи удалены.',
+	ns_remove_confirm:'Удалить все NS-записи из метаданных аккаунта?',
 
 	/* Access */
 	access_remove_caption:'удалить',

@@ -138,6 +138,7 @@ var ltmp_zh_arr = {
 						<!--<div class="icon icon-wide icon-150px icon-color-blue icon-config-account"></div>-->
 						<div class="wide-buttons captions">
 							<a class="wide-button" data-href="/settings/profile/">修改资料</a>
+							<a class="wide-button" data-href="/settings/ns/">NS 记录 (VIZ DNS)</a>
 
 						</div>
 					</div>
@@ -361,6 +362,36 @@ var ltmp_zh_arr = {
 
 				<div class="addon captions"><h3>提示</h3><p>所有发送的数据将被记录在区块链上且无法删除，但您可以随时编辑它。</p></div>
 
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-ns" data-title="NS 记录">
+			<div class="card">
+				<h3>NS 记录 (VIZ DNS)</h3>
+				<p class="grey">将您账户名的 DNS 记录直接存储在区块链上：A 记录（IPv4，支持轮询）和 SSL 证书哈希（公钥的 SHA-256）。通过 account_metadata 操作写入账户元数据——您的资料字段会被保留。</p>
+				<p><span class="input-caption">A 记录 (IPv4)：</span></p>
+				<div class="ns-a-list"></div>
+				<p><a class="inline-button ns-add-a captions">+ 添加 A 记录</a></p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">SSL 哈希 (SHA-256，可选)：</span>
+						<input type="text" name="ns-ssl" placeholder="64 位十六进制" class="simple-rounded wide">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">TTL (秒)：</span>
+						<input type="text" name="ns-ttl" placeholder="28800" class="simple-rounded simple-rounded-size">
+					</label>
+				</p>
+				<p class="red ns-error"></p>
+				<p class="green ns-success"></p>
+				<p>
+					<input class="ns-save-action blue-button captions" type="button" value="保存 NS 记录">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<p><a class="inline-button grey ns-remove-action captions">删除所有 NS 记录</a></p>
 				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -2071,6 +2102,13 @@ var ltmp_zh_arr = {
 
 	/* Manage Profile */
 	save_profile_success:'资料保存成功',
+	ns_bad_ip:'无效的 IPv4 地址：',
+	ns_bad_ssl:'SSL 哈希必须为 64 位十六进制字符 (SHA-256)。',
+	ns_bad_ttl:'TTL 必须为正整数（秒）。',
+	ns_empty:'请至少添加一条 A 记录或 SSL 哈希。',
+	ns_saved:'NS 记录已保存到区块链。',
+	ns_removed:'NS 记录已删除。',
+	ns_remove_confirm:'从您的账户元数据中删除所有 NS 记录？',
 
 	/* Access */
 	access_remove_caption:'移除',

@@ -138,7 +138,7 @@ var ltmp_en_arr={
 						<!--<div class="icon icon-wide icon-150px icon-color-blue icon-config-account"></div>-->
 						<div class="wide-buttons captions">
 							<a class="wide-button" data-href="/settings/profile/">Change profile</a>
-
+							<a class="wide-button" data-href="/settings/ns/">NS records (VIZ DNS)</a>
 						</div>
 					</div>
 					<div class="column column-2 shadow grid">
@@ -361,6 +361,36 @@ var ltmp_en_arr={
 
 				<div class="addon captions"><h3>Hint</h3><p>All sent data will be recorded in the blockchain and cannot be deleted, but you can edit it at any time.</p></div>
 
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-ns" data-title="NS records">
+			<div class="card">
+				<h3>NS records (VIZ DNS)</h3>
+				<p class="grey">Store DNS records on-chain for your account name: A records (IPv4, round-robin supported) and an SSL certificate hash (SHA-256 of the public key). Saved into your account metadata via the account_metadata operation — your profile fields are preserved.</p>
+				<p><span class="input-caption">A records (IPv4):</span></p>
+				<div class="ns-a-list"></div>
+				<p><a class="inline-button ns-add-a captions">+ Add A record</a></p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">SSL hash (SHA-256, optional):</span>
+						<input type="text" name="ns-ssl" placeholder="64 hex characters" class="simple-rounded wide">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">TTL (seconds):</span>
+						<input type="text" name="ns-ttl" placeholder="28800" class="simple-rounded simple-rounded-size">
+					</label>
+				</p>
+				<p class="red ns-error"></p>
+				<p class="green ns-success"></p>
+				<p>
+					<input class="ns-save-action blue-button captions" type="button" value="Save NS records">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<p><a class="inline-button grey ns-remove-action captions">Remove all NS records</a></p>
 				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -2071,6 +2101,13 @@ var ltmp_en_arr={
 
 	/* Manage Profile */
 	save_profile_success:'Profile successfully saved',
+	ns_bad_ip:'Invalid IPv4 address:',
+	ns_bad_ssl:'SSL hash must be 64 hex characters (SHA-256).',
+	ns_bad_ttl:'TTL must be a positive integer (seconds).',
+	ns_empty:'Add at least one A record or an SSL hash.',
+	ns_saved:'NS records saved to the blockchain.',
+	ns_removed:'NS records removed.',
+	ns_remove_confirm:'Remove all NS records from your account metadata?',
 
 	/* Access */
 	access_remove_caption:'remove',

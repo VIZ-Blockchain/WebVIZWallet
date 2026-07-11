@@ -1061,6 +1061,98 @@ function wallet_change_pass(){
 		});
 	}).catch(function(e){ page.find('.encc-error').html(ltmp_arr.enc_wrong||'Wrong passphrase.'); });
 }
+
+/* ── Settings → NS records (VIZ DNS): A records + SSL hash + TTL in account json_metadata ──
+ * Same mechanism as save_profile: account_metadata op (active key satisfies regular auth); other
+ * metadata (profile, …) preserved. Spec: viz-js-lib .qoder/docs/spec/viz-dns-nameserver-spec.md. */
+function ns_is_ipv4(s){ var m=/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(s); if(!m){ return false; } for(var i=1;i<=4;i++){ if(parseInt(m[i],10)>255){ return false; } } return true; }
+function ns_is_sha256(s){ return /^[0-9a-fA-F]{64}$/.test(s); }
+function ns_add_a_row(value){
+	var row='<p class="ns-a-row"><input type="text" class="simple-rounded ns-a-input" placeholder="188.120.231.153" value="'+escape_html(value||'')+'"> <a class="inline-button grey small ns-a-del captions">&times;</a></p>';
+	$('.view-settings .page-ns .ns-a-list').append(row);
+}
+function setup_ns(){
+	var page=$('.view-settings .page-ns'); if(!page.length){ return; }
+	page.find('.ns-a-list').html('');
+	page.find('input[name=ns-ssl]').val('');
+	page.find('input[name=ns-ttl]').val('28800');
+	page.find('.ns-error,.ns-success').html('');
+	page.find('.icon-check').css('display','none');
+	page.find('.submit-button-ring').css('display','none');
+	if(''==current_user){ ns_add_a_row(''); return; }
+	viz.api.getAccounts([current_user],function(err,response){
+		var md={}; try{ if(response&&response[0]&&''!=response[0].json_metadata){ md=JSON.parse(response[0].json_metadata); } }catch(e){ md={}; }
+		var aCount=0, ssl='';
+		if(md.ns&&md.ns.length){
+			for(var i=0;i<md.ns.length;i++){
+				var rec=md.ns[i]; if(!rec||rec.length<2){ continue; }
+				if('A'==rec[0]){ ns_add_a_row(rec[1]); aCount++; }
+				else if('TXT'==rec[0]){ var kv=(''+rec[1]).split('='); if('ssl'==kv[0]){ ssl=kv.slice(1).join('='); } }
+			}
+		}
+		page.find('input[name=ns-ssl]').val(ssl);
+		if(md.ttl){ page.find('input[name=ns-ttl]').val(md.ttl); }
+		if(0==aCount){ ns_add_a_row(''); }
+	});
+}
+function save_ns(){
+	var page=$('.view-settings .page-ns');
+	page.find('.ns-error').html(''); page.find('.ns-success').html('');
+	var aRecords=[], bad='';
+	page.find('.ns-a-input').each(function(){ var v=(''+$(this).val()).trim(); if(''==v){ return; } if(!ns_is_ipv4(v)){ bad=v; } aRecords.push(v); });
+	if(bad){ page.find('.ns-error').html((ltmp_arr.ns_bad_ip||'Invalid IPv4 address:')+' '+escape_html(bad)); return; }
+	var ssl=(''+page.find('input[name=ns-ssl]').val()).trim();
+	if(''!=ssl && !ns_is_sha256(ssl)){ page.find('.ns-error').html(ltmp_arr.ns_bad_ssl||'SSL hash must be 64 hex characters (SHA-256).'); return; }
+	var ttl=parseInt((''+page.find('input[name=ns-ttl]').val()).trim(),10);
+	if(!(ttl>0)){ page.find('.ns-error').html(ltmp_arr.ns_bad_ttl||'TTL must be a positive integer (seconds).'); return; }
+	if(0==aRecords.length && ''==ssl){ page.find('.ns-error').html(ltmp_arr.ns_empty||'Add at least one A record or an SSL hash.'); return; }
+	page.find('.ns-save-action').attr('disabled','disabled');
+	page.find('.icon-check').css('display','none');
+	page.find('.submit-button-ring').css('display','inline-block');
+	viz.api.getAccounts([current_user],function(err,response){
+		if(err||!response||typeof response[0]==='undefined'||current_user!=response[0].name){
+			page.find('.ns-error').html('<p class="red">'+(ltmp_arr.default_node_not_respond||'Node did not respond')+'</p>');
+			page.find('.ns-save-action').removeAttr('disabled'); page.find('.submit-button-ring').css('display','none'); return;
+		}
+		var md={}; try{ if(''!=response[0].json_metadata){ md=JSON.parse(response[0].json_metadata); } }catch(e){ md={}; }
+		var ns=[];
+		for(var i=0;i<aRecords.length;i++){ ns.push(['A',aRecords[i]]); }
+		if(''!=ssl){ ns.push(['TXT','ssl='+ssl]); }
+		md.ns=ns; md.ttl=ttl;
+		viz.broadcast.accountMetadata(users[current_user].active_key,current_user,JSON.stringify(md),function(err,result){
+			if(result){
+				page.find('.ns-success').html(ltmp_arr.ns_saved||'NS records saved to the blockchain.');
+				page.find('.submit-button-ring').css('display','none');
+				page.find('.icon-check').css('display','inline-block');
+				page.find('.ns-save-action').removeAttr('disabled');
+			}else{
+				page.find('.ns-error').html(ltmp_arr.default_operation_error||'Operation error.');
+				page.find('.submit-button-ring').css('display','none');
+				page.find('.ns-save-action').removeAttr('disabled');
+				console.log(err);
+			}
+		});
+	});
+}
+function remove_ns(){
+	var page=$('.view-settings .page-ns');
+	if(!confirm(ltmp_arr.ns_remove_confirm||'Remove all NS records from your account metadata?')){ return; }
+	page.find('.ns-error').html(''); page.find('.ns-success').html('');
+	viz.api.getAccounts([current_user],function(err,response){
+		if(err||!response||typeof response[0]==='undefined'||current_user!=response[0].name){
+			page.find('.ns-error').html('<p class="red">'+(ltmp_arr.default_node_not_respond||'Node did not respond')+'</p>'); return;
+		}
+		var md={}; try{ if(''!=response[0].json_metadata){ md=JSON.parse(response[0].json_metadata); } }catch(e){ md={}; }
+		delete md.ns; delete md.ttl;
+		viz.broadcast.accountMetadata(users[current_user].active_key,current_user,JSON.stringify(md),function(err,result){
+			if(result){
+				page.find('.ns-a-list').html(''); ns_add_a_row('');
+				page.find('input[name=ns-ssl]').val(''); page.find('input[name=ns-ttl]').val('28800');
+				page.find('.ns-success').html(ltmp_arr.ns_removed||'NS records removed.');
+			}else{ page.find('.ns-error').html(ltmp_arr.default_operation_error||'Operation error.'); console.log(err); }
+		});
+	});
+}
 // one-time setup: track activity + poll for idle auto-lock; wire the header quick-lock button
 $(function(){
 	$(document).on('mousemove.walllock keydown.walllock click.walllock touchstart.walllock', wallet_mark_activity);
@@ -2641,6 +2733,7 @@ function view_settings(path,params,title){
 				}
 
 				if('security'==path[2]){ setup_wallet_security(); }
+				if('ns'==path[2]){ setup_ns(); }
 					if('profile'==path[2]){
 					$('.page-profile input[name=manage-profile-nickname]').val('');
 					$('.page-profile input[name=manage-profile-about]').val('');
@@ -7299,6 +7392,10 @@ function app_mouse(e){
 	if($(target).hasClass('enc-enable-action')){ wallet_enable_encryption(); }
 	if($(target).hasClass('enc-change-action')){ wallet_change_pass(); }
 	if($(target).hasClass('enc-disable-action')){ wallet_disable_encryption(); }
+	if($(target).hasClass('ns-add-a')){ ns_add_a_row(''); }
+	if($(target).hasClass('ns-a-del')){ $(target).closest('.ns-a-row').remove(); }
+	if($(target).hasClass('ns-save-action')){ save_ns(); }
+	if($(target).hasClass('ns-remove-action')){ remove_ns(); }
 	if($(target).hasClass('manage-access-preload-action')){
 		let account=$('.page-access input[name=manage-access-login]').val().toLowerCase().trim();
 		manage_access_preload(account,$('.page-access'));
