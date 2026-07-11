@@ -15,7 +15,7 @@
 	-->
 	<link rel="stylesheet" href="/app.css?<?=filemtime('app.css')?>">
 	<script type="text/javascript" src="/viz.min.js"></script>
-	<script type="text/javascript" src="/jquery-3.7.1.min.js"></script>
+	<script type="text/javascript" src="/cash.min.js"></script>
 	<script type="text/javascript" src="/progressbar.min.js"></script>
 	<script type="text/javascript" src="/ltmp_ru.js?<?=filemtime('ltmp_ru.js')?>"></script>
 	<script type="text/javascript" src="/ltmp_en.js?<?=filemtime('ltmp_en.js')?>"></script>
