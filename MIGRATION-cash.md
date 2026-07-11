@@ -51,3 +51,12 @@ Swap фреймворка на ЖИВОМ кошельке с подписью t
 (автотестов нет, я не могу интерактивно проверить все money-потоки). План выше делает флип механическим;
 исполнять — в ветке с проверкой через shot.js, желательно с ведома владельца. Экономия после: −~80 КБ
 (jQuery 3.7.1 ~87КБ min → cash ~6КБ).
+
+---
+## DONE (2026-07-11) — фактический подход
+Реализовано НЕ переписыванием 13 сайтов, а **compat-shim** в начале app.js (cash поддерживает namespaces
+и offset, что упростило): shim добавил `$.ajax`→fetch, `$.extend`, `$.fn.animate({scrollTop})/scrollTop`,
+jQuery shorthand-события (`.change/.focus/.keyup/...`), `window.jQuery=$`. Плюс правки несовместимых
+СЕЛЕКТОРОВ (cash = strict native qsa): 24× `[attr='+var+']`→quoted, 3× `option:selected`→`option:checked`,
+1× `$(location.hash)`→safe query. **Верифицировано на тестнете (bettor):** login грузит баланс, transfer
+0.001 VIZ и PM-ставка легли на цепь, обход всех разделов 0 JS-ошибок. Смержено в master. −71КБ.
