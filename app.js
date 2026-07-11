@@ -646,8 +646,11 @@ function escape_html(text) {
 $(window).on('hashchange',function(e){
 	e.preventDefault();
 	if(''!=window.location.hash){
-		if($(window.location.hash).length>0){
-			$('body,html').animate({scrollTop:parseInt($('.index[data-index='+window.location.hash+']').offset().top) - 64 - 10},1000);
+		// hash can be a route ("#/send/"), not a valid selector — query the anchor safely (jQuery/Sizzle
+		// tolerated $('#/send/'); cash/native qsa throws), then scroll to it if it exists.
+		var _anchor=null; try{ _anchor=document.querySelector('.index[data-index="'+window.location.hash+'"]'); }catch(e){}
+		if(_anchor){
+			$('body,html').animate({scrollTop:parseInt($(_anchor).offset().top) - 64 - 10},1000);
 		}
 	}
 	else{
@@ -1559,7 +1562,7 @@ function load_paid_subscriptions(page){
 	let offset=page*per_page;
 	let search=$('.page-paid-subscriptions .view-paid-subscriptions input[name=provider-filter]').val().trim();
 	let descr=$('.page-paid-subscriptions .view-paid-subscriptions input[name=descr-filter]').val().trim();
-	let order=$('.page-paid-subscriptions .view-paid-subscriptions select[name=order] option:selected').val();
+	let order=$('.page-paid-subscriptions .view-paid-subscriptions select[name=order] option:checked').val();
 	$('.page-paid-subscriptions .view-paid-subscriptions .table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
 	$.ajax({
 		type:'GET',
@@ -1665,7 +1668,7 @@ function load_accounts_on_sale(page){
 	let per_page=10;
 	let offset=page*per_page;
 	let search=$('.page-buy-account .accounts-on-sale input[name=account-filter]').val().trim();
-	let order=$('.page-buy-account .accounts-on-sale select[name=order] option:selected').val();
+	let order=$('.page-buy-account .accounts-on-sale select[name=order] option:checked').val();
 	$('.page-buy-account .accounts-on-sale .table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
 	$.ajax({
 		type:'GET',
@@ -1800,7 +1803,7 @@ function load_subaccounts_on_sale(page){
 	let per_page=10;
 	let offset=page*per_page;
 	let search=$('.page-buy-subaccount .subaccounts-on-sale input[name=subaccount-filter]').val().trim();
-	let order=$('.page-buy-subaccount .subaccounts-on-sale select[name=order] option:selected').val();
+	let order=$('.page-buy-subaccount .subaccounts-on-sale select[name=order] option:checked').val();
 	$('.page-buy-subaccount .subaccounts-on-sale .table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
 	$.ajax({
 		type:'GET',
@@ -1904,7 +1907,7 @@ function load_inactive_paid_subscriptions(){
 					}
 				}
 				else{
-					$('.page-active-paid-subscriptions .inactive-paid-subscriptions .table-data .columns-view[data-provider='+response.creator+']').addClass('red');
+					$('.page-active-paid-subscriptions .inactive-paid-subscriptions .table-data .columns-view[data-provider="'+response.creator+'"]').addClass('red');
 				}
 			});
 		}
@@ -2267,7 +2270,7 @@ function view_market(path,params,title){
 									}
 								}
 								else{
-									$('.page-active-paid-subscriptions .active-paid-subscriptions .table-data .columns-view[data-provider='+response.creator+']').addClass('red');
+									$('.page-active-paid-subscriptions .active-paid-subscriptions .table-data .columns-view[data-provider="'+response.creator+'"]').addClass('red');
 								}
 							});
 						}
@@ -3046,7 +3049,7 @@ function load_history(el,back,clear){
 			}
 			for(i in response){
 				let history_id=response[i][0]
-				if(0==el.find('div[data-id='+history_id+']').length){
+				if(0==el.find('div[data-id="'+history_id+'"]').length){
 					let op_name=response[i][1].op[0];
 					if(-1!=operations_arr.indexOf(op_name)){
 						let op_date=response[i][1].timestamp;
@@ -4071,8 +4074,8 @@ function update_fund_request(id,votes,votes_update){
 	}
 	if(in_range){
 		viz.api.getCommitteeRequest(id,(!votes?0:-1),function(err,response){
-			if(0<$('.fund-request[data-id='+response.request_id+']').length){
-				$('.fund-request[data-id='+response.request_id+']').removeClass('hidden');
+			if(0<$('.fund-request[data-id="'+response.request_id+'"]').length){
+				$('.fund-request[data-id="'+response.request_id+'"]').removeClass('hidden');
 				if(!err){
 					let data='';
 					if(response.request_id)
@@ -4109,13 +4112,13 @@ function update_fund_request(id,votes,votes_update){
 					if(5==response.status){
 						data+='<span class="inline-button color-green small">'+number_thousands(show_balance_in_tokens(response.payout_amount,true))+'</span>';
 					}
-					$('.fund-request[data-id='+response.request_id+']').html(data);
+					$('.fund-request[data-id="'+response.request_id+'"]').html(data);
 				}
 				else{
-					$('.fund-request[data-id='+response.request_id+']').html('<p><a data-href="/dao/fund-requests/'+response.request_id+'/">#'+response.request_id+' <span class="red">'+ltmp_arr.default_node_error+'</span></a></p>');
+					$('.fund-request[data-id="'+response.request_id+'"]').html('<p><a data-href="/dao/fund-requests/'+response.request_id+'/">#'+response.request_id+' <span class="red">'+ltmp_arr.default_node_error+'</span></a></p>');
 				}
 			}
-			if(0<$('.section-fund-request[data-id='+response.request_id+']').length){
+			if(0<$('.section-fund-request[data-id="'+response.request_id+'"]').length){
 				if(votes_update){
 					let data='';
 					data+='<h3>'+ltmp_arr.fund_request_votes_caption+'</h3>';
@@ -4165,7 +4168,7 @@ function update_fund_request(id,votes,votes_update){
 							});
 						}
 					}
-					$('.section-fund-request[data-id='+response.request_id+'] .fund-request-votes').html(data);
+					$('.section-fund-request[data-id="'+response.request_id+'"] .fund-request-votes').html(data);
 				}
 				else{
 					let data='';
@@ -4299,7 +4302,7 @@ function update_fund_request(id,votes,votes_update){
 						data+='<p class="red">'+ltmp_arr.default_node_error+'</p>';
 					}
 					data+='<hr><a data-href="/dao/fund-requests/">'+ltmp_arr.default_return_link+'</a>';
-					$('.section-fund-request[data-id='+response.request_id+']').html(data);
+					$('.section-fund-request[data-id="'+response.request_id+'"]').html(data);
 					//binds
 					if(0<$('input[name=fund-vote-request-percent]').length){
 						$('input[name=fund-vote-request-percent]').unbind('keyup');
@@ -4329,11 +4332,11 @@ function update_fund_requests(status){
 		update_fund_requests(5);
 	}
 	else{
-		$('.fund-requests[data-status='+status+'] div').remove();
-		$('.fund-requests[data-status='+status+']').append('<div class="loading captions"><span class="submit-button-ring" style="display:inline-block;"></span>'+ltmp_arr.default_loading+'</div>');
+		$('.fund-requests[data-status="'+status+'"] div').remove();
+		$('.fund-requests[data-status="'+status+'"]').append('<div class="loading captions"><span class="submit-button-ring" style="display:inline-block;"></span>'+ltmp_arr.default_loading+'</div>');
 		viz.api.getCommitteeRequestsList(status,function(err,response){
 			if(!err){
-				$('.fund-requests[data-status='+status+'] .loading').remove();
+				$('.fund-requests[data-status="'+status+'"] .loading').remove();
 				let counter=0;
 				let per_status=10;
 				for(i in response){
@@ -4350,32 +4353,32 @@ function update_fund_requests(status){
 					}
 					if(counter<=per_status){
 						if(in_range){
-							$('.fund-requests[data-status='+status+']').append('<div class="fund-request captions" data-id="'+response[req_id]+'"><a data-href="/dao/fund-requests/'+response[req_id]+'/">#'+response[req_id]+'</a></div>');
+							$('.fund-requests[data-status="'+status+'"]').append('<div class="fund-request captions" data-id="'+response[req_id]+'"><a data-href="/dao/fund-requests/'+response[req_id]+'/">#'+response[req_id]+'</a></div>');
 							update_fund_request(response[req_id]);
 						}
 					}
 					else{
 						if(in_range){
-							$('.fund-requests[data-status='+status+']').append('<div class="fund-request hidden captions" data-id="'+response[req_id]+'">#'+response[req_id]+'</div>');
+							$('.fund-requests[data-status="'+status+'"]').append('<div class="fund-request hidden captions" data-id="'+response[req_id]+'">#'+response[req_id]+'</div>');
 						}
 					}
 
 				}
 				if(counter>=per_status){
-					$('.fund-requests[data-status='+status+']').append('<div class="load-more"><a class="inline-button color-orange no-margin fund-show-more-requests captions">'+ltmp_arr.fund_show_other_requests+'</a></div>');
+					$('.fund-requests[data-status="'+status+'"]').append('<div class="load-more"><a class="inline-button color-orange no-margin fund-show-more-requests captions">'+ltmp_arr.fund_show_other_requests+'</a></div>');
 				}
 				if(0==response.length){
 					if(0==status){
-						$('.fund-requests[data-status='+status+']').append('<div class="no-results"><p class="captions">'+ltmp_arr.fund_none_new_requests+'</p></div>');
+						$('.fund-requests[data-status="'+status+'"]').append('<div class="no-results"><p class="captions">'+ltmp_arr.fund_none_new_requests+'</p></div>');
 					}
 					else{
-						$('.fund-requests[data-status='+status+']').append('<div class="no-results"><p class="captions">'+ltmp_arr.fund_none_requests+'</p></div>');
+						$('.fund-requests[data-status="'+status+'"]').append('<div class="no-results"><p class="captions">'+ltmp_arr.fund_none_requests+'</p></div>');
 					}
 				}
 			}
 			else{
-				$('.fund-requests[data-status='+status+'] .loading').remove();
-				$('.fund-requests[data-status='+status+']').append('<div class="error"><p class="red captions">'+ltmp_arr.default_node_error+'</p></div>');
+				$('.fund-requests[data-status="'+status+'"] .loading').remove();
+				$('.fund-requests[data-status="'+status+'"]').append('<div class="error"><p class="red captions">'+ltmp_arr.default_node_error+'</p></div>');
 			}
 		});
 	}
@@ -8254,7 +8257,7 @@ function dom_bindings(callback){
 		$('.page-transfer .transfer-tokens-amount-fee').html('&hellip;');
 		$('.page-transfer .transfer-memo-caption').css('display','none');
 		$('.page-transfer .transfer-memo-format').html('&hellip;');
-		let template=$(this).find('option[value='+this.value+']');
+		let template=$(this).find('option[value="'+this.value+'"]');
 		if((typeof template.attr('data-account') != 'undefined') && (''!=template.attr('data-account'))){
 			$('.page-transfer input[name=transfer-account]').attr('disabled','disabled');
 			$('.page-transfer input[name=transfer-account]').val(template.attr('data-account'));
@@ -8379,8 +8382,8 @@ $(document).ready(function(){
 					if(''!=hash_load){
 						hash_load=hash_load.substr(1);
 						if(-1==hash_load.indexOf('/')){
-							if(0<$('.index[data-index='+hash_load+']').length){
-								$('body,html').animate({scrollTop:parseInt($('.index[data-index='+hash_load+']').offset().top) - 64 - 10},1000);
+							if(0<$('.index[data-index="'+hash_load+'"]').length){
+								$('body,html').animate({scrollTop:parseInt($('.index[data-index="'+hash_load+'"]').offset().top) - 64 - 10},1000);
 							}
 						}
 					}
