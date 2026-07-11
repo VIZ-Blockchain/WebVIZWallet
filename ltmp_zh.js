@@ -1863,9 +1863,13 @@ var ltmp_zh_arr = {
 			</div>
 		</div>
 		<div class="page page-completed">
-			<div class="card transparent">
-				<h3 class="captions">我的已完成市场</h3>
-				<div class="pm-completed-list"></div>
+			<div class="card">
+				<div class="table-view captions">
+					<div class="table-header">
+						<h3>我的已完成市场 <span class="loading">%%default_loading%%</span></h3>
+					</div>
+					<div class="table-data pm-completed-list"></div>
+				</div>
 				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>

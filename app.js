@@ -3994,9 +3994,12 @@ function pm_dispute_vote_action(btn){
 // My completed (resolved) positions — read-only summary with payout.
 function load_pm_completed(){
 	let box=$('.view-pm .page-completed .pm-completed-list');
-	box.html('<p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p>');
+	let tv=box.closest('.table-view');
+	tv.find('.table-header .loading').css('display','inline-block');
+	box.html('');
 	viz.api.getAccountPositions(current_user,0,300,function(err,list){
-		if(err||!list){ box.html('<p class="red">'+ltmp_arr.default_node_error+'</p>'); if(err){console.log(err);} return; }
+		tv.find('.table-header .loading').css('display','none');
+		if(err||!list){ box.html('<div class="columns-view no-results"><div class="column-view column-flex"><span class="red">'+ltmp_arr.default_node_error+'</span></div></div>'); if(err){console.log(err);} return; }
 		let rows='';
 		for(let i in list){
 			let p=pm_norm_position(list[i]);
@@ -4010,10 +4013,10 @@ function load_pm_completed(){
 			let ocl=pm_pos_outcome_label(p,[]);
 			rows+='<div class="columns-view">'
 				+'<div class="column-view column-flex"><a data-href="/pm/market/'+escape_html(''+mid)+'/">#'+escape_html(''+mid)+'</a> <span class="grey">'+escape_html(''+ocl)+'</span></div>'
-				+'<div class="column-view small grey">'+(ltmp_arr.pm_payout||'Payout')+': '+escape_html(''+payout)+'</div>'
+				+'<div class="column-view"><span class="grey">'+(ltmp_arr.pm_payout||'Payout')+':</span> '+escape_html(''+payout)+'</div>'
 				+'</div>';
 		}
-		box.html(rows?('<div class="table-view captions">'+rows+'</div>'):('<p class="grey small">'+(ltmp_arr.pm_no_completed||'No completed positions yet.')+'</p>'));
+		box.html(rows||('<div class="columns-view no-results"><div class="column-view column-flex">'+(ltmp_arr.pm_no_completed||'No completed positions yet.')+'</div></div>'));
 	});
 }
 function update_fund_request(id,votes,votes_update){

@@ -1867,9 +1867,13 @@ var ltmp_en_arr={
 			</div>
 		</div>
 		<div class="page page-completed">
-			<div class="card transparent">
-				<h3 class="captions">My completed markets</h3>
-				<div class="pm-completed-list"></div>
+			<div class="card">
+				<div class="table-view captions">
+					<div class="table-header">
+						<h3>My completed markets <span class="loading">%%default_loading%%</span></h3>
+					</div>
+					<div class="table-data pm-completed-list"></div>
+				</div>
 				<p><hr><a data-href="/pm/">%%default_return_link%%</a></p>
 			</div>
 		</div>
