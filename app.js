@@ -893,13 +893,143 @@ function view_memo(path,params,title){
 	$('.view-memo').css('display','block');
 }
 
-function save_session(){
-	let users_json=JSON.stringify(users);
-	localStorage.setItem('users',users_json);
-	localStorage.setItem('current_user',current_user);
+// ── Optional wallet encryption (crypto container, mirrors Forecaster keystore) ──
+// The accounts+keys container (`users`) is normally stored in localStorage as plaintext.
+// Optionally the owner can encrypt it behind a passphrase (any characters, recommended >6):
+// PBKDF2(200000, SHA-256) → AES-GCM-256. When enabled, localStorage['users'] is replaced by an
+// encrypted vault (`users_vault`); the passphrase lives in memory only for the session and is
+// asked on load. Optional: default stays plaintext. (owner 2026-07-11.)
+var wallet_pass=null;   // in-memory passphrase after unlock/enable (NEVER persisted)
+function wallet_is_encrypted(){ return '1'==localStorage.getItem('wallet_encrypted') && null!=localStorage.getItem('users_vault'); }
+function wallet_b64(buf){ let b=new Uint8Array(buf),s='';for(let i=0;i<b.length;i++){s+=String.fromCharCode(b[i]);}return btoa(s); }
+function wallet_unb64(str){ let s=atob(str),b=new Uint8Array(s.length);for(let i=0;i<s.length;i++){b[i]=s.charCodeAt(i);}return b; }
+async function wallet_derive_key(pass,salt){
+	let base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
+	return crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:200000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+async function wallet_encrypt_vault(obj,pass){
+	let salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+	let key=await wallet_derive_key(pass,salt);
+	let ct=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,new TextEncoder().encode(JSON.stringify(obj)));
+	return {v:1,salt:wallet_b64(salt),iv:wallet_b64(iv),ct:wallet_b64(ct)};
+}
+async function wallet_decrypt_vault(blob,pass){
+	let key=await wallet_derive_key(pass,wallet_unb64(blob.salt));
+	let pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:wallet_unb64(blob.iv)},key,wallet_unb64(blob.ct));
+	return JSON.parse(new TextDecoder().decode(pt));
+}
+// persist encrypted vault (async) from save_session when a passphrase is active
+function wallet_persist_vault(){
+	if(!wallet_pass){ return; }
+	wallet_encrypt_vault(users,wallet_pass).then(function(blob){
+		localStorage.setItem('users_vault',JSON.stringify(blob));
+		localStorage.setItem('wallet_encrypted','1');
+		localStorage.removeItem('users');   // never keep plaintext keys alongside the vault
+	}).catch(function(e){ console.log('vault encrypt error',e); });
+}
 
+function save_session(){
+	if(wallet_pass){
+		// encryption active → store encrypted vault, keep NO plaintext keys
+		localStorage.setItem('current_user',current_user);
+		localStorage.removeItem('users');
+		wallet_persist_vault();
+	}
+	else{
+		let users_json=JSON.stringify(users);
+		localStorage.setItem('users',users_json);
+		localStorage.setItem('current_user',current_user);
+	}
 	let api_nodes_addon_json=JSON.stringify(api_nodes_addon);
 	localStorage.setItem('api_nodes_addon',api_nodes_addon_json);
+}
+
+// Boot unlock overlay: when a vault exists, ask for the passphrase before the app loads accounts.
+function wallet_unlock_overlay(onSuccess){
+	let blob=null; try{ blob=JSON.parse(localStorage.getItem('users_vault')); }catch(e){ blob=null; }
+	if(!blob){ onSuccess(); return; }
+	let h='<div class="wallet-unlock-overlay"><div class="wallet-unlock-box">'
+		+'<h3>'+(ltmp_arr.enc_unlock_title||'Wallet is encrypted')+'</h3>'
+		+'<p class="small grey">'+(ltmp_arr.enc_unlock_hint||'Enter your passphrase to unlock your accounts.')+'</p>'
+		+'<p><input type="password" class="simple-rounded" name="wallet-unlock-pass" autocomplete="off" placeholder="'+(ltmp_arr.enc_pass||'Passphrase')+'"></p>'
+		+'<div class="wide-buttons captions"><a class="wide-button color-red wallet-unlock-go">'+(ltmp_arr.enc_unlock||'Unlock')+'</a></div>'
+		+'<p class="red wallet-unlock-error"></p>'
+		+'<p class="small"><a class="wallet-unlock-forget grey">'+(ltmp_arr.enc_forget||'Forget wallet (erase encrypted data)')+'</a></p>'
+		+'</div></div>';
+	$('body').append(h);
+	let ov=$('.wallet-unlock-overlay');
+	let doUnlock=function(){
+		let pass=''+ov.find('input[name=wallet-unlock-pass]').val();
+		ov.find('.wallet-unlock-error').html('');
+		wallet_decrypt_vault(blob,pass).then(function(obj){
+			users=obj; wallet_pass=pass;
+			ov.remove();
+			onSuccess();
+		}).catch(function(e){ ov.find('.wallet-unlock-error').html(ltmp_arr.enc_wrong||'Wrong passphrase.'); });
+	};
+	ov.find('.wallet-unlock-go').on('click',doUnlock);
+	ov.find('input[name=wallet-unlock-pass]').on('keydown',function(e){ if('Enter'==e.key){ doUnlock(); } });
+	ov.find('.wallet-unlock-forget').on('click',function(){
+		if(confirm(ltmp_arr.enc_forget_confirm||'Erase the encrypted wallet from this device? Accounts without a backup will be lost.')){
+			localStorage.removeItem('users_vault'); localStorage.removeItem('wallet_encrypted'); localStorage.removeItem('users'); localStorage.removeItem('current_user');
+			users={}; current_user=''; wallet_pass=null;
+			ov.remove(); onSuccess();
+		}
+	});
+	setTimeout(function(){ ov.find('input[name=wallet-unlock-pass]').focus(); },50);
+}
+
+// Settings → Security page renderer: enable/disable encryption of the wallet container.
+function render_wallet_security(){
+	let box=$('.view-settings .page-security .security-box'); if(!box.length){ return; }
+	let enc=wallet_is_encrypted();
+	let h='<h3 class="captions">'+(ltmp_arr.enc_title||'Wallet encryption')+'</h3>';
+	h+='<p class="small grey">'+(ltmp_arr.enc_info||'Optionally encrypt your keys and accounts in a crypto container behind a passphrase (any characters, recommended more than 6). The passphrase is stored only in memory and asked on load. Keep a backup of your keys — a lost passphrase cannot be recovered.')+'</p>';
+	if(!enc){
+		h+='<p class="green small">'+(ltmp_arr.enc_state_off||'Encryption is OFF (keys stored in plain text on this device).')+'</p>';
+		h+='<p><input type="password" name="enc-pass1" class="simple-rounded" autocomplete="new-password" placeholder="'+(ltmp_arr.enc_pass||'Passphrase')+'"></p>';
+		h+='<p><input type="password" name="enc-pass2" class="simple-rounded" autocomplete="new-password" placeholder="'+(ltmp_arr.enc_pass_repeat||'Repeat passphrase')+'"></p>';
+		h+='<div class="wide-buttons captions"><a class="wide-button color-red enc-enable">'+(ltmp_arr.enc_enable||'Enable encryption')+'</a></div>';
+	}
+	else{
+		h+='<p class="red small">'+(ltmp_arr.enc_state_on||'Encryption is ON (keys stored in an encrypted container).')+'</p>';
+		h+='<p><input type="password" name="enc-pass-cur" class="simple-rounded" autocomplete="off" placeholder="'+(ltmp_arr.enc_pass||'Passphrase')+'"></p>';
+		h+='<div class="wide-buttons captions"><a class="wide-button color-red enc-disable">'+(ltmp_arr.enc_disable||'Disable encryption')+'</a></div>';
+	}
+	h+='<p class="red enc-error"></p><p class="green enc-success"></p>';
+	box.html(h);
+	box.find('.enc-enable').on('click',wallet_enable_encryption);
+	box.find('.enc-disable').on('click',wallet_disable_encryption);
+}
+function wallet_enable_encryption(){
+	let box=$('.view-settings .page-security .security-box');
+	box.find('.enc-error').html(''); box.find('.enc-success').html('');
+	let p1=''+box.find('input[name=enc-pass1]').val(), p2=''+box.find('input[name=enc-pass2]').val();
+	if(p1.length<4){ box.find('.enc-error').html(ltmp_arr.enc_too_short||'Passphrase is too short.'); return; }
+	if(p1!==p2){ box.find('.enc-error').html(ltmp_arr.enc_mismatch||'Passphrases do not match.'); return; }
+	if(p1.length<7 && !confirm(ltmp_arr.enc_short_confirm||'Short passphrase (more than 6 characters is recommended). Continue?')){ return; }
+	wallet_encrypt_vault(users,p1).then(function(blob){
+		localStorage.setItem('users_vault',JSON.stringify(blob));
+		localStorage.setItem('wallet_encrypted','1');
+		localStorage.removeItem('users');
+		wallet_pass=p1;
+		box.find('.enc-success').html(ltmp_arr.enc_enabled||'Encryption enabled.');
+		render_wallet_security();
+	}).catch(function(e){ box.find('.enc-error').html((ltmp_arr.enc_fail||'Encryption failed')+': '+escape_html(''+(e.message||e))); console.log(e); });
+}
+function wallet_disable_encryption(){
+	let box=$('.view-settings .page-security .security-box');
+	box.find('.enc-error').html(''); box.find('.enc-success').html('');
+	let pass=''+box.find('input[name=enc-pass-cur]').val();
+	let blob=null; try{ blob=JSON.parse(localStorage.getItem('users_vault')); }catch(e){ blob=null; }
+	if(!blob){ box.find('.enc-error').html(ltmp_arr.enc_fail||'No vault.'); return; }
+	wallet_decrypt_vault(blob,pass).then(function(obj){
+		users=obj; wallet_pass=null;
+		localStorage.setItem('users',JSON.stringify(users));
+		localStorage.removeItem('users_vault'); localStorage.removeItem('wallet_encrypted');
+		box.find('.enc-success').html(ltmp_arr.enc_disabled||'Encryption disabled.');
+		render_wallet_security();
+	}).catch(function(e){ box.find('.enc-error').html(ltmp_arr.enc_wrong||'Wrong passphrase.'); });
 }
 
 function remove_user(login,location=''){
@@ -2471,7 +2601,8 @@ function view_settings(path,params,title){
 					update_balances($('.view-'+path[1]+' .page-'+path[2]+' .account-balance'));
 				}
 
-				if('profile'==path[2]){
+				if('security'==path[2]){ render_wallet_security(); }
+					if('profile'==path[2]){
 					$('.page-profile input[name=manage-profile-nickname]').val('');
 					$('.page-profile input[name=manage-profile-about]').val('');
 					$('.page-profile input[name=manage-profile-avatar]').val('');
@@ -7664,8 +7795,7 @@ function init_bindings(callback){
 		$('.absolute-view.menu-list').css('display','none');
 	});
 
-	if(null!=localStorage.getItem('users')){
-		users=JSON.parse(localStorage.getItem('users'));
+	function wallet_boot_proceed(){
 		if(null!=localStorage.getItem('current_user')){
 			current_user=localStorage.getItem('current_user');
 			if(''!=current_user){
@@ -7687,15 +7817,26 @@ function init_bindings(callback){
 				}
 			}
 		}
+		else{
+			if(standalone){
+				parse_standalone_fullpath();
+				change_state(standalone_path+standalone_search,{},false);
+			}
+			else{
+				change_state(document.location.pathname+document.location.search,{},false);
+			}
+		}
+	}
+	if(wallet_is_encrypted()){
+		// encrypted container present → ask passphrase, decrypt into `users`, then proceed
+		wallet_unlock_overlay(wallet_boot_proceed);
+	}
+	else if(null!=localStorage.getItem('users')){
+		users=JSON.parse(localStorage.getItem('users'));
+		wallet_boot_proceed();
 	}
 	else{
-		if(standalone){
-			parse_standalone_fullpath();
-			change_state(standalone_path+standalone_search,{},false);
-		}
-		else{
-			change_state(document.location.pathname+document.location.search,{},false);
-		}
+		wallet_boot_proceed();
 	}
 
 	clearTimeout(update_dgp_timer);

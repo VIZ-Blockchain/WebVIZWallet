@@ -230,6 +230,30 @@ a:hover{
 .header.testnet-mode{
 	box-shadow:inset 0 -2px 0 #e08a00;
 }
+.wallet-unlock-overlay{
+	position:fixed;
+	top:0;left:0;right:0;bottom:0;
+	background:rgba(20,24,32,.92);
+	z-index:10000;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	padding:16px;
+}
+.wallet-unlock-overlay .wallet-unlock-box{
+	background:#fff;
+	border-radius:10px;
+	padding:22px;
+	max-width:360px;
+	width:100%;
+	box-shadow:0 8px 30px rgba(0,0,0,.35);
+}
+.wallet-unlock-overlay .wallet-unlock-box h3{
+	margin:0 0 10px;
+}
+.security-box .simple-rounded{
+	margin-bottom:6px;
+}
 .header .user-menu{
 	display:inline-block;
 	font-size:22px;

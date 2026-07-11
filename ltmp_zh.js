@@ -147,12 +147,19 @@ var ltmp_zh_arr = {
 						<div class="wide-buttons captions">
 							<a class="wide-button" data-href="/settings/reset-access/">重置密钥</a>
 							<a class="wide-button" data-href="/settings/access/">管理访问权限</a>
+								<a class="wide-button" data-href="/settings/security/">加密</a>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="page page-reset-access" data-title="重置密钥">
+		<div class="page page-security" data-title="加密">
+				<div class="card transparent">
+					<p><a class="inline-button grey small" data-href="/settings/">&larr; </a></p>
+					<div class="security-box"></div>
+				</div>
+			</div>
+			<div class="page page-reset-access" data-title="重置密钥">
 			<div class="card">
 				<h3>重置密钥</h3>
 				<p>注意！重置密钥时，所有旧的授权账户和附加密钥将从账户中删除。每种访问类型将只保留一个密钥。</p>
@@ -1725,6 +1732,27 @@ var ltmp_zh_arr = {
 	pm_transfer_success:'持仓已转移！',
 	pm_transfer_title:'转移持仓',
 	pm_you_have:'您拥有',
+	// wallet encryption (#optional crypto container) strings
+	enc_title:'钱包加密',
+	enc_info:'可选：用口令将密钥和账户加密存入加密容器（任意字符，建议多于6位）。口令仅保存在内存中并在加载时询问。请备份您的密钥——遗失口令无法恢复。',
+	enc_state_off:'加密已关闭（密钥以明文保存在本设备）。',
+	enc_state_on:'加密已开启（密钥保存在加密容器中）。',
+	enc_pass:'口令',
+	enc_pass_repeat:'重复口令',
+	enc_enable:'开启加密',
+	enc_disable:'关闭加密',
+	enc_enabled:'加密已开启。',
+	enc_disabled:'加密已关闭。',
+	enc_too_short:'口令太短。',
+	enc_mismatch:'两次口令不一致。',
+	enc_short_confirm:'口令较短（建议多于6位）。继续吗？',
+	enc_fail:'加密失败',
+	enc_wrong:'口令错误。',
+	enc_unlock_title:'钱包已加密',
+	enc_unlock_hint:'请输入口令以解锁您的账户。',
+	enc_unlock:'解锁',
+	enc_forget:'忘记钱包（清除加密数据）',
+	enc_forget_confirm:'从本设备清除加密钱包？没有备份的账户将丢失。',
 	preset_view_pm:`
 		<div class="page page-index">
 			<div class="card transparent">

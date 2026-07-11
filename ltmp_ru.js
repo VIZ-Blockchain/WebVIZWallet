@@ -146,12 +146,19 @@ var ltmp_ru_arr={
 						<div class="wide-buttons captions">
 							<a class="wide-button" data-href="/settings/reset-access/">Сброс ключей</a>
 							<a class="wide-button" data-href="/settings/access/">Управление доступами</a>
+								<a class="wide-button" data-href="/settings/security/">Шифрование</a>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="page page-reset-access" data-title="Сброс ключей">
+		<div class="page page-security" data-title="Шифрование">
+				<div class="card transparent">
+					<p><a class="inline-button grey small" data-href="/settings/">&larr; </a></p>
+					<div class="security-box"></div>
+				</div>
+			</div>
+			<div class="page page-reset-access" data-title="Сброс ключей">
 			<div class="card">
 				<h3>Сброс ключей</h3>
 				<p>Внимание! При сбросе ключей у аккаунта удаляются все старые доверенные аккаунты и дополнительные ключи. Останется только по одному ключу для каждого из типов доступа.</p>
@@ -1725,6 +1732,27 @@ var ltmp_ru_arr={
 	pm_transfer_success:'Позиция передана!',
 	pm_transfer_title:'Передать позицию',
 	pm_you_have:'У вас',
+	// wallet encryption (#optional crypto container) strings
+	enc_title:'Шифрование кошелька',
+	enc_info:'По желанию зашифруйте ключи и аккаунты в криптоконтейнере под парольной фразой (любые символы, рекомендуется больше 6). Пароль хранится только в памяти и запрашивается при загрузке. Держите резервную копию ключей — забытый пароль восстановить нельзя.',
+	enc_state_off:'Шифрование ВЫКЛ (ключи хранятся в открытом виде на этом устройстве).',
+	enc_state_on:'Шифрование ВКЛ (ключи в зашифрованном контейнере).',
+	enc_pass:'Парольная фраза',
+	enc_pass_repeat:'Повторите пароль',
+	enc_enable:'Включить шифрование',
+	enc_disable:'Выключить шифрование',
+	enc_enabled:'Шифрование включено.',
+	enc_disabled:'Шифрование выключено.',
+	enc_too_short:'Пароль слишком короткий.',
+	enc_mismatch:'Пароли не совпадают.',
+	enc_short_confirm:'Короткий пароль (рекомендуется больше 6 символов). Продолжить?',
+	enc_fail:'Не удалось зашифровать',
+	enc_wrong:'Неверный пароль.',
+	enc_unlock_title:'Кошелёк зашифрован',
+	enc_unlock_hint:'Введите пароль, чтобы разблокировать аккаунты.',
+	enc_unlock:'Разблокировать',
+	enc_forget:'Забыть кошелёк (стереть зашифрованные данные)',
+	enc_forget_confirm:'Стереть зашифрованный кошелёк с этого устройства? Аккаунты без резервной копии будут потеряны.',
 	preset_view_pm:`
 		<div class="page page-index">
 			<div class="card transparent">

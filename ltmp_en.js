@@ -147,12 +147,19 @@ var ltmp_en_arr={
 						<div class="wide-buttons captions">
 							<a class="wide-button" data-href="/settings/reset-access/">Reset keys</a>
 							<a class="wide-button" data-href="/settings/access/">Manage access</a>
+								<a class="wide-button" data-href="/settings/security/">Encryption</a>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="page page-reset-access" data-title="Reset keys">
+		<div class="page page-security" data-title="Encryption">
+				<div class="card transparent">
+					<p><a class="inline-button grey small" data-href="/settings/">&larr; </a></p>
+					<div class="security-box"></div>
+				</div>
+			</div>
+			<div class="page page-reset-access" data-title="Reset keys">
 			<div class="card">
 				<h3>Reset keys</h3>
 				<p>Attention! When you reset the keys, all old authorized accounts and additional keys are deleted from the account. Only one key for each type of access will remain.</p>
@@ -1725,6 +1732,27 @@ var ltmp_en_arr={
 	pm_transfer_success:'Position transferred!',
 	pm_transfer_title:'Transfer position',
 	pm_you_have:'You have',
+	// wallet encryption (#optional crypto container) strings
+	enc_title:'Wallet encryption',
+	enc_info:'Optionally encrypt your keys and accounts in a crypto container behind a passphrase (any characters, recommended more than 6). The passphrase is stored only in memory and asked on load. Keep a backup of your keys — a lost passphrase cannot be recovered.',
+	enc_state_off:'Encryption is OFF (keys stored in plain text on this device).',
+	enc_state_on:'Encryption is ON (keys stored in an encrypted container).',
+	enc_pass:'Passphrase',
+	enc_pass_repeat:'Repeat passphrase',
+	enc_enable:'Enable encryption',
+	enc_disable:'Disable encryption',
+	enc_enabled:'Encryption enabled.',
+	enc_disabled:'Encryption disabled.',
+	enc_too_short:'Passphrase is too short.',
+	enc_mismatch:'Passphrases do not match.',
+	enc_short_confirm:'Short passphrase (more than 6 characters is recommended). Continue?',
+	enc_fail:'Encryption failed',
+	enc_wrong:'Wrong passphrase.',
+	enc_unlock_title:'Wallet is encrypted',
+	enc_unlock_hint:'Enter your passphrase to unlock your accounts.',
+	enc_unlock:'Unlock',
+	enc_forget:'Forget wallet (erase encrypted data)',
+	enc_forget_confirm:'Erase the encrypted wallet from this device? Accounts without a backup will be lost.',
 	preset_view_pm:`
 		<div class="page page-index">
 			<div class="card transparent">
