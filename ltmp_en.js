@@ -1839,10 +1839,6 @@ var ltmp_en_arr={
 	preset_view_pm:`
 		<div class="page page-index">
 			<div class="card transparent">
-				<div class="wide-buttons size2 captions">
-					<a class="wide-button" data-href="/pm/">Markets</a>
-					<a class="wide-button" data-href="/pm/completed/">My completed</a>
-				</div>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Filter:</span>

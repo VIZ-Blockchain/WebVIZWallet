@@ -1840,10 +1840,6 @@ var ltmp_ru_arr={
 	preset_view_pm:`
 		<div class="page page-index">
 			<div class="card transparent">
-				<div class="wide-buttons size2 captions">
-					<a class="wide-button" data-href="/pm/">Рынки</a>
-					<a class="wide-button" data-href="/pm/completed/">Мои завершённые</a>
-				</div>
 				<p><label class="input-descr"><span class="input-caption">Фильтр:</span><input type="text" name="pm-filter" class="simple-rounded wide" placeholder="Фильтр по названию"></label></p>
 				<div class="table-view captions">
 					<div class="table-header">
