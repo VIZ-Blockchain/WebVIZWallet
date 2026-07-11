@@ -3573,18 +3573,21 @@ function pm_transfer_action(btn){
 		setTimeout(function(){ load_pm_market(market_id); },1200);
 	});
 }
-// Dispute create (op 74, active auth). Shown once betting is closed (dispute applies to resolution).
-// Note: dispute_vote (op 75) needs REGULAR auth — the wallet stores only the active key, so voting
-// is intentionally omitted here (see #52 note / owner question).
+// Dispute create + vote. Shown once betting is closed (dispute applies to resolution).
+// dispute_vote needs REGULAR auth, but the node accepts active/master as a fallback for regular
+// (transaction.cpp verify_authority: regular satisfied by regular OR active OR master), verified
+// on testnet — so both are signed with the wallet's active key. (owner confirmed 2026-07-11, #138).
 function render_pm_dispute(market_id,m,ocs,bettable){
 	let box=$('.view-pm .page-market .pm-dispute-box'); if(!box.length){ return; }
 	if(bettable){ box.html(''); return; } // dispute only meaningful after betting closes
 	let h='<h4 class="captions">'+(ltmp_arr.pm_dispute||'Dispute')+'</h4>';
 	h+='<p class="small grey">'+(ltmp_arr.pm_dispute_hint||'Open a dispute if you disagree with how this market resolves.')+'</p>';
-	h+='<div class="wide-buttons captions"><a class="wide-button color-red pm-dispute-open">'+(ltmp_arr.pm_dispute_create||'Open dispute')+'</a></div>';
+	h+='<div class="wide-buttons size2 captions"><a class="wide-button color-red pm-dispute-open">'+(ltmp_arr.pm_dispute_create||'Open dispute')+'</a>'
+		+'<a class="wide-button color-red pm-dispute-vote-open">'+(ltmp_arr.pm_dispute_vote||'Vote in dispute')+'</a></div>';
 	h+='<div class="pm-dispute-form" style="display:none"></div>';
 	box.html(h);
 	box.find('.pm-dispute-open').off('click.pmd').on('click.pmd',function(){ pm_dispute_create_form(market_id,ocs); });
+	box.find('.pm-dispute-vote-open').off('click.pmdv').on('click.pmdv',function(){ pm_dispute_vote_form(market_id,ocs); });
 }
 function pm_dispute_create_form(market_id,ocs){
 	let f=$('.view-pm .page-market .pm-dispute-form');
@@ -3609,6 +3612,35 @@ function pm_dispute_create_action(btn){
 		btn.removeAttr('disabled');
 		if(err){ f.find('.pm-dispute-error').html((ltmp_arr.pm_dispute_error||'Dispute failed')+': '+escape_html((''+(err.message||JSON.stringify(err))).slice(0,160))); console.log(err); return; }
 		f.find('.pm-dispute-success').html(ltmp_arr.pm_dispute_success||'Dispute opened!');
+		setTimeout(function(){ load_pm_market(market_id); },1500);
+	});
+}
+// Vote in an open dispute (pm_dispute_vote). vote_outcome: -1 = uphold original, else outcome index.
+// vote_percent in basis points (100% -> 10000). Signed with active key (accepted for regular auth).
+function pm_dispute_vote_form(market_id,ocs){
+	let f=$('.view-pm .page-market .pm-dispute-form');
+	let opts='<option value="-1">'+(ltmp_arr.pm_dispute_uphold||'Uphold original')+'</option>';
+	for(let i in ocs){ opts+='<option value="'+parseInt(ocs[i].outcome_index)+'">'+escape_html(''+ocs[i].label)+'</option>'; }
+	let html='<h4 class="captions">'+(ltmp_arr.pm_dispute_vote||'Vote in dispute')+'</h4>';
+	html+='<p>'+(ltmp_arr.pm_dispute_vote_outcome||'Vote outcome')+': <select name="pm-dvote-oc" class="simple-rounded">'+opts+'</select></p>';
+	html+='<p>'+(ltmp_arr.pm_dispute_vote_weight||'Weight %')+': <input type="text" name="pm-dvote-pct" class="simple-rounded" value="100"></p>';
+	html+='<div class="wide-buttons captions"><a class="wide-button color-red pm-dvote-send" data-market="'+market_id+'">'+(ltmp_arr.pm_dispute_vote||'Vote')+'</a></div>';
+	html+='<p class="red pm-dvote-error"></p><p class="green pm-dvote-success"></p>';
+	f.html(html).css('display','block');
+	f.find('.pm-dvote-send').off('click.pmdvs').on('click.pmdvs',function(){ pm_dispute_vote_action($(this)); });
+}
+function pm_dispute_vote_action(btn){
+	let f=$('.view-pm .page-market .pm-dispute-form');
+	f.find('.pm-dvote-error').html(''); f.find('.pm-dvote-success').html('');
+	let market_id=parseInt(btn.attr('data-market'));
+	let oc=parseInt(f.find('select[name=pm-dvote-oc]').val());
+	let pct=pm_to_bp(f.find('input[name=pm-dvote-pct]').val());
+	if(!(pct>0)){ f.find('.pm-dvote-error').html(ltmp_arr.pm_dispute_vote_bad||'Enter a valid weight.'); return; }
+	btn.attr('disabled','disabled');
+	viz.broadcast.pmDisputeVote(users[current_user].active_key,current_user,market_id,oc,pct,[],function(err,result){
+		btn.removeAttr('disabled');
+		if(err){ f.find('.pm-dvote-error').html((ltmp_arr.pm_dispute_vote_error||'Vote failed')+': '+escape_html((''+(err.message||JSON.stringify(err))).slice(0,160))); console.log(err); return; }
+		f.find('.pm-dvote-success').html(ltmp_arr.pm_dispute_vote_success||'Vote submitted!');
 		setTimeout(function(){ load_pm_market(market_id); },1500);
 	});
 }
