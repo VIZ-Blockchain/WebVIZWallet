@@ -3326,6 +3326,7 @@ function update_validator_props(props){
 	}
 	else{
 		let data='';
+		let rendered_props={};
 		for(j_num in ltmp_arr.witness_props_order){
 			let j=ltmp_arr.witness_props_order[j_num];
 		//for(j in props){//old order by props object sort
@@ -3337,6 +3338,7 @@ function update_validator_props(props){
 					continue;
 				}
 			}
+			rendered_props[j]=true;
 			if(typeof validator_props_captions[j] == 'undefined'){
 				data+='<input type="hidden" name="witness-set-props-'+j+'" value="'+escape_html(''+props[j])+'">';
 			}
@@ -3346,6 +3348,20 @@ function update_validator_props(props){
 				data+='value="'+(-1!==validator_props_percent.indexOf(j)?((parseInt(props[j])/100)+'%'):escape_html(''+props[j]))+'">';
 				data+='</label></p>';
 			}
+		}
+		//HF14+: render node props absent from the predefined order (prediction-market params etc.) so they are
+		//shown, editable, and preserved on re-broadcast — never silently dropped (correct v5 serialization).
+		let pm_group_added=false;
+		for(let k in props){
+			if(true===rendered_props[k]){continue;}
+			if(!pm_group_added && 'pm_'===(''+k).substring(0,3)){
+				data+='<p class="input-caption bold">'+(typeof ltmp_arr.witness_props_pm_group!=='undefined'?ltmp_arr.witness_props_pm_group:'Prediction market (HF14)')+'</p>';
+				pm_group_added=true;
+			}
+			let cap=(typeof validator_props_captions[k]!=='undefined')?validator_props_captions[k]:(''+k).replace(/_/g,' ');
+			data+='<p><label class="input-descr"><span class="input-caption">'+escape_html(cap)+':</span>';
+			data+='<input type="text" name="witness-set-props-'+k+'" class="simple-rounded" value="'+escape_html(''+props[k])+'">';
+			data+='</label></p>';
 		}
 		data+='<p class="red witness-set-props-error"></p>\
 		<p class="green witness-set-props-success"></p>\
@@ -4900,8 +4916,12 @@ function validator_set_props(el){
 		if(!err){
 			var props=response.props;
 			for(i in props){
+				let prop_orig_type=typeof props[i];
 				props[i]=page.find('input[name="witness-set-props-'+i+'"]').val();
-				if(-1!==validator_props_percent.indexOf(i)){
+				if('boolean'===prop_orig_type){
+					props[i]=('true'===(''+props[i]).toLowerCase()||'1'===(''+props[i]));
+				}
+				else if(-1!==validator_props_percent.indexOf(i)){
 					props[i]=parseInt(parseFloat(props[i])*100);
 					if(props[i]>100000){
 						props[i]=100000;
@@ -4924,7 +4944,8 @@ function validator_set_props(el){
 					}
 				}
 			}
-			let props_version=(typeof props.distribution_epoch_length !== 'undefined')?4:3;
+			//variant by node hardfork: pm fields present → HF14 (v5); distribution_epoch_length → hf13 (v4); else hf9 (v3)
+			let props_version=(typeof props.pm_max_outcomes !== 'undefined')?5:((typeof props.distribution_epoch_length !== 'undefined')?4:3);
 			viz.broadcast.versionedChainPropertiesUpdate(users[current_user].active_key,current_user,[props_version,props],function(err,result){
 				if(!err){
 					page.find('.witness-set-props-success').html(ltmp_arr.witness_set_props_success);
