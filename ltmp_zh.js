@@ -1325,6 +1325,10 @@ var ltmp_zh_arr = {
 				<p class="red create-account-available"></p>
 				<p class="red create-account-error"></p>
 				<p>
+					<label class="check">创建后立即将此账户连接到钱包<input type="checkbox" name="create-account-connect" checked="checked"><span class="mark"></span></label>
+				</p>
+				<p class="green create-account-connected hidden">账户已连接到此钱包。</p>
+				<p>
 					<input class="create-account-action blue-button captions" type="button" value="创建">
 					<span class="submit-button-ring" rel="create-account"></span>
 					<span class="icon icon-margin hidden icon-color-blue icon-check" rel="create-account"></span>
@@ -1364,6 +1368,10 @@ var ltmp_zh_arr = {
 				</p>
 				<p class="red invite-create-account-available"></p>
 				<p class="red invite-create-account-error"></p>
+				<p>
+					<label class="check">创建后立即将此账户连接到钱包<input type="checkbox" name="invite-create-account-connect" checked="checked"><span class="mark"></span></label>
+				</p>
+				<p class="green invite-create-account-connected hidden">账户已连接到此钱包。</p>
 				<p>
 					<input class="invite-create-account-action blue-button captions" type="button" value="创建">
 					<span class="submit-button-ring" rel="invite-create-account"></span>
@@ -1418,6 +1426,10 @@ var ltmp_zh_arr = {
 				</p>
 				<p class="red create-subaccount-available"></p>
 				<p class="red create-subaccount-error"></p>
+				<p>
+					<label class="check">创建后立即将此账户连接到钱包<input type="checkbox" name="create-subaccount-connect" checked="checked"><span class="mark"></span></label>
+				</p>
+				<p class="green create-subaccount-connected hidden">账户已连接到此钱包。</p>
 				<p>
 					<input class="create-subaccount-action blue-button captions" type="button" value="创建">
 					<span class="submit-button-ring"></span>

@@ -1324,6 +1324,10 @@ var ltmp_en_arr={
 				<p class="red create-account-available"></p>
 				<p class="red create-account-error"></p>
 				<p>
+					<label class="check">Connect this account to the wallet after creation<input type="checkbox" name="create-account-connect" checked="checked"><span class="mark"></span></label>
+				</p>
+				<p class="green create-account-connected hidden">Account connected to this wallet.</p>
+				<p>
 					<input class="create-account-action blue-button captions" type="button" value="Create">
 					<span class="submit-button-ring" rel="create-account"></span>
 					<span class="icon icon-margin hidden icon-color-blue icon-check" rel="create-account"></span>
@@ -1363,6 +1367,10 @@ var ltmp_en_arr={
 				</p>
 				<p class="red invite-create-account-available"></p>
 				<p class="red invite-create-account-error"></p>
+				<p>
+					<label class="check">Connect this account to the wallet after creation<input type="checkbox" name="invite-create-account-connect" checked="checked"><span class="mark"></span></label>
+				</p>
+				<p class="green invite-create-account-connected hidden">Account connected to this wallet.</p>
 				<p>
 					<input class="invite-create-account-action blue-button captions" type="button" value="Create">
 					<span class="submit-button-ring" rel="invite-create-account"></span>
@@ -1417,6 +1425,10 @@ var ltmp_en_arr={
 				</p>
 				<p class="red create-subaccount-available"></p>
 				<p class="red create-subaccount-error"></p>
+				<p>
+					<label class="check">Connect this account to the wallet after creation<input type="checkbox" name="create-subaccount-connect" checked="checked"><span class="mark"></span></label>
+				</p>
+				<p class="green create-subaccount-connected hidden">Account connected to this wallet.</p>
 				<p>
 					<input class="create-subaccount-action blue-button captions" type="button" value="Create">
 					<span class="submit-button-ring"></span>

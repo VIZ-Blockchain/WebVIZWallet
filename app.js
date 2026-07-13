@@ -6121,6 +6121,12 @@ function invite_create_account(account_login,secret_key,login_el){
 					page.find('.invite-account-keys .memo-key').html(private_key);
 					page.find('.invite-account-keys').css('display','block');
 
+					if(page.find('input[name="invite-create-account-connect"]').prop('checked')){
+						if(connect_created_account(account_login,private_key,private_key,private_key)){
+							page.find('.invite-create-account-connected').css('display','block');
+						}
+					}
+
 					download('viz-account.txt','wallet.VIZ.world\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+private_key+'\r\nActive key: '+private_key+'\r\nRegular key: '+private_key+'\r\nMemo key: '+private_key+'');
 				}
 				else{
@@ -6151,6 +6157,19 @@ function invite_create_account(account_login,secret_key,login_el){
 			return;
 		}
 	});
+}
+// Save a freshly-created account into this wallet's keystore (owner 2026-07-13:
+// "connect to wallet" checkbox on account/subaccount creation). Mirrors the login
+// flow's users[] shape (active_key + optional memo). Persists via save_session();
+// keeps the current user unless the wallet was empty.
+function connect_created_account(login,active_key,regular_key,memo_key){
+	if(''==login||typeof active_key==='undefined'||!active_key){return false;}
+	users[login]={active_key};
+	if(regular_key){users[login].regular_key=regular_key;}
+	if(memo_key){users[login].memo_key=memo_key;}
+	if(''==current_user){current_user=login;}
+	save_session();
+	return true;
 }
 function create_account(account_login,token_amount,shares_amount,login_el){
 	let page=login_el.closest('.page');
@@ -6207,6 +6226,12 @@ function create_account(account_login,token_amount,shares_amount,login_el){
 		page.find('.account-keys .regular-key').html(keys['regular']);
 		page.find('.account-keys .memo-key').html(keys['memo']);
 		page.find('.account-keys').css('display','block');
+
+		if(page.find('input[name="create-account-connect"]').prop('checked')){
+			if(connect_created_account(account_login,keys['active'],keys['regular'],keys['memo'])){
+				page.find('.create-account-connected').css('display','block');
+			}
+		}
 
 		download('viz-account.txt','wallet.VIZ.world\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+keys['master']+'\r\nActive key: '+keys['active']+'\r\nRegular key: '+keys['regular']+'\r\nMemo key: '+keys['memo']+'');
 
@@ -7081,6 +7106,12 @@ function create_subaccount(account_login,token_amount,shares_amount,login_el){
 		page.find('.account-keys .regular-key').html(keys['regular']);
 		page.find('.account-keys .memo-key').html(keys['memo']);
 		page.find('.account-keys').css('display','block');
+
+		if(page.find('input[name="create-subaccount-connect"]').prop('checked')){
+			if(connect_created_account(account_login,keys['active'],keys['regular'],keys['memo'])){
+				page.find('.create-subaccount-connected').css('display','block');
+			}
+		}
 
 		download('viz-account.txt','wallet.VIZ.world\r\n\r\nAccount login: '+account_login+'\r\nMaster key: '+keys['master']+'\r\nActive key: '+keys['active']+'\r\nRegular key: '+keys['regular']+'\r\nMemo key: '+keys['memo']+'');
 
