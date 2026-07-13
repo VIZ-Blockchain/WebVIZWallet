@@ -2180,6 +2180,11 @@ function view_market(path,params,title){
 					$('.page-create-paid-subscribe .create-paid-subscribe-error').html('');
 					$('.page-create-paid-subscribe .create-paid-subscribe-success').html('');
 					$('.page-create-paid-subscribe input[type=text]').val('');
+					if(typeof params.descr!='undefined'){$('.page-create-paid-subscribe input[name=create-paid-subscribe-descr]').val(params.descr);}
+					if(typeof params.url!='undefined'){$('.page-create-paid-subscribe input[name=create-paid-subscribe-url]').val(params.url);}
+					if(typeof params.levels!='undefined'){$('.page-create-paid-subscribe input[name=create-paid-subscribe-levels]').val(params.levels);}
+					if(typeof params.amount!='undefined'){$('.page-create-paid-subscribe input[name=create-paid-subscribe-amount]').val(params.amount);}
+					if(typeof params.period!='undefined'){$('.page-create-paid-subscribe input[name=create-paid-subscribe-period]').val(params.period);}
 					$('.page-create-paid-subscribe input[type=radio]:checked').prop('checked','');
 					viz.api.getPaidSubscriptionOptions(current_user,function(err,response){
 						if(!err){
@@ -2324,6 +2329,9 @@ function view_account(path,params,title){
 				}
 
 				if('create-account'==path[2]){
+					if(typeof params.login!='undefined'){$('.page-create-account input[name=create-account-login]').val(params.login);}
+					if(typeof params.amount!='undefined'){$('.page-create-account input[name=create-account-token-amount]').val(params.amount);}
+					if(typeof params.shares!='undefined'){$('.page-create-account input[name=create-account-shares-amount]').val(params.shares);}
 					viz.api.getChainProperties(function(err,response){
 						if(!err){
 							$('.median-props[rel="account_creation_fee"]').html(show_price_in_tokens(response.account_creation_fee,true));
@@ -2365,6 +2373,9 @@ function view_account(path,params,title){
 				}
 
 				if('create-subaccount'==path[2]){
+					if(typeof params.login!='undefined'){$('.page-create-subaccount input[name=create-subaccount-login]').val(params.login);}
+					if(typeof params.amount!='undefined'){$('.page-create-subaccount input[name=create-subaccount-token-amount]').val(params.amount);}
+					if(typeof params.shares!='undefined'){$('.page-create-subaccount input[name=create-subaccount-shares-amount]').val(params.shares);}
 					viz.api.getChainProperties(function(err,response){
 						if(!err){
 							$('.median-props[rel="account_creation_fee"]').html(show_price_in_tokens(response.account_creation_fee,true));
@@ -2580,6 +2591,7 @@ function view_account(path,params,title){
 					$('.page-sell-account input[name="set-account-master-key"]').val('');
 					$('.page-sell-account input[name="set-account-seller"]').val('');
 					$('.page-sell-account input[name="set-account-price"]').val('');
+					if(typeof params.price!='undefined'){$('.page-sell-account input[name="set-account-price"]').val(params.price);}
 					viz.api.getAccounts([current_user],function(err,response){
 						if(typeof response[0] != 'undefined'){
 							if(response[0].name==current_user){
@@ -2664,6 +2676,8 @@ function view_account(path,params,title){
 					$('.page-sell-subaccount input[name="set-subaccount-master-key"]').val('');
 					$('.page-sell-subaccount input[name="set-subaccount-seller"]').val('');
 					$('.page-sell-subaccount input[name="set-subaccount-price"]').val('');
+					if(typeof params.login!='undefined'){$('.page-sell-subaccount input[name="set-subaccount-login"]').val(params.login);}
+					if(typeof params.price!='undefined'){$('.page-sell-subaccount input[name="set-subaccount-price"]').val(params.price);}
 					viz.api.getAccounts([current_user],function(err,response){
 						if(typeof response[0] != 'undefined'){
 							if(response[0].name==current_user){
@@ -3269,6 +3283,7 @@ function view_assets(path,params,title){
 								}
 								$('.page-unstake-shares input[name=unstake-shares-tokens-amount]').val('0.00 viz');
 								$('.page-unstake-shares input[name=unstake-shares-tokens-amount]').change();
+								if(typeof params.amount!='undefined'){$('.page-unstake-shares input[name=unstake-shares-tokens-amount]').val(params.amount).change();}
 
 								load_history($('.page-unstake-shares .history'),false,true);
 							}
@@ -3339,6 +3354,8 @@ function view_assets(path,params,title){
 					$('.page-checks .invites-claim-success').html('');
 					$('.page-checks input[name=invites-claim-receiver]').val(current_user);
 					$('.page-checks input[name=invites-claim-code]').val('');
+					if(typeof params.amount!='undefined'){$('.page-checks input[name=invites-create-amount]').val(params.amount);}
+					if(typeof params.code!='undefined'){$('.page-checks input[name=invites-claim-code]').val(params.code);}
 					$('.page-checks .invites-claim-code-caption').css('display','none');
 
 					clearTimeout(update_chain_properties_timer);
@@ -3399,6 +3416,7 @@ function view_assets(path,params,title){
 					$('.page-stake-shares .stake-shares-error').html('');
 					$('.page-stake-shares .stake-shares-success').html('');
 					$('.page-stake-shares input[name=stake-shares-tokens-amount]').val('');
+					if(typeof params.amount!='undefined'){$('.page-stake-shares input[name=stake-shares-tokens-amount]').val(params.amount);}
 					if(standalone){
 						$('.activate-viz-dollars').css('display','none');
 					}
@@ -3541,6 +3559,25 @@ function validator_vote_action(e){
 			check.prop('checked',!check.prop('checked'));
 		}
 	});
+}
+// Deep-link helper: #/dao/validators/?vote=<name> scrolls to and highlights that validator in the
+// (async-rendered) list so the user can cast the vote with one click — never auto-votes.
+function deeplink_focus_validator(name){
+	name=(''+name).toLowerCase().trim();
+	if(''==name){ return; }
+	var tries=0;
+	var t=setInterval(function(){
+		tries++;
+		var cb=$('.validators-list input[value="'+name+'"]');
+		if(cb.length){
+			clearInterval(t);
+			var item=cb.closest('.validator-item');
+			item.css({'outline':'2px solid #e0a92d','outline-offset':'2px'});
+			try{ item[0].scrollIntoView({behavior:'smooth',block:'center'}); }
+			catch(e){ try{ $('body,html').animate({scrollTop:item.offset().top-80},600); }catch(e2){} }
+		}
+		if(tries>40){ clearInterval(t); } // give up after ~6s
+	},150);
 }
 function update_validators_list(){
 	$('.validators-list').find('div').remove();
@@ -3739,7 +3776,7 @@ function view_pm(path,params,title){
 	let sub=(typeof path[2]!=='undefined'&&''!=path[2])?path[2]:'index';
 	if('market'==sub){
 		$('.view-pm .page-market').css('display','block');
-		load_pm_market(path[3]);
+		load_pm_market(path[3],params);
 	}
 	else if('completed'==sub){
 		$('.view-pm .page-completed').css('display','block');
@@ -3957,7 +3994,7 @@ function pm_distribution(m,ocs){
 	}
 	return out;
 }
-function load_pm_market(id){
+function load_pm_market(id,prefill){
 	id=parseInt(id);
 	$('.view-pm .page-market .pm-market-detail').html('<p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p>');
 	viz.api.getMarket(id,function(err,m){
@@ -3996,6 +4033,17 @@ function load_pm_market(id){
 				bd+='</div><p class="red pm-bet-error"></p><p class="green pm-bet-success"></p>';
 				box.html('<hr>'+pm_wrap(bd));
 				box.find('.pm-bet-btn').off('click.pmbet').on('click.pmbet',function(){ pm_place_bet_action($(this)); });
+				// Deep-link prefill: #/pm/<id>?amount=&side=  (or &oindex= for multi). Fills the amount and
+				// highlights the matching outcome button — never auto-submits (a bet is one explicit click).
+				if(prefill){
+					if(typeof prefill.amount!='undefined'){ box.find('input[name=pm-bet-amount]').val(prefill.amount); }
+					box.find('.pm-bet-btn').each(function(){
+						var b=$(this);
+						var match=(typeof prefill.side!='undefined' && ''!=(''+prefill.side) && (''+b.attr('data-side'))==(''+prefill.side) && '-1'!=(''+b.attr('data-side')))
+							|| (typeof prefill.oindex!='undefined' && ''!=(''+prefill.oindex) && (''+b.attr('data-oindex'))==(''+prefill.oindex) && '-1'!=(''+b.attr('data-oindex')));
+						if(match){ b.css({'outline':'2px solid #3ba55d','outline-offset':'2px'}); }
+					});
+				}
 			}
 			load_pm_positions(id,m,ocs);
 			render_pm_dispute(id,m,ocs,bettable);
@@ -4537,6 +4585,12 @@ function view_dao(path,params,title){
 			if(0<$('.view-'+path[1]+' .page-'+path[2]).length){
 				$('.view-'+path[1]+' .page-'+path[2]).css('display','block');
 				if('fund-create-request'==path[2]){
+					if(typeof params.worker!='undefined'){$('.page-fund-create-request input[name=fund-create-request-worker]').val(params.worker);}
+					if(typeof params.descr!='undefined'){$('.page-fund-create-request input[name=fund-create-request-descr]').val(params.descr);}
+					if(typeof params.url!='undefined'){$('.page-fund-create-request input[name=fund-create-request-url]').val(params.url);}
+					if(typeof params.min!='undefined'){$('.page-fund-create-request input[name=fund-create-request-min-amount]').val(params.min);}
+					if(typeof params.max!='undefined'){$('.page-fund-create-request input[name=fund-create-request-max-amount]').val(params.max);}
+					if(typeof params.duration!='undefined'){$('.page-fund-create-request input[name=fund-create-request-duration]').val(params.duration);}
 					viz.api.getChainProperties(function(err,response){
 						if(!err){
 							$('.median-props[rel="committee_create_request_fee"]').html(show_price_in_tokens(response.committee_create_request_fee,true));
@@ -4567,6 +4621,7 @@ function view_dao(path,params,title){
 					$('.page-validators .icon-check[rel=proxy]').css('display','none');
 					update_balances($('.page-validators .account-balance'));
 					update_validators_list();
+					if(typeof params.vote!='undefined' && ''!=params.vote){ deeplink_focus_validator(params.vote); }
 				}
 				if('validator-reward-sharing'==path[2]){
 					$('.page-validator-reward-sharing .validator-reward-sharing-error').html('');
