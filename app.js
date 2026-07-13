@@ -3603,6 +3603,7 @@ function update_validators_list(){
 							let validator_account=item_arr.owner;
 							item+='<div class="validator-item captions'+(active?'':' inactive')+'">';
 							item+='<label class="check color-orange">'+validator_account+'<input type="checkbox" value="'+validator_account+'"'+(-1!=user_votes.indexOf(validator_account)?' checked="checked" title="'+ltmp(ltmp_arr.validator_unvote_caption,{validator:validator_account})+'"':' title="'+ltmp(ltmp_arr.validator_vote_caption,{validator:validator_account})+'"')+'><span class="mark"></span></label>';
+							item+=' <span class="text-small" title="'+ltmp_arr.validator_sharing_rate_caption+'">'+ltmp_arr.validator_sharing_rate_caption+'<strong>'+((typeof item_arr.sharing_rate!=='undefined')?(parseInt(item_arr.sharing_rate)/100):0)+'%</strong></span>';
 							item+=' <span class="validator-props-action inline-button grey small">'+ltmp_arr.validator_props_caption+'</span>';
 							/*//31.10.2021 change, remove link from a validators list
 							if(-1==item_arr.url.indexOf('https://')){
