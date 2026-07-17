@@ -1936,6 +1936,51 @@ var ltmp_ru_arr={
 			</div>
 		</div>
 	`,
+	preset_view_multisig:`
+		<div class="page page-index">
+			<div class="card transparent">
+				<div class="wide-buttons captions"><a class="wide-button color-blue" data-href="/multisig/create/">%%ms_create_button%%</a></div>
+				<div class="section table-view captions">
+					<div class="table-header"><h3 class="captions">%%ms_list_title%%</h3></div>
+					<div class="table-data ms-list"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
+				</div>
+				<p><hr><a data-href="/assets/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-create">
+			<div class="card">
+				<h3 class="captions">%%ms_create_title%%</h3>
+				<label class="input-descr"><span class="input-caption">%%ms_f_title%%</span><input type="text" name="ms-title" class="simple-rounded" autocomplete="off"></label>
+				<label class="input-descr"><span class="input-caption">%%ms_f_memo%%</span><input type="text" name="ms-memo" class="simple-rounded" autocomplete="off"></label>
+				<label class="input-descr"><span class="input-caption">%%ms_f_expiration%%</span><input type="datetime-local" name="ms-expiration" class="simple-rounded"></label>
+				<label class="input-descr"><span class="input-caption">%%ms_f_optype%%</span><select name="ms-optype" class="simple-rounded simple-rounded-size"><option value="transfer">%%ms_op_transfer%%</option><option value="account_update">%%ms_op_account_update%%</option></select></label>
+				<div class="ms-op ms-op-transfer">
+					<label class="input-descr"><span class="input-caption">%%ms_t_from%%</span><input type="text" name="ms-t-from" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_t_to%%</span><input type="text" name="ms-t-to" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_t_amount%%</span><input type="text" name="ms-t-amount" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_t_memo%%</span><input type="text" name="ms-t-memo" class="simple-rounded" autocomplete="off"></label>
+				</div>
+				<div class="ms-op ms-op-account_update" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_au_account%%</span><input type="text" name="ms-au-account" class="simple-rounded" autocomplete="off"></label>
+					<p class="grey small">%%ms_au_hint%%</p>
+					<label class="input-descr"><span class="input-caption">%%ms_au_threshold%%</span><input type="text" name="ms-au-threshold" class="simple-rounded" autocomplete="off" inputmode="numeric"></label>
+					<div class="input-caption">%%ms_au_auths%%</div>
+					<div class="ms-auths"></div>
+					<p><a class="inline-button ms-auth-add">%%ms_au_add_auth%%</a> <a class="inline-button ms-au-load">%%ms_au_load%%</a></p>
+				</div>
+				<p class="red ms-create-error"></p>
+				<p class="green ms-create-success"></p>
+				<p><input class="ms-create-action blue-button captions" type="button" value="%%ms_create_submit%%"><span class="submit-button-ring"></span><span class="icon icon-margin hidden icon-color-blue icon-check"></span></p>
+				<p><hr><a data-href="/multisig/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-view">
+			<div class="card">
+				<div class="ms-detail captions"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
+				<p><hr><a data-href="/multisig/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+	`,
 	preset_view_market:`
 		<div class="page page-index">
 			<div class="card transparent">
@@ -2560,6 +2605,50 @@ var ltmp_ru_arr={
 	invite_info_success:'Чек на {amount}, код погашения: {private_key}',
 	transfer_memo_not_match_template:'Заметка не соответствует формату шаблона',
 	transfer_memo_not_valid_ton:'Впишите в заметку корректный TON-адрес кошелька (не сошлась контрольная сумма). Именно на него придёт wVIZ в сети TON — проверьте внимательно.',
+	preset_view_multisig_title:'Мультисиг',
+	ms_create_button:'Новый пропозал',
+	ms_list_title:'Пропозалы (ваши и ждущие вашей подписи)',
+	ms_create_title:'Новый пропозал',
+	ms_f_title:'Заголовок (уникален в рамках автора)',
+	ms_f_memo:'Заметка (необязательно)',
+	ms_f_expiration:'Истекает',
+	ms_f_optype:'Операция пропозала',
+	ms_op_transfer:'Перевод',
+	ms_op_account_update:'Изменить authority аккаунта (мультисиг)',
+	ms_t_from:'Откуда (мультисиг-аккаунт)',
+	ms_t_to:'Кому',
+	ms_t_amount:'Сумма, VIZ',
+	ms_t_memo:'Заметка (необязательно)',
+	ms_au_account:'Аккаунт для изменения',
+	ms_au_hint:'Задаёт active-authority (ключи/аккаунты и порог, управляющие аккаунтом). Загрузите текущие значения, отредактируйте и предложите.',
+	ms_au_threshold:'Порог веса',
+	ms_au_auths:'Authorities (имя аккаунта или публичный ключ VIZ + вес)',
+	ms_au_add_auth:'+ добавить',
+	ms_au_load:'Загрузить текущие',
+	ms_create_submit:'Создать пропозал',
+	ms_none:'Пропозалов нет.',
+	ms_author:'Автор',
+	ms_expires:'Истекает',
+	ms_expired:'истёк',
+	ms_open:'Открыть',
+	ms_ops:'Операции',
+	ms_approvals:'Подписи',
+	ms_needed:'ещё нужно',
+	ms_key_approvals:'Подписи ключами',
+	ms_approve_account:'Подписать моим аккаунтом',
+	ms_approve_key_title:'Подписать отдельным приватным ключом',
+	ms_key_wif_ph:'Приватный ключ (WIF)',
+	ms_approve_key_btn:'Подписать этим ключом',
+	ms_revoke:'Отозвать мою подпись',
+	ms_delete:'Удалить / вето',
+	ms_delete_confirm:'Удалить этот пропозал? Действие необратимо.',
+	ms_create_fill:'Заполните все обязательные поля.',
+	ms_create_ok:'Пропозал создан.',
+	ms_sign_ok:'Подпись отправлена.',
+	ms_revoke_ok:'Подпись отозвана.',
+	ms_delete_ok:'Пропозал удалён.',
+	ms_bad_wif:'Неверный приватный ключ.',
+	ms_err:'Ошибка',
 	withdraw_success:'Уменьшение капитала подтверждено',
 	stop_withdraw_error:'Ошибка в операции остановки',
 	setted_validator_proxy:'Право голоса передано аккаунту {account}',

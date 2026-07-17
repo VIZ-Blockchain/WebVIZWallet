@@ -1936,6 +1936,51 @@ var ltmp_zh_arr = {
 			</div>
 		</div>
 	`,
+	preset_view_multisig:`
+		<div class="page page-index">
+			<div class="card transparent">
+				<div class="wide-buttons captions"><a class="wide-button color-blue" data-href="/multisig/create/">%%ms_create_button%%</a></div>
+				<div class="section table-view captions">
+					<div class="table-header"><h3 class="captions">%%ms_list_title%%</h3></div>
+					<div class="table-data ms-list"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
+				</div>
+				<p><hr><a data-href="/assets/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-create">
+			<div class="card">
+				<h3 class="captions">%%ms_create_title%%</h3>
+				<label class="input-descr"><span class="input-caption">%%ms_f_title%%</span><input type="text" name="ms-title" class="simple-rounded" autocomplete="off"></label>
+				<label class="input-descr"><span class="input-caption">%%ms_f_memo%%</span><input type="text" name="ms-memo" class="simple-rounded" autocomplete="off"></label>
+				<label class="input-descr"><span class="input-caption">%%ms_f_expiration%%</span><input type="datetime-local" name="ms-expiration" class="simple-rounded"></label>
+				<label class="input-descr"><span class="input-caption">%%ms_f_optype%%</span><select name="ms-optype" class="simple-rounded simple-rounded-size"><option value="transfer">%%ms_op_transfer%%</option><option value="account_update">%%ms_op_account_update%%</option></select></label>
+				<div class="ms-op ms-op-transfer">
+					<label class="input-descr"><span class="input-caption">%%ms_t_from%%</span><input type="text" name="ms-t-from" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_t_to%%</span><input type="text" name="ms-t-to" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_t_amount%%</span><input type="text" name="ms-t-amount" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_t_memo%%</span><input type="text" name="ms-t-memo" class="simple-rounded" autocomplete="off"></label>
+				</div>
+				<div class="ms-op ms-op-account_update" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_au_account%%</span><input type="text" name="ms-au-account" class="simple-rounded" autocomplete="off"></label>
+					<p class="grey small">%%ms_au_hint%%</p>
+					<label class="input-descr"><span class="input-caption">%%ms_au_threshold%%</span><input type="text" name="ms-au-threshold" class="simple-rounded" autocomplete="off" inputmode="numeric"></label>
+					<div class="input-caption">%%ms_au_auths%%</div>
+					<div class="ms-auths"></div>
+					<p><a class="inline-button ms-auth-add">%%ms_au_add_auth%%</a> <a class="inline-button ms-au-load">%%ms_au_load%%</a></p>
+				</div>
+				<p class="red ms-create-error"></p>
+				<p class="green ms-create-success"></p>
+				<p><input class="ms-create-action blue-button captions" type="button" value="%%ms_create_submit%%"><span class="submit-button-ring"></span><span class="icon icon-margin hidden icon-color-blue icon-check"></span></p>
+				<p><hr><a data-href="/multisig/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-view">
+			<div class="card">
+				<div class="ms-detail captions"><p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p></div>
+				<p><hr><a data-href="/multisig/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+	`,
 	preset_view_market:`
 		<div class="page page-index">
 			<div class="card transparent">
@@ -2558,6 +2603,50 @@ var ltmp_zh_arr = {
 	invite_info_success:'金额为 {amount} 的支票，兑换码：{private_key}',
 	transfer_memo_not_match_template:'附言与模板格式不匹配',
 	transfer_memo_not_valid_ton:'请在附言中填写有效的 TON 钱包地址（校验和不匹配）。wVIZ 将通过 TON 网络发送到该地址，请仔细核对。',
+	preset_view_multisig_title:'多签',
+	ms_create_button:'新建提案',
+	ms_list_title:'提案（你的以及等待你签名的）',
+	ms_create_title:'新建提案',
+	ms_f_title:'标题（同一作者内唯一）',
+	ms_f_memo:'备注（可选）',
+	ms_f_expiration:'过期时间',
+	ms_f_optype:'提案操作',
+	ms_op_transfer:'转账',
+	ms_op_account_update:'更新账户权限（多签）',
+	ms_t_from:'来源（多签账户）',
+	ms_t_to:'收款方',
+	ms_t_amount:'金额，VIZ',
+	ms_t_memo:'备注（可选）',
+	ms_au_account:'要更新的账户',
+	ms_au_hint:'设置 active 权限（管理账户的密钥/账户及阈值）。先加载当前值，编辑后再提案。',
+	ms_au_threshold:'权重阈值',
+	ms_au_auths:'权限（账户名或 VIZ 公钥 + 权重）',
+	ms_au_add_auth:'+ 添加',
+	ms_au_load:'加载当前',
+	ms_create_submit:'创建提案',
+	ms_none:'暂无提案。',
+	ms_author:'作者',
+	ms_expires:'过期',
+	ms_expired:'已过期',
+	ms_open:'打开',
+	ms_ops:'操作',
+	ms_approvals:'签名',
+	ms_needed:'仍需',
+	ms_key_approvals:'密钥签名',
+	ms_approve_account:'用我的账户签名',
+	ms_approve_key_title:'用单独的私钥签名',
+	ms_key_wif_ph:'私钥（WIF）',
+	ms_approve_key_btn:'用此密钥签名',
+	ms_revoke:'撤销我的签名',
+	ms_delete:'删除 / 否决',
+	ms_delete_confirm:'删除此提案？此操作不可撤销。',
+	ms_create_fill:'请填写所有必填项。',
+	ms_create_ok:'提案已创建。',
+	ms_sign_ok:'签名已广播。',
+	ms_revoke_ok:'签名已撤销。',
+	ms_delete_ok:'提案已删除。',
+	ms_bad_wif:'私钥无效。',
+	ms_err:'错误',
 	withdraw_success:'确认提取资本',
 	stop_withdraw_error:'停止操作出错',
 	setted_validator_proxy:'投票权已代理给账户 {account}',

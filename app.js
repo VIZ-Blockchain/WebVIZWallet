@@ -4736,6 +4736,289 @@ function view_dao(path,params,title){
 	}
 }
 
+// ---- Multisig / on-chain proposals (#/multisig) ----
+// VIZ native proposals: proposal_create/update/delete. Proposal key = (author, title).
+// Read via database_api.get_proposed_transactions (account = author OR required approver).
+var ms_op_list=[]; // last fetched proposals (for detail lookup)
+function ms_esc(s){ return escape_html(''+(s==null?'':s)); }
+function ms_rpc(method,params,cb){
+	fetch(default_api_node,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:'call',params:['database_api',method,params],id:1})})
+		.then(function(r){ return r.json(); })
+		.then(function(j){ cb((j&&j.error)?j.error:null,(j&&typeof j.result!=='undefined')?j.result:null); })
+		.catch(function(e){ cb(e||true,null); });
+}
+function ms_fmt_time(unix){
+	if(!unix){ return '&mdash;'; }
+	try{ let d=new Date(unix*1000); let p=function(n){ return ('0'+n).slice(-2); };
+		return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes()); }
+	catch(e){ return ''+unix; }
+}
+function view_multisig(path,params,title){
+	if(''==current_user){
+		if(standalone){ parse_standalone_fullpath(); change_state('/login/?back='+standalone_path+encodeURIComponent(standalone_search),{},true); }
+		else{ change_state('/login/?back='+document.location.pathname+encodeURIComponent(document.location.search),{},true); }
+		return false;
+	}
+	$('.view').css('display','none');
+	$('.view-multisig').css('display','block');
+	$('.view-multisig .page').css('display','none');
+	let sub=(typeof path[2]!=='undefined'&&''!=path[2])?path[2]:'index';
+	if('create'==sub){
+		$('.view-multisig .page-create').css('display','block');
+		ms_reset_create(params);
+	}
+	else if('view'==sub){
+		$('.view-multisig .page-view').css('display','block');
+		ms_load_proposal((params&&params.author)?params.author:current_user,(params&&params.title)?params.title:'');
+	}
+	else{
+		$('.view-multisig .page-index').css('display','block');
+		ms_load_list();
+	}
+}
+function ms_approvals_summary(p){
+	let parts=[], needed=0;
+	function line(caption,req,avail){
+		if(!req||!req.length){ return; }
+		let have=avail||[];
+		let miss=req.filter(function(a){ return have.indexOf(a)<0; });
+		needed+=miss.length;
+		parts.push(ms_esc(caption)+': '+ms_esc(have.length)+'/'+ms_esc(req.length)+(miss.length?(' <span class="grey">('+ltmp_arr.ms_needed+': '+ms_esc(miss.join(', '))+')</span>'):''));
+	}
+	line('active',p.required_active_approvals,p.available_active_approvals);
+	line('master',p.required_master_approvals,p.available_master_approvals);
+	line('regular',p.required_regular_approvals,p.available_regular_approvals);
+	if(p.available_key_approvals&&p.available_key_approvals.length){
+		parts.push(ltmp_arr.ms_key_approvals+': '+ms_esc(p.available_key_approvals.length));
+	}
+	let signed=(p.available_active_approvals&&p.available_active_approvals.indexOf(current_user)>=0)||(p.available_master_approvals&&p.available_master_approvals.indexOf(current_user)>=0)||(p.available_regular_approvals&&p.available_regular_approvals.indexOf(current_user)>=0);
+	return { signed:signed, html:parts.join('<br>'), needed:needed };
+}
+function ms_op_summary(ops){
+	let out=[];
+	for(let i=0;i<(ops||[]).length;i++){
+		let o=ops[i];
+		let name=Array.isArray(o)?o[0]:'?';
+		let body=Array.isArray(o)?o[1]:{};
+		if('transfer'==name){
+			out.push(ltmp_arr.ms_op_transfer+': '+ms_esc(body.amount)+' '+ms_esc(body.from)+' &rarr; '+ms_esc(body.to)+(body.memo?(' <span class="grey">'+ms_esc(body.memo)+'</span>'):''));
+		}
+		else if('account_update'==name){
+			out.push(ltmp_arr.ms_op_account_update+': '+ms_esc(body.account));
+		}
+		else{ out.push(ms_esc(name)); }
+	}
+	return out.join('<br>');
+}
+function ms_load_list(){
+	let box=$('.view-multisig .page-index .ms-list');
+	box.html('<p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p>');
+	ms_rpc('get_proposed_transactions',[current_user,0,100],function(err,res){
+		if(err||!Array.isArray(res)){ box.html('<p class="red">'+ltmp_arr.ms_err+'</p>'); return; }
+		ms_op_list=res;
+		if(!res.length){ box.html('<p class="grey center">'+ltmp_arr.ms_none+'</p>'); return; }
+		let now=parseInt(new Date().getTime()/1000);
+		let html='';
+		for(let i=0;i<res.length;i++){
+			let p=res[i];
+			let exp=pm_chain_time(p.expiration_time);
+			let sum=ms_approvals_summary(p);
+			let href='/multisig/view/?author='+encodeURIComponent(p.author)+'&title='+encodeURIComponent(p.title);
+			html+='<div class="columns-view section">';
+			html+='<div class="column-view column-flex">';
+			html+='<p><a data-href="'+href+'"><b>'+ms_esc(p.title)+'</b></a> <span class="grey">'+ltmp_arr.ms_author+': '+ms_esc(p.author)+'</span></p>';
+			html+='<p class="small">'+ms_op_summary(p.proposed_operations)+'</p>';
+			html+='<p class="small grey">'+ltmp_arr.ms_expires+': '+ms_fmt_time(exp)+(exp&&exp<now?(' ('+ltmp_arr.ms_expired+')'):'')+'</p>';
+			html+='<p class="small">'+sum.html+'</p>';
+			html+='</div><div class="column-view"><a class="inline-button" data-href="'+href+'">'+ltmp_arr.ms_open+'</a></div>';
+			html+='</div>';
+		}
+		box.html(html);
+	});
+}
+function ms_load_proposal(author,title){
+	let box=$('.view-multisig .page-view .ms-detail');
+	box.html('<p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p>');
+	ms_rpc('get_proposed_transactions',[current_user,0,100],function(err,res){
+		if(err||!Array.isArray(res)){ box.html('<p class="red">'+ltmp_arr.ms_err+'</p>'); return; }
+		ms_op_list=res;
+		let p=null;
+		for(let i=0;i<res.length;i++){ if(res[i].author==author&&res[i].title==title){ p=res[i]; break; } }
+		if(!p){ box.html('<p class="grey center">'+ltmp_arr.ms_none+'</p>'); return; }
+		ms_render_detail(box,p);
+	});
+}
+function ms_render_detail(box,p){
+	let now=parseInt(new Date().getTime()/1000);
+	let exp=pm_chain_time(p.expiration_time);
+	let sum=ms_approvals_summary(p);
+	let iAmRequired=(p.required_active_approvals&&p.required_active_approvals.indexOf(current_user)>=0)||(p.required_master_approvals&&p.required_master_approvals.indexOf(current_user)>=0)||(p.required_regular_approvals&&p.required_regular_approvals.indexOf(current_user)>=0);
+	let h='';
+	h+='<h3>'+ms_esc(p.title)+'</h3>';
+	h+='<p class="grey">'+ltmp_arr.ms_author+': '+ms_esc(p.author)+(p.memo?(' &middot; '+ms_esc(p.memo)):'')+'</p>';
+	h+='<p class="grey small">'+ltmp_arr.ms_expires+': '+ms_fmt_time(exp)+(exp&&exp<now?(' ('+ltmp_arr.ms_expired+')'):'')+'</p>';
+	h+='<p class="captions"><b>'+ltmp_arr.ms_ops+'</b></p><p class="small">'+ms_op_summary(p.proposed_operations)+'</p>';
+	h+='<p class="captions"><b>'+ltmp_arr.ms_approvals+'</b></p><p class="small">'+(sum.html||'&mdash;')+'</p>';
+	h+='<input type="hidden" class="ms-cur-author" value="'+ms_esc(p.author)+'"><input type="hidden" class="ms-cur-title" value="'+ms_esc(p.title)+'">';
+	h+='<p class="red ms-detail-error"></p><p class="green ms-detail-success"></p>';
+	h+='<p>';
+	if(iAmRequired&&!sum.signed){ h+='<input class="ms-approve-account blue-button captions" type="button" value="'+ms_esc(ltmp_arr.ms_approve_account)+'"> '; }
+	if(sum.signed){ h+='<input class="ms-revoke inline-button red captions" type="button" value="'+ms_esc(ltmp_arr.ms_revoke)+'"> '; }
+	h+='<input class="ms-delete inline-button red captions" type="button" value="'+ms_esc(ltmp_arr.ms_delete)+'">';
+	h+=' <span class="submit-button-ring"></span></p>';
+	h+='<div class="section"><p class="captions"><b>'+ms_esc(ltmp_arr.ms_approve_key_title)+'</b></p>';
+	h+='<label class="input-descr"><span class="input-caption">'+ms_esc(ltmp_arr.ms_key_wif_ph)+'</span><input type="password" class="simple-rounded ms-key-wif" autocomplete="off"></label>';
+	h+='<p><input class="ms-approve-key blue-button captions" type="button" value="'+ms_esc(ltmp_arr.ms_approve_key_btn)+'"></p></div>';
+	box.html(h);
+}
+function ms_detail_ctx(){
+	let page=$('.view-multisig .page-view');
+	return { page:page, author:(''+page.find('.ms-cur-author').val()), title:(''+page.find('.ms-cur-title').val()), err:page.find('.ms-detail-error'), ok:page.find('.ms-detail-success') };
+}
+function ms_after(msg,ctx){
+	return function(err,result){
+		ctx.page.find('.submit-button-ring').css('display','none');
+		if(err){ ctx.err.html(ltmp_arr.ms_err+': '+ms_esc((''+(err.message||JSON.stringify(err))).slice(0,200))); console.log(err); return; }
+		ctx.ok.html(msg);
+		setTimeout(function(){ ms_load_proposal(ctx.author,ctx.title); },1200);
+	};
+}
+function ms_approve_account_action(){
+	let ctx=ms_detail_ctx();
+	if(!ctx.author||!ctx.title){ return; }
+	let wif=users[current_user]&&users[current_user].active_key;
+	if(!wif){ ctx.err.html(ltmp_arr.ms_bad_wif); return; }
+	ctx.err.html(''); ctx.ok.html(''); ctx.page.find('.submit-button-ring').css('display','inline-block');
+	viz.broadcast.proposalUpdate(wif,ctx.author,ctx.title,[current_user],[],[],[],[],[],[],[],[],ms_after(ltmp_arr.ms_sign_ok,ctx));
+}
+function ms_revoke_action(){
+	let ctx=ms_detail_ctx();
+	if(!ctx.author||!ctx.title){ return; }
+	let wif=users[current_user]&&users[current_user].active_key;
+	if(!wif){ ctx.err.html(ltmp_arr.ms_bad_wif); return; }
+	ctx.err.html(''); ctx.ok.html(''); ctx.page.find('.submit-button-ring').css('display','inline-block');
+	viz.broadcast.proposalUpdate(wif,ctx.author,ctx.title,[],[current_user],[],[],[],[],[],[],[],ms_after(ltmp_arr.ms_revoke_ok,ctx));
+}
+function ms_approve_key_action(){
+	let ctx=ms_detail_ctx();
+	if(!ctx.author||!ctx.title){ return; }
+	let wif=(''+ctx.page.find('.ms-key-wif').val()).trim();
+	if(!viz.auth.isWif(wif)){ ctx.err.html(ltmp_arr.ms_bad_wif); return; }
+	let pub;
+	try{ pub=viz.auth.wifToPublic(wif); }catch(e){ ctx.err.html(ltmp_arr.ms_bad_wif); return; }
+	ctx.err.html(''); ctx.ok.html(''); ctx.page.find('.submit-button-ring').css('display','inline-block');
+	viz.broadcast.proposalUpdate(wif,ctx.author,ctx.title,[],[],[],[],[],[],[pub],[],[],ms_after(ltmp_arr.ms_sign_ok,ctx));
+}
+function ms_delete_action(){
+	let ctx=ms_detail_ctx();
+	if(!ctx.author||!ctx.title){ return; }
+	if(!confirm(ltmp_arr.ms_delete_confirm)){ return; }
+	let wif=users[current_user]&&users[current_user].active_key;
+	if(!wif){ ctx.err.html(ltmp_arr.ms_bad_wif); return; }
+	ctx.err.html(''); ctx.ok.html(''); ctx.page.find('.submit-button-ring').css('display','inline-block');
+	viz.broadcast.proposalDelete(wif,ctx.author,ctx.title,current_user,[],ms_after(ltmp_arr.ms_delete_ok,ctx));
+}
+function ms_op_toggle(){
+	let page=$('.view-multisig .page-create');
+	let t=page.find('select[name=ms-optype]').val();
+	if('account_update'==t){
+		page.find('.ms-op-transfer').css('display','none');
+		page.find('.ms-op-account_update').css('display','block');
+		if(!page.find('.ms-auths .ms-auth-row').length){ ms_auth_add('',''); }
+	}
+	else{
+		page.find('.ms-op-transfer').css('display','block');
+		page.find('.ms-op-account_update').css('display','none');
+	}
+}
+function ms_auth_add(key,weight){
+	let row='<div class="ms-auth-row columns-view"><div class="column-view column-flex"><input type="text" class="simple-rounded ms-auth-key" autocomplete="off" placeholder="account / VIZ pubkey" value="'+ms_esc(key)+'"></div><div class="column-view"><input type="text" class="simple-rounded ms-auth-weight" inputmode="numeric" value="'+ms_esc(weight||'1')+'" style="max-width:80px"></div><div class="column-view"><a class="inline-button red ms-auth-del">&times;</a></div></div>';
+	$('.view-multisig .page-create .ms-auths').append(row);
+}
+function ms_au_load_action(){
+	let page=$('.view-multisig .page-create');
+	let acc=(''+page.find('input[name=ms-au-account]').val()).toLowerCase().trim();
+	if(!acc){ return; }
+	viz.api.getAccounts([acc],function(err,r){
+		if(err||!r||!r[0]||!r[0].active){ page.find('.ms-create-error').html(ltmp_arr.ms_err); return; }
+		let a=r[0].active;
+		page.find('input[name=ms-au-threshold]').val(a.weight_threshold);
+		page.find('.ms-auths').html('');
+		(a.account_auths||[]).forEach(function(x){ ms_auth_add(x[0],x[1]); });
+		(a.key_auths||[]).forEach(function(x){ ms_auth_add(x[0],x[1]); });
+		page.find('.ms-create-error').html('');
+	});
+}
+function ms_reset_create(params){
+	let page=$('.view-multisig .page-create');
+	page.find('.ms-create-error').html(''); page.find('.ms-create-success').html('');
+	page.find('input[name=ms-title]').val((params&&params.title)?params.title:'');
+	page.find('input[name=ms-memo]').val('');
+	let d=new Date(new Date().getTime()+3*86400000);
+	let p=function(n){ return ('0'+n).slice(-2); };
+	page.find('input[name=ms-expiration]').val(d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes()));
+	page.find('select[name=ms-optype]').val('transfer');
+	page.find('input[name=ms-t-from]').val(current_user);
+	page.find('input[name=ms-t-to]').val(''); page.find('input[name=ms-t-amount]').val(''); page.find('input[name=ms-t-memo]').val('');
+	page.find('input[name=ms-au-account]').val(current_user);
+	page.find('input[name=ms-au-threshold]').val('1');
+	page.find('.ms-auths').html('');
+	ms_op_toggle();
+	page.find('select[name=ms-optype]').off('change.ms').on('change.ms',ms_op_toggle);
+}
+function ms_create_action(){
+	let page=$('.view-multisig .page-create');
+	let err=page.find('.ms-create-error'), ok=page.find('.ms-create-success');
+	err.html(''); ok.html('');
+	let wif=users[current_user]&&users[current_user].active_key;
+	if(!wif){ err.html(ltmp_arr.ms_bad_wif); return; }
+	let ptitle=(''+page.find('input[name=ms-title]').val()).trim();
+	let pmemo=(''+page.find('input[name=ms-memo]').val()).trim();
+	let expv=(''+page.find('input[name=ms-expiration]').val()).trim();
+	if(!ptitle||!expv){ err.html(ltmp_arr.ms_create_fill); return; }
+	let exp_iso;
+	try{ exp_iso=new Date(expv).toISOString().slice(0,19); }catch(e){ err.html(ltmp_arr.ms_create_fill); return; }
+	let optype=page.find('select[name=ms-optype]').val();
+	function broadcast_create(op){
+		page.find('.ms-create-action').attr('disabled','disabled');
+		page.find('.page-create .submit-button-ring').css('display','inline-block');
+		viz.broadcast.proposalCreate(wif,current_user,ptitle,pmemo,exp_iso,[{op:op}],null,[],function(e,res){
+			page.find('.ms-create-action').removeAttr('disabled');
+			page.find('.submit-button-ring').css('display','none');
+			if(e){ err.html(ltmp_arr.ms_err+': '+ms_esc((''+(e.message||JSON.stringify(e))).slice(0,200))); console.log(e); return; }
+			ok.html(ltmp_arr.ms_create_ok);
+			setTimeout(function(){ change_state('/multisig/',{},true); },1000);
+		});
+	}
+	if('transfer'==optype){
+		let from=(''+page.find('input[name=ms-t-from]').val()).toLowerCase().trim();
+		let to=(''+page.find('input[name=ms-t-to]').val()).toLowerCase().trim();
+		let amount=parseFloat((''+page.find('input[name=ms-t-amount]').val()).replace(',','.'));
+		let memo=(''+page.find('input[name=ms-t-memo]').val());
+		if(!from||!to||!(amount>0)){ err.html(ltmp_arr.ms_create_fill); return; }
+		broadcast_create(['transfer',{from:from,to:to,amount:amount.toFixed(3)+' VIZ',memo:memo}]);
+	}
+	else{
+		let acc=(''+page.find('input[name=ms-au-account]').val()).toLowerCase().trim();
+		let threshold=parseInt(page.find('input[name=ms-au-threshold]').val())||0;
+		if(!acc||!(threshold>0)){ err.html(ltmp_arr.ms_create_fill); return; }
+		let account_auths=[], key_auths=[];
+		page.find('.ms-auths .ms-auth-row').each(function(){
+			let k=(''+$(this).find('.ms-auth-key').val()).trim();
+			let w=parseInt($(this).find('.ms-auth-weight').val())||0;
+			if(!k||!(w>0)){ return; }
+			if(viz.auth.isPubkey(k)){ key_auths.push([k,w]); }
+			else{ account_auths.push([k.toLowerCase(),w]); }
+		});
+		if(!account_auths.length&&!key_auths.length){ err.html(ltmp_arr.ms_create_fill); return; }
+		// preserve the account's current memo_key + json_metadata (account_update overwrites them otherwise)
+		viz.api.getAccounts([acc],function(e,r){
+			if(e||!r||!r[0]){ err.html(ltmp_arr.ms_err); return; }
+			broadcast_create(['account_update',{account:acc,active:{weight_threshold:threshold,account_auths:account_auths,key_auths:key_auths},memo_key:(r[0].memo_key||''),json_metadata:(r[0].json_metadata||'')}]);
+		});
+	}
+}
+
 function change_state(location,state,save_state){
 	save_state=typeof save_state==='undefined'?false:save_state;
 	clearTimeout(update_dgp_timer);
@@ -7821,6 +8104,14 @@ function app_mouse(e){
 	if($(target).hasClass('ns-a-del')){ $(target).closest('.ns-a-row').remove(); }
 	if($(target).hasClass('ns-save-action')){ save_ns(); }
 	if($(target).hasClass('ns-remove-action')){ remove_ns(); }
+	if($(target).hasClass('ms-create-action')){ ms_create_action(); }
+	if($(target).hasClass('ms-auth-add')){ ms_auth_add('',''); }
+	if($(target).hasClass('ms-auth-del')){ $(target).closest('.ms-auth-row').remove(); }
+	if($(target).hasClass('ms-au-load')){ ms_au_load_action(); }
+	if($(target).hasClass('ms-approve-account')){ ms_approve_account_action(); }
+	if($(target).hasClass('ms-approve-key')){ ms_approve_key_action(); }
+	if($(target).hasClass('ms-revoke')){ ms_revoke_action(); }
+	if($(target).hasClass('ms-delete')){ ms_delete_action(); }
 	if($(target).hasClass('manage-access-preload-action')){
 		let account=$('.page-access input[name=manage-access-login]').val().toLowerCase().trim();
 		manage_access_preload(account,$('.page-access'));
@@ -8338,7 +8629,7 @@ function preset_template(callback){
 	}
 	let select_lang=ltmp(ltmp_arr.select_lang,{items:available_langs_str});
 	$('.menu-bg').html(ltmp(ltmp_arr.menu_preset));
-	let preset_view=['index','portable','login','memo','settings','assets','dao','account','market','pm'];
+	let preset_view=['index','portable','login','memo','settings','assets','dao','account','market','pm','multisig'];
 	for(let i in preset_view){
 		let view_name=preset_view[i];
 		if(typeof ltmp_arr['preset_view_'+view_name] !== 'undefined'){

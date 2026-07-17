@@ -59,6 +59,7 @@
 			<div class="view view-account"></div>
 			<div class="view view-market"></div>
 			<div class="view view-pm"></div>
+			<div class="view view-multisig"></div>
 		</div>
 	</div>
 </div>
