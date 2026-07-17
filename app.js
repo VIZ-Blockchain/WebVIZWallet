@@ -3366,6 +3366,15 @@ function view_assets(path,params,title){
 				if('transfer'==path[2]){
 					$('.view-'+path[1]+' .page-transfer .transfer-templates-wrapper').css('display','block');
 					$('.view-'+path[1]+' .page-transfer .transfer-templates-hint').css('display','block');
+					if(standalone){
+						// Public GitHub Pages (standalone) build: expose only the wVIZ -> GRAM
+						// template; keep legacy exchange templates on the server deploy only.
+						$('.view-'+path[1]+' .page-transfer select[name=transfer-template] option').each(function(){
+							if('0'!=$(this).attr('value') && 'gram.gate'!=$(this).attr('data-account')){
+								$(this).remove();
+							}
+						});
+					}
 
 					$('.page-transfer .submit-button-ring').css('display','none');
 					$('.page-transfer .icon-check').css('display','none');
