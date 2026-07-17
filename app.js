@@ -3366,10 +3366,6 @@ function view_assets(path,params,title){
 				if('transfer'==path[2]){
 					$('.view-'+path[1]+' .page-transfer .transfer-templates-wrapper').css('display','block');
 					$('.view-'+path[1]+' .page-transfer .transfer-templates-hint').css('display','block');
-					if(standalone){
-						$('.view-'+path[1]+' .page-transfer .transfer-templates-wrapper').css('display','none');
-						$('.view-'+path[1]+' .page-transfer .transfer-templates-hint').css('display','none');
-					}
 
 					$('.page-transfer .submit-button-ring').css('display','none');
 					$('.page-transfer .icon-check').css('display','none');
