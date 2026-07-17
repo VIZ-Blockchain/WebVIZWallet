@@ -805,6 +805,7 @@ var ltmp_zh_arr = {
 							<option value="1" data-account="xchng" data-tokens-amount-fee="10" data-memo="log:" data-memo-format="log:BITSHARES-LOGIN" data-memo-check="^log:([a-z0-9\-\.]+)$" data-memo-encrypt="false">BitShares 上的 XCHNG</option>
 							<option value="2" data-account="gls.xchng" data-tokens-amount-fee="0" data-memo="log:" data-memo-format="log:GOLOS-LOGIN" data-memo-check="^log:([a-z0-9\-\.]+)$" data-memo-encrypt="false">GOLOS 上的 XCHNG</option>
 							<option value="3" data-account="vmp" data-tokens-amount-fee="0" data-memo="Mx" data-memo-format="Minter address" data-memo-check="^Mx([a-f0-9\-\.]+)$" data-memo-encrypt="false">Minter 上的 VIZCHAIN</option>
+							<option value="5" data-account="gram.gate" data-tokens-amount-fee="0" data-memo="" data-memo-format="TON 钱包地址 (EQ…/UQ…)" data-memo-ton="1" data-memo-encrypt="false">wVIZ → GRAM (TON)</option>
 
 						</select>
 					</label>
@@ -2551,6 +2552,7 @@ var ltmp_zh_arr = {
 	invite_amount_success:'金额为 {amount} 的支票创建成功',
 	invite_info_success:'金额为 {amount} 的支票，兑换码：{private_key}',
 	transfer_memo_not_match_template:'附言与模板格式不匹配',
+	transfer_memo_not_valid_ton:'请在附言中填写有效的 TON 钱包地址（校验和不匹配）。wVIZ 将通过 TON 网络发送到该地址，请仔细核对。',
 	withdraw_success:'确认提取资本',
 	stop_withdraw_error:'停止操作出错',
 	setted_validator_proxy:'投票权已代理给账户 {account}',

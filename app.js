@@ -5618,6 +5618,41 @@ function fund_create_request(url,worker,min,max,duration,el){
 		}
 	});
 }
+// TON/GRAM address validation (used by the "wVIZ on GRAM" transfer template).
+// User-provided TON wallet address goes in the memo; gram.gate reads it as the peg-out destination.
+// Accepts mainnet bounceable (EQ…, tag 0x11) and non-bounceable (UQ…, tag 0x51), workchain 0 or -1,
+// verified by the trailing CRC16-CCITT checksum. Testnet tags (0x91/0xd1) are intentionally rejected.
+function ton_crc16(data){
+	let crc=0;
+	for(let j=0;j<data.length;j++){
+		crc^=data[j]<<8;
+		for(let i=0;i<8;i++){
+			crc=(crc&0x8000)?((crc<<1)^0x1021)&0xffff:(crc<<1)&0xffff;
+		}
+	}
+	return crc;
+}
+function is_valid_ton_address(addr){
+	if(!/^[A-Za-z0-9+/_-]{48}$/.test(addr)){
+		return false;
+	}
+	let raw;
+	try{
+		let bin=atob(addr.replace(/-/g,'+').replace(/_/g,'/'));
+		raw=Uint8Array.from(bin,function(c){return c.charCodeAt(0);});
+	}
+	catch(e){
+		return false;
+	}
+	let tag=raw[0];
+	if(tag!==0x11 && tag!==0x51){
+		return false;
+	}
+	if(raw[1]!==0x00 && raw[1]!==0xff){
+		return false;
+	}
+	return ton_crc16(raw.subarray(0,34))===((raw[34]<<8)|raw[35]);
+}
 function transfer(account,amount,memo,encode,el){
 	let page=$(el).closest('.page');
 	page.find('.transfer-action').attr('disabled','disabled');
@@ -5691,6 +5726,18 @@ function transfer(account,amount,memo,encode,el){
 		if(!memo_check_regexp.test(memo)){
 			page.find('input[name=transfer-memo]').addClass('red');
 			page.find('.transfer-error').html(ltmp_arr.transfer_memo_not_match_template);
+
+			page.find('.transfer-action').removeAttr('disabled');
+			page.find('.submit-button-ring').css('display','none');
+			return;
+		}
+	}
+	let memo_ton=page.find('input[name=transfer-memo]').attr('data-memo-ton');
+	if(typeof memo_ton != 'undefined' && ''!=memo_ton){
+		if(!is_valid_ton_address(memo.trim())){
+			page.find('input[name=transfer-memo]').addClass('red');
+			page.find('input[name=transfer-memo]').focus();
+			page.find('.transfer-error').html(ltmp_arr.transfer_memo_not_valid_ton);
 
 			page.find('.transfer-action').removeAttr('disabled');
 			page.find('.submit-button-ring').css('display','none');
@@ -8475,6 +8522,7 @@ function dom_bindings(callback){
 		$('.page-transfer input[name=transfer-tokens-amount]').removeAttr('disabled');
 		$('.page-transfer input[name=transfer-memo]').removeAttr('disabled');
 		$('.page-transfer input[name=transfer-memo]').removeAttr('data-memo-check');
+		$('.page-transfer input[name=transfer-memo]').removeAttr('data-memo-ton');
 		$('.page-transfer .transfer-tokens-amount-caption').css('display','none');
 		$('.page-transfer .transfer-tokens-amount-fee').html('&hellip;');
 		$('.page-transfer .transfer-memo-caption').css('display','none');
@@ -8502,6 +8550,9 @@ function dom_bindings(callback){
 		}
 		if((typeof template.attr('data-memo-check') != 'undefined') && (''!=template.attr('data-memo-check'))){
 			$('.page-transfer input[name=transfer-memo]').attr('data-memo-check',template.attr('data-memo-check'));
+		}
+		if((typeof template.attr('data-memo-ton') != 'undefined') && (''!=template.attr('data-memo-ton'))){
+			$('.page-transfer input[name=transfer-memo]').attr('data-memo-ton',template.attr('data-memo-ton'));
 		}
 		if(typeof template.attr('data-memo-encrypt') != 'undefined'){
 			if('false'==template.attr('data-memo-encrypt')){

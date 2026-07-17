@@ -804,6 +804,7 @@ var ltmp_en_arr={
 							<option value="1" data-account="xchng" data-tokens-amount-fee="10" data-memo="log:" data-memo-format="log:BITSHARES-LOGIN" data-memo-check="^log:([a-z0-9\-\.]+)$" data-memo-encrypt="false">XCHNG on BitShares</option>
 							<option value="2" data-account="gls.xchng" data-tokens-amount-fee="0" data-memo="log:" data-memo-format="log:GOLOS-LOGIN" data-memo-check="^log:([a-z0-9\-\.]+)$" data-memo-encrypt="false">XCHNG on GOLOS</option>
 							<option value="3" data-account="vmp" data-tokens-amount-fee="0" data-memo="Mx" data-memo-format="Minter address" data-memo-check="^Mx([a-f0-9\-\.]+)$" data-memo-encrypt="false">VIZCHAIN on Minter</option>
+							<option value="5" data-account="gram.gate" data-tokens-amount-fee="0" data-memo="" data-memo-format="TON wallet address (EQ…/UQ…)" data-memo-ton="1" data-memo-encrypt="false">wVIZ → GRAM (TON)</option>
 
 						</select>
 					</label>
@@ -2555,6 +2556,7 @@ var ltmp_en_arr={
 	invite_amount_success:'Check for {amount} was successfully created',
 	invite_info_success:'Check for {amount}, redemption code: {private_key}',
 	transfer_memo_not_match_template:'The memo does not match the format of the template',
+	transfer_memo_not_valid_ton:'Enter a valid TON wallet address in the memo (checksum failed). This is where wVIZ will be delivered on TON — double-check it.',
 	withdraw_success:'Unstake capital is confirmed',
 	stop_withdraw_error:'Error in the stop operation',
 	setted_validator_proxy:'The right to vote has been proxied to the account {account}',

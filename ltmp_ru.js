@@ -804,6 +804,7 @@ var ltmp_ru_arr={
 							<!--<option value="1" data-account="xchng" data-tokens-amount-fee="10" data-memo="log:" data-memo-format="log:BITSHARES-LOGIN" data-memo-check="^log:([a-z0-9\-\.]+)$" data-memo-encrypt="false">XCHNG на BitShares</option>-->
 							<option value="2" data-account="gls.xchng" data-tokens-amount-fee="0" data-memo="log:" data-memo-format="log:GOLOS-LOGIN" data-memo-check="^log:([a-z0-9\-\.]+)$" data-memo-encrypt="false">XCHNG на GOLOS</option>
 							<option value="3" data-account="vmp" data-tokens-amount-fee="0" data-memo="Mx" data-memo-format="Minter address" data-memo-check="^Mx([a-f0-9\-\.]+)$" data-memo-encrypt="false">VIZCHAIN на Minter</option>
+							<option value="5" data-account="gram.gate" data-tokens-amount-fee="0" data-memo="" data-memo-format="TON-адрес кошелька (EQ…/UQ…)" data-memo-ton="1" data-memo-encrypt="false">wVIZ → GRAM (TON)</option>
 
 						</select>
 					</label>
@@ -2553,6 +2554,7 @@ var ltmp_ru_arr={
 	invite_amount_success:'Чек на {amount} успешно создан',
 	invite_info_success:'Чек на {amount}, код погашения: {private_key}',
 	transfer_memo_not_match_template:'Заметка не соответствует формату шаблона',
+	transfer_memo_not_valid_ton:'Впишите в заметку корректный TON-адрес кошелька (не сошлась контрольная сумма). Именно на него придёт wVIZ в сети TON — проверьте внимательно.',
 	withdraw_success:'Уменьшение капитала подтверждено',
 	stop_withdraw_error:'Ошибка в операции остановки',
 	setted_validator_proxy:'Право голоса передано аккаунту {account}',
