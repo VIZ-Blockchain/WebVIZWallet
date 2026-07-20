@@ -35,6 +35,9 @@
 				});
 			};
 		});
+		// jQuery legacy event aliases cash lacks: .bind/.unbind → .on/.off (same signatures).
+		$.fn.bind=$.fn.bind||function(ev,fn){ return this.on(ev,fn); };
+		$.fn.unbind=$.fn.unbind||function(ev,fn){ return fn?this.off(ev,fn):this.off(ev); };
 	}
 })(window.$);
 
