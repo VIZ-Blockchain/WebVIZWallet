@@ -1386,7 +1386,7 @@ function view_index(path,params,title){
 						<div class="column-view column-4 text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_social_capital_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">
 						${active_withdraw}
 						${vesting_shares}${received_vesting_shares}${delegated_vesting_shares}</span></div>
-						<div class="column-view column-4 text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_balance_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">${number_thousands(show_balance_in_tokens(account.balance))}</span></div>
+						<div class="column-view column-4 text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_balance_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">${number_thousands(show_balance_in_tokens(account.balance))}</span><span class="pm-frozen-badge" data-pm-frozen="${escape_html(account.name)}"></span><span class="pm-lazy-badge" data-pm-lazy="${escape_html(account.name)}"></span></div>
 						<div class="column-view column-flex text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_energy_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">${(parseInt(new_energy)/100).toFixed(2)}%</span></div>
 						<!--<div class="column-view column-flex">${info}</div>-->
 					</div>`;
@@ -1399,6 +1399,26 @@ function view_index(path,params,title){
 				</div>`;
 			}
 			$('.view-index .sessions .table-data').html(data);
+			// Per-account PM exposure badges next to the balance: lock icon + amount frozen
+			// on prediction markets. Oracle insurance (get_oracle) and lazy-pool principal
+			// (get_lazy_deposit) are single cheap queries; both throw when the account has
+			// neither, so err simply means "nothing frozen" → badge stays empty.
+			if(!err){
+				for(let j in response){
+					(function(nm){
+						viz.api.getOracle(nm,function(oerr,o){
+							if(!oerr&&o&&parseInt(o.insurance||0)>0){
+								$('[data-pm-frozen="'+nm+'"]').html(' <span class="grey" title="'+escape_html(ltmp_arr.index_frozen_markets_title)+'">&#128274;&nbsp;'+pm_fmt_viz(o.insurance)+'</span>');
+							}
+						});
+						viz.api.getLazyDeposit(nm,function(derr,d){
+							if(!derr&&d&&parseInt(d.principal||0)>0){
+								$('[data-pm-lazy="'+nm+'"]').html(' <span class="grey" title="'+escape_html(ltmp_arr.index_frozen_pool_title)+'">&#128274;&nbsp;'+pm_fmt_viz(d.principal)+'</span>');
+							}
+						});
+					})(response[j].name);
+				}
+			}
 		});
 	}
 	let nodes='';

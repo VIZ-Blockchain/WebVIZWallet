@@ -2182,6 +2182,8 @@ var ltmp_en_arr={
 	index_logout_account_caption:'Logout by account {account}',
 	index_social_capital_adaptive_caption:'Capital (viz):',
 	index_balance_adaptive_caption:'Balance (viz):',
+	index_frozen_markets_title:'Locked in prediction markets',
+	index_frozen_pool_title:'Locked in the lazy liquidity pool',
 	index_energy_adaptive_caption:'Energy:',
 	index_selected_node:'Selected node',
 	index_remove_node:'remove',

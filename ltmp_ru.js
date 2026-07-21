@@ -2178,6 +2178,8 @@ var ltmp_ru_arr={
 	index_logout_account_caption:'Отключить аккаунт {account}',
 	index_social_capital_adaptive_caption:'Капитал (viz):',
 	index_balance_adaptive_caption:'Баланс (viz):',
+	index_frozen_markets_title:'Заморожено в рынках предсказаний',
+	index_frozen_pool_title:'Заморожено в lazy-пуле ликвидности',
 	index_energy_adaptive_caption:'Энергия:',
 	index_selected_node:'Используемая нода',
 	index_remove_node:'удалить',

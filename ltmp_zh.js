@@ -2178,6 +2178,8 @@ var ltmp_zh_arr = {
 	index_logout_account_caption:'注销账户 {account}',
 	index_social_capital_adaptive_caption:'资本 (viz):',
 	index_balance_adaptive_caption:'余额 (viz):',
+	index_frozen_markets_title:'锁定在预测市场中',
+	index_frozen_pool_title:'锁定在惰性流动性池中',
 	index_energy_adaptive_caption:'能量:',
 	index_selected_node:'已选节点',
 	index_remove_node:'移除',
