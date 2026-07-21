@@ -1386,7 +1386,7 @@ function view_index(path,params,title){
 						<div class="column-view column-4 text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_social_capital_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">
 						${active_withdraw}
 						${vesting_shares}${received_vesting_shares}${delegated_vesting_shares}</span></div>
-						<div class="column-view column-4 text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_balance_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">${number_thousands(show_balance_in_tokens(account.balance))}</span><span class="pm-frozen-badge" data-pm-frozen="${escape_html(account.name)}"></span><span class="pm-lazy-badge" data-pm-lazy="${escape_html(account.name)}"></span></div>
+						<div class="column-view column-4 text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_balance_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">${number_thousands(show_balance_in_tokens(account.balance))}</span>${pm_lock_badge(account.pm_liquidity_committed,ltmp_arr.index_frozen_liquidity_title)}${pm_lock_badge(account.pm_bets_staked,ltmp_arr.index_frozen_bets_title)}${pm_lock_badge(account.pm_leverage_collateral,ltmp_arr.index_frozen_leverage_title)}<span class="pm-frozen-badge" data-pm-frozen="${escape_html(account.name)}"></span><span class="pm-lazy-badge" data-pm-lazy="${escape_html(account.name)}"></span></div>
 						<div class="column-view column-flex text-right"><span class="adaptive-show adaptive-float-left">`+ltmp_arr.index_energy_adaptive_caption+`&nbsp;</span><span class="adaptive-bold">${(parseInt(new_energy)/100).toFixed(2)}%</span></div>
 						<!--<div class="column-view column-flex">${info}</div>-->
 					</div>`;
@@ -1511,6 +1511,14 @@ function show_balance_in_tokens(tokens,ticker){
 	let true_tokens=parseFloat(tokens);
 	let ceil_tokens=Math.floor(true_tokens*100)/100;
 	return ''+ceil_tokens.toFixed(2)+(ticker?' viz':'');
+}
+// PM frozen-funds lock badge next to an account balance. `val` is an asset string
+// ("X.XXX VIZ") from get_accounts; renders nothing when zero/absent (older nodes that
+// don't yet return the field → parseFloat is NaN → no badge).
+function pm_lock_badge(val,title){
+	let v=parseFloat(val);
+	if(!(v>0)){ return ''; }
+	return ' <span class="grey" title="'+escape_html(title)+'">&#128274;&nbsp;'+number_thousands(show_balance_in_tokens(v))+'</span>';
 }
 function update_balances(el){
 	el.css('display','block');
