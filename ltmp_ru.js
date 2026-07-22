@@ -1953,7 +1953,7 @@ var ltmp_ru_arr={
 				<label class="input-descr"><span class="input-caption">%%ms_f_title%%</span><input type="text" name="ms-title" class="simple-rounded" autocomplete="off"></label>
 				<label class="input-descr"><span class="input-caption">%%ms_f_memo%%</span><input type="text" name="ms-memo" class="simple-rounded" autocomplete="off"></label>
 				<label class="input-descr"><span class="input-caption">%%ms_f_expiration%%</span><input type="datetime-local" name="ms-expiration" class="simple-rounded"></label>
-				<label class="input-descr"><span class="input-caption">%%ms_f_optype%%</span><select name="ms-optype" class="simple-rounded simple-rounded-size"><option value="transfer">%%ms_op_transfer%%</option><option value="account_update">%%ms_op_account_update%%</option></select></label>
+				<label class="input-descr"><span class="input-caption">%%ms_f_optype%%</span><select name="ms-optype" class="simple-rounded simple-rounded-size"><option value="transfer">%%ms_op_transfer%%</option><option value="account_update">%%ms_op_account_update%%</option><option value="account_metadata">%%ms_op_account_metadata%%</option><option value="custom">%%ms_op_custom%%</option></select></label>
 				<div class="ms-op ms-op-transfer">
 					<label class="input-descr"><span class="input-caption">%%ms_t_from%%</span><input type="text" name="ms-t-from" class="simple-rounded" autocomplete="off"></label>
 					<label class="input-descr"><span class="input-caption">%%ms_t_to%%</span><input type="text" name="ms-t-to" class="simple-rounded" autocomplete="off"></label>
@@ -1967,6 +1967,18 @@ var ltmp_ru_arr={
 					<div class="input-caption">%%ms_au_auths%%</div>
 					<div class="ms-auths"></div>
 					<p><a class="inline-button ms-auth-add">%%ms_au_add_auth%%</a> <a class="inline-button ms-au-load">%%ms_au_load%%</a></p>
+				</div>
+				<div class="ms-op ms-op-account_metadata" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_am_account%%</span><input type="text" name="ms-am-account" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_am_json%%</span><textarea name="ms-am-json" class="simple-rounded" rows="4" autocomplete="off" spellcheck="false"></textarea></label>
+					<p class="grey small">%%ms_am_hint%%</p>
+				</div>
+				<div class="ms-op ms-op-custom" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_c_id%%</span><input type="text" name="ms-c-id" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_c_json%%</span><textarea name="ms-c-json" class="simple-rounded" rows="4" autocomplete="off" spellcheck="false"></textarea></label>
+					<label class="input-descr"><span class="input-caption">%%ms_c_active%%</span><input type="text" name="ms-c-active" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_c_regular%%</span><input type="text" name="ms-c-regular" class="simple-rounded" autocomplete="off"></label>
+					<p class="grey small">%%ms_c_hint%%</p>
 				</div>
 				<p class="red ms-create-error"></p>
 				<p class="green ms-create-success"></p>
@@ -2615,6 +2627,18 @@ var ltmp_ru_arr={
 	ms_f_optype:'Операция пропозала',
 	ms_op_transfer:'Перевод',
 	ms_op_account_update:'Изменить authority аккаунта (мультисиг)',
+	ms_op_account_metadata:'Обновить метаданные аккаунта (JSON)',
+	ms_op_custom:'Custom (произвольная on-chain операция)',
+	ms_am_account:'Аккаунт для обновления',
+	ms_am_json:'JSON-метаданные',
+	ms_am_hint:'Заменяет публичное json_metadata аккаунта. Пусто — очистить. Ключи и memo не трогает.',
+	ms_c_id:'ID операции (имя протокола)',
+	ms_c_json:'JSON-данные',
+	ms_c_active:'Требуемые active-подписи (аккаунты через запятую)',
+	ms_c_regular:'Требуемые regular-подписи (аккаунты через запятую)',
+	ms_c_hint:'Custom-операция несёт произвольные JSON-данные, подписанные указанными authority. Нужна хотя бы одна active- или regular-подпись.',
+	ms_bad_json:'Данные — не валидный JSON.',
+	ms_custom_need_auth:'Укажите хотя бы одну active- или regular-подпись.',
 	ms_t_from:'Откуда (мультисиг-аккаунт)',
 	ms_t_to:'Кому',
 	ms_t_amount:'Сумма, VIZ',

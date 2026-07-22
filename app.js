@@ -4794,6 +4794,15 @@ function ms_approvals_summary(p){
 	let signed=(p.available_active_approvals&&p.available_active_approvals.indexOf(current_user)>=0)||(p.available_master_approvals&&p.available_master_approvals.indexOf(current_user)>=0)||(p.available_regular_approvals&&p.available_regular_approvals.indexOf(current_user)>=0);
 	return { signed:signed, html:parts.join('<br>'), needed:needed };
 }
+// Parse a comma/space separated list of account names into a lowercased, deduped array.
+function ms_split_accounts(v){
+	let out=[], seen={};
+	(''+(v||'')).split(/[\s,]+/).forEach(function(a){
+		a=a.toLowerCase().trim();
+		if(a&&!seen[a]){ seen[a]=1; out.push(a); }
+	});
+	return out;
+}
 function ms_op_summary(ops){
 	let out=[];
 	for(let i=0;i<(ops||[]).length;i++){
@@ -4805,6 +4814,13 @@ function ms_op_summary(ops){
 		}
 		else if('account_update'==name){
 			out.push(ltmp_arr.ms_op_account_update+': '+ms_esc(body.account));
+		}
+		else if('account_metadata'==name){
+			out.push(ltmp_arr.ms_op_account_metadata+': '+ms_esc(body.account)+(body.json_metadata?(' <span class="grey">'+ms_esc((''+body.json_metadata).slice(0,120))+'</span>'):''));
+		}
+		else if('custom'==name){
+			let auths=[].concat(body.required_active_auths||[],body.required_regular_auths||[]);
+			out.push(ltmp_arr.ms_op_custom+': <span class="grey">id=</span>'+ms_esc(body.id)+(auths.length?(' <span class="grey">'+ms_esc(auths.join(', '))+'</span>'):''));
 		}
 		else{ out.push(ms_esc(name)); }
 	}
@@ -4921,15 +4937,9 @@ function ms_delete_action(){
 function ms_op_toggle(){
 	let page=$('.view-multisig .page-create');
 	let t=page.find('select[name=ms-optype]').val();
-	if('account_update'==t){
-		page.find('.ms-op-transfer').css('display','none');
-		page.find('.ms-op-account_update').css('display','block');
-		if(!page.find('.ms-auths .ms-auth-row').length){ ms_auth_add('',''); }
-	}
-	else{
-		page.find('.ms-op-transfer').css('display','block');
-		page.find('.ms-op-account_update').css('display','none');
-	}
+	page.find('.ms-op').css('display','none');
+	page.find('.ms-op-'+t).css('display','block');
+	if('account_update'==t&&!page.find('.ms-auths .ms-auth-row').length){ ms_auth_add('',''); }
 }
 function ms_auth_add(key,weight){
 	let row='<div class="ms-auth-row columns-view"><div class="column-view column-flex"><input type="text" class="simple-rounded ms-auth-key" autocomplete="off" placeholder="account / VIZ pubkey" value="'+ms_esc(key)+'"></div><div class="column-view"><input type="text" class="simple-rounded ms-auth-weight" inputmode="numeric" value="'+ms_esc(weight||'1')+'" style="max-width:80px"></div><div class="column-view"><a class="inline-button red ms-auth-del">&times;</a></div></div>';
@@ -4963,6 +4973,12 @@ function ms_reset_create(params){
 	page.find('input[name=ms-au-account]').val(current_user);
 	page.find('input[name=ms-au-threshold]').val('1');
 	page.find('.ms-auths').html('');
+	page.find('input[name=ms-am-account]').val(current_user);
+	page.find('textarea[name=ms-am-json]').val('');
+	page.find('input[name=ms-c-active]').val(current_user);
+	page.find('input[name=ms-c-regular]').val('');
+	page.find('input[name=ms-c-id]').val('');
+	page.find('textarea[name=ms-c-json]').val('');
 	ms_op_toggle();
 	page.find('select[name=ms-optype]').off('change.ms').on('change.ms',ms_op_toggle);
 }
@@ -4997,6 +5013,23 @@ function ms_create_action(){
 		let memo=(''+page.find('input[name=ms-t-memo]').val());
 		if(!from||!to||!(amount>0)){ err.html(ltmp_arr.ms_create_fill); return; }
 		broadcast_create(['transfer',{from:from,to:to,amount:amount.toFixed(3)+' VIZ',memo:memo}]);
+	}
+	else if('account_metadata'==optype){
+		let acc=(''+page.find('input[name=ms-am-account]').val()).toLowerCase().trim();
+		let jsonv=(''+page.find('textarea[name=ms-am-json]').val()).trim();
+		if(!acc){ err.html(ltmp_arr.ms_create_fill); return; }
+		if(''!==jsonv){ try{ JSON.parse(jsonv); }catch(e){ err.html(ltmp_arr.ms_bad_json); return; } }
+		broadcast_create(['account_metadata',{account:acc,json_metadata:jsonv}]);
+	}
+	else if('custom'==optype){
+		let id=(''+page.find('input[name=ms-c-id]').val()).trim();
+		let jsonv=(''+page.find('textarea[name=ms-c-json]').val()).trim();
+		if(!id||''===jsonv){ err.html(ltmp_arr.ms_create_fill); return; }
+		try{ JSON.parse(jsonv); }catch(e){ err.html(ltmp_arr.ms_bad_json); return; }
+		let active_auths=ms_split_accounts(page.find('input[name=ms-c-active]').val());
+		let regular_auths=ms_split_accounts(page.find('input[name=ms-c-regular]').val());
+		if(!active_auths.length&&!regular_auths.length){ err.html(ltmp_arr.ms_custom_need_auth); return; }
+		broadcast_create(['custom',{required_active_auths:active_auths,required_regular_auths:regular_auths,id:id,json:jsonv}]);
 	}
 	else{
 		let acc=(''+page.find('input[name=ms-au-account]').val()).toLowerCase().trim();

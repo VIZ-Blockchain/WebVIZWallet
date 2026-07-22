@@ -1953,7 +1953,7 @@ var ltmp_zh_arr = {
 				<label class="input-descr"><span class="input-caption">%%ms_f_title%%</span><input type="text" name="ms-title" class="simple-rounded" autocomplete="off"></label>
 				<label class="input-descr"><span class="input-caption">%%ms_f_memo%%</span><input type="text" name="ms-memo" class="simple-rounded" autocomplete="off"></label>
 				<label class="input-descr"><span class="input-caption">%%ms_f_expiration%%</span><input type="datetime-local" name="ms-expiration" class="simple-rounded"></label>
-				<label class="input-descr"><span class="input-caption">%%ms_f_optype%%</span><select name="ms-optype" class="simple-rounded simple-rounded-size"><option value="transfer">%%ms_op_transfer%%</option><option value="account_update">%%ms_op_account_update%%</option></select></label>
+				<label class="input-descr"><span class="input-caption">%%ms_f_optype%%</span><select name="ms-optype" class="simple-rounded simple-rounded-size"><option value="transfer">%%ms_op_transfer%%</option><option value="account_update">%%ms_op_account_update%%</option><option value="account_metadata">%%ms_op_account_metadata%%</option><option value="custom">%%ms_op_custom%%</option></select></label>
 				<div class="ms-op ms-op-transfer">
 					<label class="input-descr"><span class="input-caption">%%ms_t_from%%</span><input type="text" name="ms-t-from" class="simple-rounded" autocomplete="off"></label>
 					<label class="input-descr"><span class="input-caption">%%ms_t_to%%</span><input type="text" name="ms-t-to" class="simple-rounded" autocomplete="off"></label>
@@ -1967,6 +1967,18 @@ var ltmp_zh_arr = {
 					<div class="input-caption">%%ms_au_auths%%</div>
 					<div class="ms-auths"></div>
 					<p><a class="inline-button ms-auth-add">%%ms_au_add_auth%%</a> <a class="inline-button ms-au-load">%%ms_au_load%%</a></p>
+				</div>
+				<div class="ms-op ms-op-account_metadata" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_am_account%%</span><input type="text" name="ms-am-account" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_am_json%%</span><textarea name="ms-am-json" class="simple-rounded" rows="4" autocomplete="off" spellcheck="false"></textarea></label>
+					<p class="grey small">%%ms_am_hint%%</p>
+				</div>
+				<div class="ms-op ms-op-custom" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_c_id%%</span><input type="text" name="ms-c-id" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_c_json%%</span><textarea name="ms-c-json" class="simple-rounded" rows="4" autocomplete="off" spellcheck="false"></textarea></label>
+					<label class="input-descr"><span class="input-caption">%%ms_c_active%%</span><input type="text" name="ms-c-active" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_c_regular%%</span><input type="text" name="ms-c-regular" class="simple-rounded" autocomplete="off"></label>
+					<p class="grey small">%%ms_c_hint%%</p>
 				</div>
 				<p class="red ms-create-error"></p>
 				<p class="green ms-create-success"></p>
@@ -2613,6 +2625,18 @@ var ltmp_zh_arr = {
 	ms_f_optype:'提案操作',
 	ms_op_transfer:'转账',
 	ms_op_account_update:'更新账户权限（多签）',
+	ms_op_account_metadata:'更新账户元数据（JSON）',
+	ms_op_custom:'自定义（任意链上操作）',
+	ms_am_account:'要更新的账户',
+	ms_am_json:'JSON 元数据',
+	ms_am_hint:'替换账户的公开 json_metadata。留空则清除。不影响密钥和 memo。',
+	ms_c_id:'自定义 ID（协议名）',
+	ms_c_json:'JSON 数据',
+	ms_c_active:'所需 active 签名（账户，逗号分隔）',
+	ms_c_regular:'所需 regular 签名（账户，逗号分隔）',
+	ms_c_hint:'自定义操作携带由指定权限签名的任意 JSON 数据。至少需要一个 active 或 regular 签名。',
+	ms_bad_json:'数据不是有效的 JSON。',
+	ms_custom_need_auth:'请至少指定一个 active 或 regular 签名。',
 	ms_t_from:'来源（多签账户）',
 	ms_t_to:'收款方',
 	ms_t_amount:'金额，VIZ',

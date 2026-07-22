@@ -1964,7 +1964,7 @@ var ltmp_en_arr={
 				<label class="input-descr"><span class="input-caption">%%ms_f_title%%</span><input type="text" name="ms-title" class="simple-rounded" autocomplete="off"></label>
 				<label class="input-descr"><span class="input-caption">%%ms_f_memo%%</span><input type="text" name="ms-memo" class="simple-rounded" autocomplete="off"></label>
 				<label class="input-descr"><span class="input-caption">%%ms_f_expiration%%</span><input type="datetime-local" name="ms-expiration" class="simple-rounded"></label>
-				<label class="input-descr"><span class="input-caption">%%ms_f_optype%%</span><select name="ms-optype" class="simple-rounded simple-rounded-size"><option value="transfer">%%ms_op_transfer%%</option><option value="account_update">%%ms_op_account_update%%</option></select></label>
+				<label class="input-descr"><span class="input-caption">%%ms_f_optype%%</span><select name="ms-optype" class="simple-rounded simple-rounded-size"><option value="transfer">%%ms_op_transfer%%</option><option value="account_update">%%ms_op_account_update%%</option><option value="account_metadata">%%ms_op_account_metadata%%</option><option value="custom">%%ms_op_custom%%</option></select></label>
 				<div class="ms-op ms-op-transfer">
 					<label class="input-descr"><span class="input-caption">%%ms_t_from%%</span><input type="text" name="ms-t-from" class="simple-rounded" autocomplete="off"></label>
 					<label class="input-descr"><span class="input-caption">%%ms_t_to%%</span><input type="text" name="ms-t-to" class="simple-rounded" autocomplete="off"></label>
@@ -1978,6 +1978,18 @@ var ltmp_en_arr={
 					<div class="input-caption">%%ms_au_auths%%</div>
 					<div class="ms-auths"></div>
 					<p><a class="inline-button ms-auth-add">%%ms_au_add_auth%%</a> <a class="inline-button ms-au-load">%%ms_au_load%%</a></p>
+				</div>
+				<div class="ms-op ms-op-account_metadata" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_am_account%%</span><input type="text" name="ms-am-account" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_am_json%%</span><textarea name="ms-am-json" class="simple-rounded" rows="4" autocomplete="off" spellcheck="false"></textarea></label>
+					<p class="grey small">%%ms_am_hint%%</p>
+				</div>
+				<div class="ms-op ms-op-custom" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_c_id%%</span><input type="text" name="ms-c-id" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_c_json%%</span><textarea name="ms-c-json" class="simple-rounded" rows="4" autocomplete="off" spellcheck="false"></textarea></label>
+					<label class="input-descr"><span class="input-caption">%%ms_c_active%%</span><input type="text" name="ms-c-active" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_c_regular%%</span><input type="text" name="ms-c-regular" class="simple-rounded" autocomplete="off"></label>
+					<p class="grey small">%%ms_c_hint%%</p>
 				</div>
 				<p class="red ms-create-error"></p>
 				<p class="green ms-create-success"></p>
@@ -2624,6 +2636,18 @@ var ltmp_en_arr={
 	ms_f_optype:'Proposed operation',
 	ms_op_transfer:'Transfer',
 	ms_op_account_update:'Update account authority (multisig)',
+	ms_op_account_metadata:'Update account metadata (JSON)',
+	ms_op_custom:'Custom (arbitrary on-chain operation)',
+	ms_am_account:'Account to update',
+	ms_am_json:'JSON metadata',
+	ms_am_hint:'Replaces the account\'s public json_metadata. Leave empty to clear it. Does not touch keys or memo.',
+	ms_c_id:'Custom ID (protocol name)',
+	ms_c_json:'JSON payload',
+	ms_c_active:'Required active auths (accounts, comma-separated)',
+	ms_c_regular:'Required regular auths (accounts, comma-separated)',
+	ms_c_hint:'A custom operation carries an arbitrary JSON payload signed by the listed authorities. At least one active or regular auth is required.',
+	ms_bad_json:'Payload is not valid JSON.',
+	ms_custom_need_auth:'Specify at least one required active or regular auth.',
 	ms_t_from:'From (multisig account)',
 	ms_t_to:'To',
 	ms_t_amount:'Amount, VIZ',
