@@ -1953,7 +1953,7 @@ var ltmp_ru_arr={
 				<label class="input-descr"><span class="input-caption">%%ms_f_title%%</span><input type="text" name="ms-title" class="simple-rounded" autocomplete="off"></label>
 				<label class="input-descr"><span class="input-caption">%%ms_f_memo%%</span><input type="text" name="ms-memo" class="simple-rounded" autocomplete="off"></label>
 				<label class="input-descr"><span class="input-caption">%%ms_f_expiration%%</span><input type="datetime-local" name="ms-expiration" class="simple-rounded"></label>
-				<label class="input-descr"><span class="input-caption">%%ms_f_optype%%</span><select name="ms-optype" class="simple-rounded simple-rounded-size"><option value="transfer">%%ms_op_transfer%%</option><option value="account_update">%%ms_op_account_update%%</option><option value="account_metadata">%%ms_op_account_metadata%%</option><option value="custom">%%ms_op_custom%%</option></select></label>
+				<label class="input-descr"><span class="input-caption">%%ms_f_optype%%</span><select name="ms-optype" class="simple-rounded simple-rounded-size"><option value="transfer">%%ms_op_transfer%%</option><option value="account_update">%%ms_op_account_update%%</option><option value="account_metadata">%%ms_op_account_metadata%%</option><option value="custom">%%ms_op_custom%%</option><option value="delegate_vesting_shares">%%ms_op_delegate%%</option><option value="award">%%ms_op_award%%</option><option value="account_validator_vote">%%ms_op_validator_vote%%</option><option value="account_validator_proxy">%%ms_op_validator_proxy%%</option><option value="set_reward_sharing">%%ms_op_reward_sharing%%</option><option value="committee_worker_create_request">%%ms_op_committee_create%%</option><option value="committee_vote_request">%%ms_op_committee_vote%%</option><option value="pm_lazy_deposit">%%ms_op_pool_deposit%%</option><option value="pm_lazy_withdraw">%%ms_op_pool_withdraw%%</option></select></label>
 				<div class="ms-op ms-op-transfer">
 					<label class="input-descr"><span class="input-caption">%%ms_t_from%%</span><input type="text" name="ms-t-from" class="simple-rounded" autocomplete="off"></label>
 					<label class="input-descr"><span class="input-caption">%%ms_t_to%%</span><input type="text" name="ms-t-to" class="simple-rounded" autocomplete="off"></label>
@@ -1979,6 +1979,52 @@ var ltmp_ru_arr={
 					<label class="input-descr"><span class="input-caption">%%ms_c_active%%</span><input type="text" name="ms-c-active" class="simple-rounded" autocomplete="off"></label>
 					<label class="input-descr"><span class="input-caption">%%ms_c_regular%%</span><input type="text" name="ms-c-regular" class="simple-rounded" autocomplete="off"></label>
 					<p class="grey small">%%ms_c_hint%%</p>
+				</div>
+				<div class="ms-op ms-op-delegate_vesting_shares" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-dg-delegator" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_dg_delegatee%%</span><input type="text" name="ms-dg-delegatee" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_dg_shares%%</span><input type="text" name="ms-dg-shares" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+				</div>
+				<div class="ms-op ms-op-award" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-aw-initiator" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_aw_receiver%%</span><input type="text" name="ms-aw-receiver" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_aw_energy%%</span><input type="text" name="ms-aw-energy" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_t_memo%%</span><input type="text" name="ms-aw-memo" class="simple-rounded" autocomplete="off"></label>
+				</div>
+				<div class="ms-op ms-op-account_validator_vote" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-vv-account" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_vv_validator%%</span><input type="text" name="ms-vv-validator" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_vv_approve%%</span><select name="ms-vv-approve" class="simple-rounded simple-rounded-size"><option value="1">%%ms_vv_yes%%</option><option value="0">%%ms_vv_no%%</option></select></label>
+				</div>
+				<div class="ms-op ms-op-account_validator_proxy" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-vp-account" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_vp_proxy%%</span><input type="text" name="ms-vp-proxy" class="simple-rounded" autocomplete="off"></label>
+				</div>
+				<div class="ms-op ms-op-set_reward_sharing" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-rs-owner" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_rs_rate%%</span><input type="text" name="ms-rs-rate" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+				</div>
+				<div class="ms-op ms-op-committee_worker_create_request" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-cc-creator" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_cc_url%%</span><input type="text" name="ms-cc-url" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_cc_worker%%</span><input type="text" name="ms-cc-worker" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_cc_min%%</span><input type="text" name="ms-cc-min" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_cc_max%%</span><input type="text" name="ms-cc-max" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_cc_duration%%</span><input type="text" name="ms-cc-duration" class="simple-rounded" autocomplete="off" inputmode="numeric"></label>
+				</div>
+				<div class="ms-op ms-op-committee_vote_request" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-cv-voter" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_cv_reqid%%</span><input type="text" name="ms-cv-reqid" class="simple-rounded" autocomplete="off" inputmode="numeric"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_cv_percent%%</span><input type="text" name="ms-cv-percent" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+				</div>
+				<div class="ms-op ms-op-pm_lazy_deposit" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-pd-account" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_pd_amount%%</span><input type="text" name="ms-pd-amount" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+				</div>
+				<div class="ms-op ms-op-pm_lazy_withdraw" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-pw-account" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_pw_shares%%</span><input type="text" name="ms-pw-shares" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_pw_emergency%%</span><select name="ms-pw-emergency" class="simple-rounded simple-rounded-size"><option value="0">%%ms_pw_planned%%</option><option value="1">%%ms_pw_emg%%</option></select></label>
 				</div>
 				<p class="red ms-create-error"></p>
 				<p class="green ms-create-success"></p>
@@ -2639,6 +2685,39 @@ var ltmp_ru_arr={
 	ms_c_hint:'Custom-операция несёт произвольные JSON-данные, подписанные указанными authority. Нужна хотя бы одна active- или regular-подпись.',
 	ms_bad_json:'Данные — не валидный JSON.',
 	ms_custom_need_auth:'Укажите хотя бы одну active- или regular-подпись.',
+	ms_op_delegate:'Делегировать доли (vesting)',
+	ms_op_award:'Награда (award, энергией)',
+	ms_op_validator_vote:'Голос за валидатора',
+	ms_op_validator_proxy:'Прокси голосов за валидаторов',
+	ms_op_reward_sharing:'Доля награды валидатора',
+	ms_op_committee_create:'Комитет: создать заявку',
+	ms_op_committee_vote:'Комитет: голос по заявке',
+	ms_op_pool_deposit:'Пул ликвидности: депозит',
+	ms_op_pool_withdraw:'Пул ликвидности: вывод',
+	ms_actor:'Аккаунт-инициатор (мультисиг)',
+	ms_dg_delegatee:'Кому делегируем',
+	ms_dg_shares:'Доли (SHARES, 0 = снять делегирование)',
+	ms_aw_receiver:'Получатель',
+	ms_aw_energy:'Энергия, %',
+	ms_vv_validator:'Валидатор',
+	ms_vv_approve:'Голос',
+	ms_vv_yes:'Поддержать',
+	ms_vv_no:'Снять голос',
+	ms_vp_proxy:'Аккаунт-прокси (пусто = сбросить)',
+	ms_rs_rate:'Доля награды, %',
+	ms_cc_url:'URL (описание)',
+	ms_cc_worker:'Исполнитель (аккаунт выплаты)',
+	ms_cc_min:'Сумма мин., VIZ',
+	ms_cc_max:'Сумма макс., VIZ',
+	ms_cc_duration:'Срок, дней (5–30)',
+	ms_cv_reqid:'ID заявки',
+	ms_cv_percent:'Голос, % (−100…100)',
+	ms_pd_amount:'Сумма, VIZ',
+	ms_pw_shares:'Доли (0 = всё)',
+	ms_pw_emergency:'Тип вывода',
+	ms_pw_planned:'Плановый',
+	ms_pw_emg:'Экстренный (штраф на награды)',
+	ms_pw_all:'всё',
 	ms_t_from:'Откуда (мультисиг-аккаунт)',
 	ms_t_to:'Кому',
 	ms_t_amount:'Сумма, VIZ',

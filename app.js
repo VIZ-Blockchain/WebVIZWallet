@@ -4822,6 +4822,33 @@ function ms_op_summary(ops){
 			let auths=[].concat(body.required_active_auths||[],body.required_regular_auths||[]);
 			out.push(ltmp_arr.ms_op_custom+': <span class="grey">id=</span>'+ms_esc(body.id)+(auths.length?(' <span class="grey">'+ms_esc(auths.join(', '))+'</span>'):''));
 		}
+		else if('delegate_vesting_shares'==name){
+			out.push(ltmp_arr.ms_op_delegate+': '+ms_esc(body.vesting_shares)+' '+ms_esc(body.delegator)+' &rarr; '+ms_esc(body.delegatee));
+		}
+		else if('award'==name){
+			out.push(ltmp_arr.ms_op_award+': '+ms_esc(body.initiator)+' &rarr; '+ms_esc(body.receiver)+' <span class="grey">'+((parseInt(body.energy)||0)/100)+'%</span>');
+		}
+		else if('account_validator_vote'==name){
+			out.push(ltmp_arr.ms_op_validator_vote+': '+ms_esc(body.account)+' &rarr; '+ms_esc(body.validator)+' <span class="grey">('+(body.approve?'+':'&minus;')+')</span>');
+		}
+		else if('account_validator_proxy'==name){
+			out.push(ltmp_arr.ms_op_validator_proxy+': '+ms_esc(body.account)+' &rarr; '+(body.proxy?ms_esc(body.proxy):'<span class="grey">&mdash;</span>'));
+		}
+		else if('set_reward_sharing'==name){
+			out.push(ltmp_arr.ms_op_reward_sharing+': '+ms_esc(body.owner)+' <span class="grey">'+((parseInt(body.sharing_rate)||0)/100)+'%</span>');
+		}
+		else if('committee_worker_create_request'==name){
+			out.push(ltmp_arr.ms_op_committee_create+': '+ms_esc(body.creator)+' &rarr; '+ms_esc(body.worker)+' <span class="grey">'+ms_esc(body.required_amount_min)+'&ndash;'+ms_esc(body.required_amount_max)+'</span>');
+		}
+		else if('committee_vote_request'==name){
+			out.push(ltmp_arr.ms_op_committee_vote+': #'+ms_esc(body.request_id)+' '+ms_esc(body.voter)+' <span class="grey">'+((parseInt(body.vote_percent)||0)/100)+'%</span>');
+		}
+		else if('pm_lazy_deposit'==name){
+			out.push(ltmp_arr.ms_op_pool_deposit+': '+ms_esc(body.account)+' <span class="grey">'+ms_esc(body.amount)+'</span>');
+		}
+		else if('pm_lazy_withdraw'==name){
+			out.push(ltmp_arr.ms_op_pool_withdraw+': '+ms_esc(body.account)+' <span class="grey">'+(parseInt(body.shares)?((parseInt(body.shares)/1000)+' sh'):ltmp_arr.ms_pw_all)+(body.emergency?' &middot; !':'')+'</span>');
+		}
 		else{ out.push(ms_esc(name)); }
 	}
 	return out.join('<br>');
@@ -4979,6 +5006,16 @@ function ms_reset_create(params){
 	page.find('input[name=ms-c-regular]').val('');
 	page.find('input[name=ms-c-id]').val('');
 	page.find('textarea[name=ms-c-json]').val('');
+	// actor field of each op defaults to the current (multisig) account; counterparties/params start blank
+	page.find('input[name=ms-dg-delegator]').val(current_user); page.find('input[name=ms-dg-delegatee]').val(''); page.find('input[name=ms-dg-shares]').val('');
+	page.find('input[name=ms-aw-initiator]').val(current_user); page.find('input[name=ms-aw-receiver]').val(''); page.find('input[name=ms-aw-energy]').val(''); page.find('input[name=ms-aw-memo]').val('');
+	page.find('input[name=ms-vv-account]').val(current_user); page.find('input[name=ms-vv-validator]').val(''); page.find('select[name=ms-vv-approve]').val('1');
+	page.find('input[name=ms-vp-account]').val(current_user); page.find('input[name=ms-vp-proxy]').val('');
+	page.find('input[name=ms-rs-owner]').val(current_user); page.find('input[name=ms-rs-rate]').val('');
+	page.find('input[name=ms-cc-creator]').val(current_user); page.find('input[name=ms-cc-url]').val(''); page.find('input[name=ms-cc-worker]').val(''); page.find('input[name=ms-cc-min]').val(''); page.find('input[name=ms-cc-max]').val(''); page.find('input[name=ms-cc-duration]').val('');
+	page.find('input[name=ms-cv-voter]').val(current_user); page.find('input[name=ms-cv-reqid]').val(''); page.find('input[name=ms-cv-percent]').val('');
+	page.find('input[name=ms-pd-account]').val(current_user); page.find('input[name=ms-pd-amount]').val('');
+	page.find('input[name=ms-pw-account]').val(current_user); page.find('input[name=ms-pw-shares]').val(''); page.find('select[name=ms-pw-emergency]').val('0');
 	ms_op_toggle();
 	page.find('select[name=ms-optype]').off('change.ms').on('change.ms',ms_op_toggle);
 }
@@ -5030,6 +5067,73 @@ function ms_create_action(){
 		let regular_auths=ms_split_accounts(page.find('input[name=ms-c-regular]').val());
 		if(!active_auths.length&&!regular_auths.length){ err.html(ltmp_arr.ms_custom_need_auth); return; }
 		broadcast_create(['custom',{required_active_auths:active_auths,required_regular_auths:regular_auths,id:id,json:jsonv}]);
+	}
+	else if('delegate_vesting_shares'==optype){
+		let delegator=(''+page.find('input[name=ms-dg-delegator]').val()).toLowerCase().trim();
+		let delegatee=(''+page.find('input[name=ms-dg-delegatee]').val()).toLowerCase().trim();
+		let sh=parseFloat((''+page.find('input[name=ms-dg-shares]').val()).replace(',','.'));
+		if(!delegator||!delegatee||isNaN(sh)||sh<0){ err.html(ltmp_arr.ms_create_fill); return; }
+		broadcast_create(['delegate_vesting_shares',{delegator:delegator,delegatee:delegatee,vesting_shares:sh.toFixed(6)+' SHARES'}]);
+	}
+	else if('award'==optype){
+		let initiator=(''+page.find('input[name=ms-aw-initiator]').val()).toLowerCase().trim();
+		let receiver=(''+page.find('input[name=ms-aw-receiver]').val()).toLowerCase().trim();
+		let energy=parseInt(parseFloat((''+page.find('input[name=ms-aw-energy]').val()).replace(',','.'))*100);
+		let memo=(''+page.find('input[name=ms-aw-memo]').val());
+		if(!initiator||!receiver||isNaN(energy)||energy<=0){ err.html(ltmp_arr.ms_create_fill); return; }
+		if(energy>10000){ energy=10000; }
+		broadcast_create(['award',{initiator:initiator,receiver:receiver,energy:energy,custom_sequence:0,memo:memo,beneficiaries:[]}]);
+	}
+	else if('account_validator_vote'==optype){
+		let acc=(''+page.find('input[name=ms-vv-account]').val()).toLowerCase().trim();
+		let validator=(''+page.find('input[name=ms-vv-validator]').val()).toLowerCase().trim();
+		let approve='1'==(''+page.find('select[name=ms-vv-approve]').val());
+		if(!acc||!validator){ err.html(ltmp_arr.ms_create_fill); return; }
+		broadcast_create(['account_validator_vote',{account:acc,validator:validator,approve:approve}]);
+	}
+	else if('account_validator_proxy'==optype){
+		let acc=(''+page.find('input[name=ms-vp-account]').val()).toLowerCase().trim();
+		let proxy=(''+page.find('input[name=ms-vp-proxy]').val()).toLowerCase().trim();
+		if(!acc){ err.html(ltmp_arr.ms_create_fill); return; }
+		broadcast_create(['account_validator_proxy',{account:acc,proxy:proxy}]);
+	}
+	else if('set_reward_sharing'==optype){
+		let owner=(''+page.find('input[name=ms-rs-owner]').val()).toLowerCase().trim();
+		let rate=parseInt(parseFloat((''+page.find('input[name=ms-rs-rate]').val()).replace(',','.'))*100);
+		if(!owner||isNaN(rate)){ err.html(ltmp_arr.ms_create_fill); return; }
+		if(rate>10000){ rate=10000; } if(rate<0){ rate=0; }
+		broadcast_create(['set_reward_sharing',{owner:owner,sharing_rate:rate}]);
+	}
+	else if('committee_worker_create_request'==optype){
+		let creator=(''+page.find('input[name=ms-cc-creator]').val()).toLowerCase().trim();
+		let url=(''+page.find('input[name=ms-cc-url]').val()).trim();
+		let worker=(''+page.find('input[name=ms-cc-worker]').val()).toLowerCase().trim();
+		let min=parseFloat((''+page.find('input[name=ms-cc-min]').val()).replace(',','.'))||0;
+		let max=parseFloat((''+page.find('input[name=ms-cc-max]').val()).replace(',','.'))||0;
+		let days=parseInt(page.find('input[name=ms-cc-duration]').val());
+		if(!creator||!worker||isNaN(days)||days<5||days>30){ err.html(ltmp_arr.ms_create_fill); return; }
+		broadcast_create(['committee_worker_create_request',{creator:creator,url:url,worker:worker,required_amount_min:min.toFixed(3)+' VIZ',required_amount_max:max.toFixed(3)+' VIZ',duration:days*86400}]);
+	}
+	else if('committee_vote_request'==optype){
+		let voter=(''+page.find('input[name=ms-cv-voter]').val()).toLowerCase().trim();
+		let reqid=parseInt(page.find('input[name=ms-cv-reqid]').val());
+		let pct=parseInt(parseFloat((''+page.find('input[name=ms-cv-percent]').val()).replace(',','.'))*100);
+		if(!voter||isNaN(reqid)||isNaN(pct)){ err.html(ltmp_arr.ms_create_fill); return; }
+		if(pct>10000){ pct=10000; } if(pct<-10000){ pct=-10000; }
+		broadcast_create(['committee_vote_request',{voter:voter,request_id:reqid,vote_percent:pct}]);
+	}
+	else if('pm_lazy_deposit'==optype){
+		let acc=(''+page.find('input[name=ms-pd-account]').val()).toLowerCase().trim();
+		let amount=parseFloat((''+page.find('input[name=ms-pd-amount]').val()).replace(',','.'));
+		if(!acc||!(amount>0)){ err.html(ltmp_arr.ms_create_fill); return; }
+		broadcast_create(['pm_lazy_deposit',{account:acc,amount:amount.toFixed(3)+' VIZ',extensions:[]}]);
+	}
+	else if('pm_lazy_withdraw'==optype){
+		let acc=(''+page.find('input[name=ms-pw-account]').val()).toLowerCase().trim();
+		let shares=Math.max(0,Math.round((parseFloat((''+page.find('input[name=ms-pw-shares]').val()).replace(',','.'))||0)*1000)); // display → raw ×1000; 0 = all
+		let emergency='1'==(''+page.find('select[name=ms-pw-emergency]').val());
+		if(!acc){ err.html(ltmp_arr.ms_create_fill); return; }
+		broadcast_create(['pm_lazy_withdraw',{account:acc,shares:shares,emergency:emergency,extensions:[]}]);
 	}
 	else{
 		let acc=(''+page.find('input[name=ms-au-account]').val()).toLowerCase().trim();
