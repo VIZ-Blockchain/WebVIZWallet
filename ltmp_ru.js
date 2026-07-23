@@ -1953,7 +1953,7 @@ var ltmp_ru_arr={
 				<label class="input-descr"><span class="input-caption">%%ms_f_title%%</span><input type="text" name="ms-title" class="simple-rounded" autocomplete="off"></label>
 				<label class="input-descr"><span class="input-caption">%%ms_f_memo%%</span><input type="text" name="ms-memo" class="simple-rounded" autocomplete="off"></label>
 				<label class="input-descr"><span class="input-caption">%%ms_f_expiration%%</span><input type="datetime-local" name="ms-expiration" class="simple-rounded"></label>
-				<label class="input-descr"><span class="input-caption">%%ms_f_optype%%</span><select name="ms-optype" class="simple-rounded simple-rounded-size"><option value="transfer">%%ms_op_transfer%%</option><option value="account_update">%%ms_op_account_update%%</option><option value="account_metadata">%%ms_op_account_metadata%%</option><option value="custom">%%ms_op_custom%%</option><option value="delegate_vesting_shares">%%ms_op_delegate%%</option><option value="award">%%ms_op_award%%</option><option value="account_validator_vote">%%ms_op_validator_vote%%</option><option value="account_validator_proxy">%%ms_op_validator_proxy%%</option><option value="set_reward_sharing">%%ms_op_reward_sharing%%</option><option value="committee_worker_create_request">%%ms_op_committee_create%%</option><option value="committee_vote_request">%%ms_op_committee_vote%%</option><option value="pm_lazy_deposit">%%ms_op_pool_deposit%%</option><option value="pm_lazy_withdraw">%%ms_op_pool_withdraw%%</option></select></label>
+				<label class="input-descr"><span class="input-caption">%%ms_f_optype%%</span><select name="ms-optype" class="simple-rounded simple-rounded-size"><option value="transfer">%%ms_op_transfer%%</option><option value="account_update">%%ms_op_account_update%%</option><option value="account_metadata">%%ms_op_account_metadata%%</option><option value="custom">%%ms_op_custom%%</option><option value="delegate_vesting_shares">%%ms_op_delegate%%</option><option value="award">%%ms_op_award%%</option><option value="account_validator_vote">%%ms_op_validator_vote%%</option><option value="account_validator_proxy">%%ms_op_validator_proxy%%</option><option value="set_reward_sharing">%%ms_op_reward_sharing%%</option><option value="committee_worker_create_request">%%ms_op_committee_create%%</option><option value="committee_vote_request">%%ms_op_committee_vote%%</option><option value="pm_lazy_deposit">%%ms_op_pool_deposit%%</option><option value="pm_lazy_withdraw">%%ms_op_pool_withdraw%%</option><option value="validator_update">%%ms_op_validator_update%%</option><option value="account_create">%%ms_op_account_create%%</option><option value="set_account_price">%%ms_op_account_price%%</option><option value="set_subaccount_price">%%ms_op_subaccount_price%%</option></select></label>
 				<div class="ms-op ms-op-transfer">
 					<label class="input-descr"><span class="input-caption">%%ms_t_from%%</span><input type="text" name="ms-t-from" class="simple-rounded" autocomplete="off"></label>
 					<label class="input-descr"><span class="input-caption">%%ms_t_to%%</span><input type="text" name="ms-t-to" class="simple-rounded" autocomplete="off"></label>
@@ -2025,6 +2025,32 @@ var ltmp_ru_arr={
 					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-pw-account" class="simple-rounded" autocomplete="off"></label>
 					<label class="input-descr"><span class="input-caption">%%ms_pw_shares%%</span><input type="text" name="ms-pw-shares" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
 					<label class="input-descr"><span class="input-caption">%%ms_pw_emergency%%</span><select name="ms-pw-emergency" class="simple-rounded simple-rounded-size"><option value="0">%%ms_pw_planned%%</option><option value="1">%%ms_pw_emg%%</option></select></label>
+				</div>
+				<div class="ms-op ms-op-validator_update" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-vu-owner" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_vu_url%%</span><input type="text" name="ms-vu-url" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_vu_key%%</span><input type="text" name="ms-vu-key" class="simple-rounded" autocomplete="off"></label>
+				</div>
+				<div class="ms-op ms-op-account_create" style="display:none">
+					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-ac-creator" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_ac_name%%</span><input type="text" name="ms-ac-name" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_ac_key%%</span><input type="text" name="ms-ac-key" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_ac_fee%%</span><input type="text" name="ms-ac-fee" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_ac_delegation%%</span><input type="text" name="ms-ac-delegation" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+				</div>
+				<div class="ms-op ms-op-set_account_price" style="display:none">
+					<p class="grey small">%%ms_sale_master_hint%%</p>
+					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-sap-account" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_sap_seller%%</span><input type="text" name="ms-sap-seller" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_sap_price%%</span><input type="text" name="ms-sap-price" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_onsale%%</span><select name="ms-sap-onsale" class="simple-rounded simple-rounded-size"><option value="1">%%ms_onsale_yes%%</option><option value="0">%%ms_onsale_no%%</option></select></label>
+				</div>
+				<div class="ms-op ms-op-set_subaccount_price" style="display:none">
+					<p class="grey small">%%ms_sale_master_hint%%</p>
+					<label class="input-descr"><span class="input-caption">%%ms_actor%%</span><input type="text" name="ms-ssp-account" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_sap_seller%%</span><input type="text" name="ms-ssp-seller" class="simple-rounded" autocomplete="off"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_sap_price%%</span><input type="text" name="ms-ssp-price" class="simple-rounded" autocomplete="off" inputmode="decimal"></label>
+					<label class="input-descr"><span class="input-caption">%%ms_onsale%%</span><select name="ms-ssp-onsale" class="simple-rounded simple-rounded-size"><option value="1">%%ms_onsale_yes%%</option><option value="0">%%ms_onsale_no%%</option></select></label>
 				</div>
 				<p class="red ms-create-error"></p>
 				<p class="green ms-create-success"></p>
@@ -2718,6 +2744,23 @@ var ltmp_ru_arr={
 	ms_pw_planned:'Плановый',
 	ms_pw_emg:'Экстренный (штраф на награды)',
 	ms_pw_all:'всё',
+	ms_op_validator_update:'Валидатор: объявить / обновить',
+	ms_op_account_create:'Создать аккаунт',
+	ms_op_account_price:'Выставить аккаунт на продажу',
+	ms_op_subaccount_price:'Выставить субаккаунты на продажу',
+	ms_vu_url:'URL валидатора',
+	ms_vu_key:'Ключ подписи блоков (пусто = деактивировать)',
+	ms_ac_name:'Имя нового аккаунта',
+	ms_ac_key:'Публичный ключ (master/active/regular/memo)',
+	ms_ac_fee:'Комиссия, VIZ',
+	ms_ac_delegation:'Делегирование, SHARES (опц.)',
+	ms_sap_seller:'Продавец (получатель оплаты)',
+	ms_sap_price:'Цена, VIZ',
+	ms_onsale:'Статус',
+	ms_onsale_yes:'В продаже',
+	ms_onsale_no:'Снять с продажи',
+	ms_sale_master_hint:'Требует подтверждения master-ключом — подписывай master-ключом (вставь WIF).',
+	ms_bad_pubkey:'Неверный публичный ключ.',
 	ms_t_from:'Откуда (мультисиг-аккаунт)',
 	ms_t_to:'Кому',
 	ms_t_amount:'Сумма, VIZ',

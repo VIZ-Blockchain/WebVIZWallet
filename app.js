@@ -4849,6 +4849,18 @@ function ms_op_summary(ops){
 		else if('pm_lazy_withdraw'==name){
 			out.push(ltmp_arr.ms_op_pool_withdraw+': '+ms_esc(body.account)+' <span class="grey">'+(parseInt(body.shares)?((parseInt(body.shares)/1000)+' sh'):ltmp_arr.ms_pw_all)+(body.emergency?' &middot; !':'')+'</span>');
 		}
+		else if('validator_update'==name){
+			out.push(ltmp_arr.ms_op_validator_update+': '+ms_esc(body.owner)+' <span class="grey">'+ms_esc(body.url)+'</span>');
+		}
+		else if('account_create'==name){
+			out.push(ltmp_arr.ms_op_account_create+': '+ms_esc(body.creator)+' &rarr; '+ms_esc(body.new_account_name)+(body.fee?(' <span class="grey">'+ms_esc(body.fee)+'</span>'):''));
+		}
+		else if('set_account_price'==name){
+			out.push(ltmp_arr.ms_op_account_price+': '+ms_esc(body.account)+' <span class="grey">'+(body.account_on_sale?ms_esc(body.account_offer_price):ltmp_arr.ms_onsale_no)+'</span>');
+		}
+		else if('set_subaccount_price'==name){
+			out.push(ltmp_arr.ms_op_subaccount_price+': '+ms_esc(body.account)+' <span class="grey">'+(body.subaccount_on_sale?ms_esc(body.subaccount_offer_price):ltmp_arr.ms_onsale_no)+'</span>');
+		}
 		else{ out.push(ms_esc(name)); }
 	}
 	return out.join('<br>');
@@ -5016,6 +5028,10 @@ function ms_reset_create(params){
 	page.find('input[name=ms-cv-voter]').val(current_user); page.find('input[name=ms-cv-reqid]').val(''); page.find('input[name=ms-cv-percent]').val('');
 	page.find('input[name=ms-pd-account]').val(current_user); page.find('input[name=ms-pd-amount]').val('');
 	page.find('input[name=ms-pw-account]').val(current_user); page.find('input[name=ms-pw-shares]').val(''); page.find('select[name=ms-pw-emergency]').val('0');
+	page.find('input[name=ms-vu-owner]').val(current_user); page.find('input[name=ms-vu-url]').val(''); page.find('input[name=ms-vu-key]').val('');
+	page.find('input[name=ms-ac-creator]').val(current_user); page.find('input[name=ms-ac-name]').val(''); page.find('input[name=ms-ac-key]').val(''); page.find('input[name=ms-ac-fee]').val(''); page.find('input[name=ms-ac-delegation]').val('');
+	page.find('input[name=ms-sap-account]').val(current_user); page.find('input[name=ms-sap-seller]').val(current_user); page.find('input[name=ms-sap-price]').val(''); page.find('select[name=ms-sap-onsale]').val('1');
+	page.find('input[name=ms-ssp-account]').val(current_user); page.find('input[name=ms-ssp-seller]').val(current_user); page.find('input[name=ms-ssp-price]').val(''); page.find('select[name=ms-ssp-onsale]').val('1');
 	ms_op_toggle();
 	page.find('select[name=ms-optype]').off('change.ms').on('change.ms',ms_op_toggle);
 }
@@ -5134,6 +5150,42 @@ function ms_create_action(){
 		let emergency='1'==(''+page.find('select[name=ms-pw-emergency]').val());
 		if(!acc){ err.html(ltmp_arr.ms_create_fill); return; }
 		broadcast_create(['pm_lazy_withdraw',{account:acc,shares:shares,emergency:emergency,extensions:[]}]);
+	}
+	else if('validator_update'==optype){
+		let owner=(''+page.find('input[name=ms-vu-owner]').val()).toLowerCase().trim();
+		let url=(''+page.find('input[name=ms-vu-url]').val()).trim();
+		let key=(''+page.find('input[name=ms-vu-key]').val()).trim();
+		if(!owner||!url){ err.html(ltmp_arr.ms_create_fill); return; }
+		if(key&&!viz.auth.isPubkey(key)){ err.html(ltmp_arr.ms_bad_pubkey); return; }
+		if(!key){ key='VIZ1111111111111111111111111111111114T1Anm'; } // empty = deactivate validator
+		broadcast_create(['validator_update',{owner:owner,url:url,block_signing_key:key}]);
+	}
+	else if('account_create'==optype){
+		let creator=(''+page.find('input[name=ms-ac-creator]').val()).toLowerCase().trim();
+		let name=(''+page.find('input[name=ms-ac-name]').val()).toLowerCase().trim();
+		let pub=(''+page.find('input[name=ms-ac-key]').val()).trim();
+		let fee=parseFloat((''+page.find('input[name=ms-ac-fee]').val()).replace(',','.'))||0;
+		let deleg=parseFloat((''+page.find('input[name=ms-ac-delegation]').val()).replace(',','.'))||0;
+		if(!creator||!name){ err.html(ltmp_arr.ms_create_fill); return; }
+		if(!viz.auth.isPubkey(pub)){ err.html(ltmp_arr.ms_bad_pubkey); return; }
+		let auth={weight_threshold:1,account_auths:[],key_auths:[[pub,1]]};
+		broadcast_create(['account_create',{fee:fee.toFixed(3)+' VIZ',delegation:deleg.toFixed(6)+' SHARES',creator:creator,new_account_name:name,master:auth,active:auth,regular:auth,memo_key:pub,json_metadata:'',referrer:'',extensions:[]}]);
+	}
+	else if('set_account_price'==optype){
+		let account=(''+page.find('input[name=ms-sap-account]').val()).toLowerCase().trim();
+		let seller=(''+page.find('input[name=ms-sap-seller]').val()).toLowerCase().trim();
+		let price=parseFloat((''+page.find('input[name=ms-sap-price]').val()).replace(',','.'))||0;
+		let onsale='1'==(''+page.find('select[name=ms-sap-onsale]').val());
+		if(!account||!seller){ err.html(ltmp_arr.ms_create_fill); return; }
+		broadcast_create(['set_account_price',{account:account,account_seller:seller,account_offer_price:price.toFixed(3)+' VIZ',account_on_sale:onsale}]);
+	}
+	else if('set_subaccount_price'==optype){
+		let account=(''+page.find('input[name=ms-ssp-account]').val()).toLowerCase().trim();
+		let seller=(''+page.find('input[name=ms-ssp-seller]').val()).toLowerCase().trim();
+		let price=parseFloat((''+page.find('input[name=ms-ssp-price]').val()).replace(',','.'))||0;
+		let onsale='1'==(''+page.find('select[name=ms-ssp-onsale]').val());
+		if(!account||!seller){ err.html(ltmp_arr.ms_create_fill); return; }
+		broadcast_create(['set_subaccount_price',{account:account,subaccount_seller:seller,subaccount_offer_price:price.toFixed(3)+' VIZ',subaccount_on_sale:onsale}]);
 	}
 	else{
 		let acc=(''+page.find('input[name=ms-au-account]').val()).toLowerCase().trim();
