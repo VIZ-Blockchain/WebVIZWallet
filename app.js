@@ -4907,7 +4907,15 @@ function ms_render_detail(box,p){
 	let now=parseInt(new Date().getTime()/1000);
 	let exp=pm_chain_time(p.expiration_time);
 	let sum=ms_approvals_summary(p);
-	let iAmRequired=(p.required_active_approvals&&p.required_active_approvals.indexOf(current_user)>=0)||(p.required_master_approvals&&p.required_master_approvals.indexOf(current_user)>=0)||(p.required_regular_approvals&&p.required_regular_approvals.indexOf(current_user)>=0);
+	// Which authority levels current_user is REQUIRED at, and which they've already signed.
+	// A user logged in with a higher-level key (e.g. master) can satisfy lower-level (active/
+	// regular) requirements too, so "approve with my account" routes to whatever level the
+	// proposal needs and signs with the stored key.
+	let inList=function(arr){ return arr&&arr.indexOf(current_user)>=0; };
+	let reqA=inList(p.required_active_approvals), reqM=inList(p.required_master_approvals), reqR=inList(p.required_regular_approvals);
+	let haveA=inList(p.available_active_approvals), haveM=inList(p.available_master_approvals), haveR=inList(p.available_regular_approvals);
+	let iAmRequired=reqA||reqM||reqR;
+	let flag=function(cls,v){ return '<input type="hidden" class="'+cls+'" value="'+(v?'1':'0')+'">'; };
 	let h='';
 	h+='<h3>'+ms_esc(p.title)+'</h3>';
 	h+='<p class="grey">'+ltmp_arr.ms_author+': '+ms_esc(p.author)+(p.memo?(' &middot; '+ms_esc(p.memo)):'')+'</p>';
@@ -4915,6 +4923,7 @@ function ms_render_detail(box,p){
 	h+='<p class="captions"><b>'+ltmp_arr.ms_ops+'</b></p><p class="small">'+ms_op_summary(p.proposed_operations)+'</p>';
 	h+='<p class="captions"><b>'+ltmp_arr.ms_approvals+'</b></p><p class="small">'+(sum.html||'&mdash;')+'</p>';
 	h+='<input type="hidden" class="ms-cur-author" value="'+ms_esc(p.author)+'"><input type="hidden" class="ms-cur-title" value="'+ms_esc(p.title)+'">';
+	h+=flag('ms-req-active',reqA)+flag('ms-req-master',reqM)+flag('ms-req-regular',reqR)+flag('ms-have-active',haveA)+flag('ms-have-master',haveM)+flag('ms-have-regular',haveR);
 	h+='<p class="red ms-detail-error"></p><p class="green ms-detail-success"></p>';
 	h+='<p>';
 	if(iAmRequired&&!sum.signed){ h+='<input class="ms-approve-account blue-button captions" type="button" value="'+ms_esc(ltmp_arr.ms_approve_account)+'"> '; }
@@ -4938,21 +4947,36 @@ function ms_after(msg,ctx){
 		setTimeout(function(){ ms_load_proposal(ctx.author,ctx.title); },1200);
 	};
 }
+function ms_flag(ctx,cls){ return '1'==(''+ctx.page.find('.'+cls).val()); }
 function ms_approve_account_action(){
 	let ctx=ms_detail_ctx();
 	if(!ctx.author||!ctx.title){ return; }
 	let wif=users[current_user]&&users[current_user].active_key;
 	if(!wif){ ctx.err.html(ltmp_arr.ms_bad_wif); return; }
+	// Add the current account to whatever authority level the proposal requires it at (and
+	// hasn't signed yet). Signed with the stored login key — a master-level login satisfies
+	// master requirements (and active/regular too, since master outranks them).
+	let me=[current_user];
+	let addA=(ms_flag(ctx,'ms-req-active')&&!ms_flag(ctx,'ms-have-active'))?me:[];
+	let addM=(ms_flag(ctx,'ms-req-master')&&!ms_flag(ctx,'ms-have-master'))?me:[];
+	let addR=(ms_flag(ctx,'ms-req-regular')&&!ms_flag(ctx,'ms-have-regular'))?me:[];
+	if(!addA.length&&!addM.length&&!addR.length){ addA=me; } // fallback: active approval
 	ctx.err.html(''); ctx.ok.html(''); ctx.page.find('.submit-button-ring').css('display','inline-block');
-	viz.broadcast.proposalUpdate(wif,ctx.author,ctx.title,[current_user],[],[],[],[],[],[],[],[],ms_after(ltmp_arr.ms_sign_ok,ctx));
+	viz.broadcast.proposalUpdate(wif,ctx.author,ctx.title,addA,[],addM,[],addR,[],[],[],[],ms_after(ltmp_arr.ms_sign_ok,ctx));
 }
 function ms_revoke_action(){
 	let ctx=ms_detail_ctx();
 	if(!ctx.author||!ctx.title){ return; }
 	let wif=users[current_user]&&users[current_user].active_key;
 	if(!wif){ ctx.err.html(ltmp_arr.ms_bad_wif); return; }
+	// Remove the current account from every level it has currently approved at.
+	let me=[current_user];
+	let remA=ms_flag(ctx,'ms-have-active')?me:[];
+	let remM=ms_flag(ctx,'ms-have-master')?me:[];
+	let remR=ms_flag(ctx,'ms-have-regular')?me:[];
+	if(!remA.length&&!remM.length&&!remR.length){ remA=me; }
 	ctx.err.html(''); ctx.ok.html(''); ctx.page.find('.submit-button-ring').css('display','inline-block');
-	viz.broadcast.proposalUpdate(wif,ctx.author,ctx.title,[],[current_user],[],[],[],[],[],[],[],ms_after(ltmp_arr.ms_revoke_ok,ctx));
+	viz.broadcast.proposalUpdate(wif,ctx.author,ctx.title,[],remA,[],remM,[],remR,[],[],[],ms_after(ltmp_arr.ms_revoke_ok,ctx));
 }
 function ms_approve_key_action(){
 	let ctx=ms_detail_ctx();

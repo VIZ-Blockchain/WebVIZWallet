@@ -2759,7 +2759,7 @@ var ltmp_ru_arr={
 	ms_onsale:'Статус',
 	ms_onsale_yes:'В продаже',
 	ms_onsale_no:'Снять с продажи',
-	ms_sale_master_hint:'Требует подтверждения master-ключом — подписывай master-ключом (вставь WIF).',
+	ms_sale_master_hint:'Требует подтверждения master-уровнем — подписывай аккаунтом, вошедшим по master-ключу (или вставь master-WIF).',
 	ms_bad_pubkey:'Неверный публичный ключ.',
 	ms_t_from:'Откуда (мультисиг-аккаунт)',
 	ms_t_to:'Кому',

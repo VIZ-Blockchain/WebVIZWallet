@@ -2768,7 +2768,7 @@ var ltmp_en_arr={
 	ms_onsale:'Status',
 	ms_onsale_yes:'On sale',
 	ms_onsale_no:'Remove from sale',
-	ms_sale_master_hint:'Requires master-authority approval — approve with the master key (paste WIF).',
+	ms_sale_master_hint:'Requires master-authority approval — approve with an account logged in via its master key (or paste a master WIF).',
 	ms_bad_pubkey:'Invalid public key.',
 	ms_t_from:'From (multisig account)',
 	ms_t_to:'To',

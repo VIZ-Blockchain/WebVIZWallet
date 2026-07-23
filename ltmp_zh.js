@@ -2757,7 +2757,7 @@ var ltmp_zh_arr = {
 	ms_onsale:'状态',
 	ms_onsale_yes:'挂售中',
 	ms_onsale_no:'取消挂售',
-	ms_sale_master_hint:'需要 master 权限批准 — 请用 master 密钥签名（粘贴 WIF）。',
+	ms_sale_master_hint:'需要 master 权限批准 — 用以 master 密钥登录的账户签名（或粘贴 master WIF）。',
 	ms_bad_pubkey:'公钥无效。',
 	ms_t_from:'来源（多签账户）',
 	ms_t_to:'收款方',
