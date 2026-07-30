@@ -1903,6 +1903,7 @@ var ltmp_ru_arr={
 		<div class="page page-index">
 			<div class="card transparent">
 				<p><label class="input-descr"><span class="input-caption">Фильтр:</span><input type="text" name="pm-filter" class="simple-rounded wide" placeholder="Фильтр по названию"></label></p>
+				<p><label class="input-descr"><span class="input-caption">Сортировка:</span><select name="pm-sort" class="simple-rounded wide"><option value="expiration">Скоро закрытие</option><option value="newest">Сначала новые</option><option value="oldest">Сначала старые</option></select></label></p>
 				<div class="table-view captions">
 					<div class="table-header">
 						<h3 class="captions">Рынки прогнозов <span class="loading">%%default_loading%%</span></h3>

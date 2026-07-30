@@ -3825,8 +3825,10 @@ function view_pm(path,params,title){
 	}
 	else{
 		$('.view-pm .page-index').css('display','block');
+		$('.view-pm .page-index select[name=pm-sort]').val(pm_sort);   // reflect current sort in the select
 		load_pm_markets(true);
 		$('.view-pm .page-index input[name=pm-filter]').off('input.pm').on('input.pm',function(){ pm_render_markets(); });
+		$('.view-pm .page-index select[name=pm-sort]').off('change.pm').on('change.pm',function(){ pm_sort=(''+$(this).val())||'expiration'; load_pm_markets(true); });
 		$('.view-pm .page-index .table-footer').off('click.pm').on('click.pm','.pm-load-more-action',function(){ pm_markets_page++; load_pm_markets(false); });
 	}
 }
@@ -3971,7 +3973,8 @@ function pm_market_status_label(m){
 	return (ltmp_arr.pm_status_closed||'Closed');
 }
 var pm_markets_page=0;
-var pm_markets_all=[];            // accumulated across pages so we can sort globally by closing time
+var pm_markets_all=[];            // accumulated across pages
+var pm_sort='expiration';         // node order: 'expiration' (ending soonest, default) · 'newest' · 'oldest'
 // betting_expiration → epoch seconds (0 = open-ended)
 function pm_close_ts(m){ let be=parseInt(new Date((''+m.betting_expiration)+'Z').getTime()/1000); return be||0; }
 // Sort key: UPCOMING soonest first, then already-closed (oldest-first), then open-ended last.
@@ -4017,7 +4020,10 @@ function pm_market_card_html(m){
 function pm_render_markets(){
 	let list=$('.view-pm .page-index .pm-markets-list');
 	let filter=(''+($('.view-pm .page-index input[name=pm-filter]').val()||'')).toLowerCase().trim();
-	let arr=pm_markets_all.slice().sort(function(x,y){ return pm_close_key(x)-pm_close_key(y); });
+	// Trust the node's order for newest/oldest; for 'expiration' re-sort client-side too — a safety net
+	// that keeps soonest-closing on top even on a node that predates the global expiration order.
+	let arr=pm_markets_all.slice();
+	if('expiration'==pm_sort){ arr.sort(function(x,y){ return pm_close_key(x)-pm_close_key(y); }); }
 	let data='';
 	for(let i=0;i<arr.length;i++){ let m=arr[i]; if(''!=filter && (''+(m.title||'')).toLowerCase().indexOf(filter)===-1){ continue; } data+=pm_market_card_html(m); }
 	list.html(data||('<p>'+ltmp_arr.default_no_items+'</p>'));
@@ -4033,9 +4039,9 @@ function load_pm_markets(reset){
 	tv.find('.table-footer').css('display','none');
 	let per_page=20;
 	let from=pm_markets_page*per_page;
-	// 'newest' — default 'oldest' returns legacy low-id placeholder markets (empty titles / far dates);
-	// newest are the freshly-seeded real markets carrying title/image/metadata + near-term expirations.
-	viz.api.listMarkets(1,from,per_page,true,'newest',function(err,markets){
+	// order = pm_sort. 'expiration' (default) = global soonest-closing feed (node by_betting_expiration);
+	// 'newest'/'oldest' by id. Legacy default 'oldest' surfaced empty-title placeholders — avoid it as default.
+	viz.api.listMarkets(1,from,per_page,true,pm_sort,function(err,markets){
 		tv.find('.table-header .loading').css('display','none');
 		if(err||!markets){ if(reset){ list.html('<p class="red">'+ltmp_arr.default_node_error+'</p>'); } if(err){console.log(err);} return; }
 		let seen={}; for(let i=0;i<pm_markets_all.length;i++){ seen[pm_markets_all[i].id]=1; }

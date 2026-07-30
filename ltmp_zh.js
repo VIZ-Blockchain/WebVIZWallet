@@ -1903,6 +1903,7 @@ var ltmp_zh_arr = {
 		<div class="page page-index">
 			<div class="card transparent">
 				<p><label class="input-descr"><span class="input-caption">筛选：</span><input type="text" name="pm-filter" class="simple-rounded wide" placeholder="按标题筛选"></label></p>
+				<p><label class="input-descr"><span class="input-caption">排序：</span><select name="pm-sort" class="simple-rounded wide"><option value="expiration">即将截止</option><option value="newest">最新优先</option><option value="oldest">最早优先</option></select></label></p>
 				<div class="table-view captions">
 					<div class="table-header">
 						<h3 class="captions">预测市场 <span class="loading">%%default_loading%%</span></h3>

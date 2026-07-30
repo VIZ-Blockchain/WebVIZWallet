@@ -1914,6 +1914,16 @@ var ltmp_en_arr={
 						<input type="text" name="pm-filter" class="simple-rounded wide" placeholder="Filter by title">
 					</label>
 				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Sort by:</span>
+						<select name="pm-sort" class="simple-rounded wide">
+							<option value="expiration">Ending soonest</option>
+							<option value="newest">Newest first</option>
+							<option value="oldest">Oldest first</option>
+						</select>
+					</label>
+				</p>
 				<div class="table-view captions">
 					<div class="table-header">
 						<h3 class="captions">Prediction markets <span class="loading">%%default_loading%%</span></h3>
