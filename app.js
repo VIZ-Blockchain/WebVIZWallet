@@ -3826,7 +3826,7 @@ function view_pm(path,params,title){
 	else{
 		$('.view-pm .page-index').css('display','block');
 		load_pm_markets(true);
-		$('.view-pm .page-index input[name=pm-filter]').off('input.pm').on('input.pm',function(){ load_pm_markets(true); });
+		$('.view-pm .page-index input[name=pm-filter]').off('input.pm').on('input.pm',function(){ pm_render_markets(); });
 		$('.view-pm .page-index .table-footer').off('click.pm').on('click.pm','.pm-load-more-action',function(){ pm_markets_page++; load_pm_markets(false); });
 	}
 }
@@ -3971,36 +3971,76 @@ function pm_market_status_label(m){
 	return (ltmp_arr.pm_status_closed||'Closed');
 }
 var pm_markets_page=0;
+var pm_markets_all=[];            // accumulated across pages so we can sort globally by closing time
+// betting_expiration → epoch seconds (0 = open-ended)
+function pm_close_ts(m){ let be=parseInt(new Date((''+m.betting_expiration)+'Z').getTime()/1000); return be||0; }
+// Sort key: UPCOMING soonest first, then already-closed (oldest-first), then open-ended last.
+// Owner wants "markets about to end" surfaced by default — the node has no global expiration sort,
+// so we pull newest (which are the freshly-seeded near-term markets, WITH metadata) and sort client-side.
+function pm_close_key(m){ let be=pm_close_ts(m); let now=parseInt(Date.now()/1000); if(be===0){ return 9e15; } if(be<=now){ return 8e15+be; } return be; }
+// Relative "closes in" — flags soon-ending markets so the card reads as urgent, not a far dead date.
+function pm_reltime(be){
+	let now=parseInt(Date.now()/1000), d=be-now;
+	if(be===0){ return {txt:(ltmp_arr.pm_open_ended||'open-ended'),soon:false}; }
+	if(d<=0){ return {txt:(ltmp_arr.pm_closed_lc||'closed'),soon:false}; }
+	if(d<3600){ return {txt:(ltmp_arr.pm_soon||'soon'),soon:true}; }
+	if(d<86400){ return {txt:ltmp(ltmp_arr.pm_in_hours||'in {n}h',{n:Math.round(d/3600)}),soon:true}; }
+	return {txt:ltmp(ltmp_arr.pm_in_days||'in {n}d',{n:Math.round(d/86400)}),soon:(d<3*86400)};
+}
+// Status word colour: active=green, awaiting/closed/resolved=grey (reuse existing .green/.grey text classes).
+function pm_status_class(m){ if(1==m.status){ let be=pm_close_ts(m); if(be>0 && be<parseInt(Date.now()/1000)){ return 'grey'; } return 'green'; } return 'grey'; }
+function pm_market_card_html(m){
+	let title=(''+(m.title||(m.metadata&&m.metadata.title)||'')).trim();
+	let card='<div class="columns-view"><div class="column column-1 shadow grid pm-market-card">';
+	if(m.image){ card+='<div class="center"><img style="max-height:70px" src="'+escape_html(''+m.image)+'" onerror="this.style.display=\'none\'"></div>'; }
+	card+='<div class="bold">'+(title!==''?escape_html(title):('#'+m.id))+'</div>';
+	card+='<div class="text-small grey">'+escape_html(''+(m.category||''))+' &middot; <span class="'+pm_status_class(m)+'">'+pm_market_status_label(m)+'</span></div>';
+	// current outcome split — binary: implied probability from CPMM reserves; multi: number of options
+	if(0==parseInt(m.market_type)){
+		let a=parseFloat(m.reserve_a)||0, b=parseFloat(m.reserve_b)||0, s=a+b;
+		let pY=s>0?Math.round(a/s*100):50, pN=100-pY;
+		card+='<div style="height:6px;border-radius:3px;overflow:hidden;background:#d94c4c;margin:5px 0"><div style="height:6px;width:'+pY+'%;background:#3a9d3a"></div></div>';
+		card+='<div class="text-small"><b>'+pY+'%</b> '+(ltmp_arr.pm_yes||'Yes')+' &middot; <b>'+pN+'%</b> '+(ltmp_arr.pm_no||'No')+'</div>';
+	}
+	else{
+		card+='<div class="text-small">'+ltmp((ltmp_arr.pm_options_n||'{n} options'),{n:parseInt(m.outcome_count)||0})+'</div>';
+	}
+	card+='<div class="text-small grey">'+(ltmp_arr.pm_volume||'Betting volume')+': '+pm_fmt_viz(m.bets_sum)+'</div>';
+	let rt=pm_reltime(pm_close_ts(m));
+	card+='<div class="text-small">'+(ltmp_arr.pm_closes||'Closes')+': <b class="'+(rt.soon?'green':'grey')+'">'+escape_html(rt.txt)+'</b> <span class="grey">('+show_date(m.betting_expiration,true)+ltmp_arr.default_date_utc+')</span></div>';
+	card+='<div class="wide-buttons captions"><a class="wide-button" data-href="/pm/market/'+m.id+'/">'+(ltmp_arr.pm_open||'Open')+'</a>';
+	if(m.url){ card+='<a class="wide-button" href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_source||'Source')+' &#8599;</a>'; }
+	card+='</div></div></div>';
+	return card;
+}
+// Render the accumulated markets, sorted soonest-closing first, applying the text filter.
+function pm_render_markets(){
+	let list=$('.view-pm .page-index .pm-markets-list');
+	let filter=(''+($('.view-pm .page-index input[name=pm-filter]').val()||'')).toLowerCase().trim();
+	let arr=pm_markets_all.slice().sort(function(x,y){ return pm_close_key(x)-pm_close_key(y); });
+	let data='';
+	for(let i=0;i<arr.length;i++){ let m=arr[i]; if(''!=filter && (''+(m.title||'')).toLowerCase().indexOf(filter)===-1){ continue; } data+=pm_market_card_html(m); }
+	list.html(data||('<p>'+ltmp_arr.default_no_items+'</p>'));
+}
 function load_pm_markets(reset){
 	reset=typeof reset==='undefined'?true:reset;
 	let list=$('.view-pm .page-index .pm-markets-list');
 	let tv=list.closest('.table-view');
 	//guard against double-loads while a page is in flight (mirrors load_history)
 	if('none'!=tv.find('.table-header .loading').css('display')){ return; }
-	if(reset){ pm_markets_page=0; list.html(''); }
+	if(reset){ pm_markets_page=0; pm_markets_all=[]; list.html(''); }
 	tv.find('.table-header .loading').css('display','inline-block');
 	tv.find('.table-footer').css('display','none');
 	let per_page=20;
 	let from=pm_markets_page*per_page;
-	viz.api.listMarkets(1,from,per_page,true,'',function(err,markets){
+	// 'newest' — default 'oldest' returns legacy low-id placeholder markets (empty titles / far dates);
+	// newest are the freshly-seeded real markets carrying title/image/metadata + near-term expirations.
+	viz.api.listMarkets(1,from,per_page,true,'newest',function(err,markets){
 		tv.find('.table-header .loading').css('display','none');
 		if(err||!markets){ if(reset){ list.html('<p class="red">'+ltmp_arr.default_node_error+'</p>'); } if(err){console.log(err);} return; }
-		let filter=(''+($('.view-pm .page-index input[name=pm-filter]').val()||'')).toLowerCase().trim();
-		let data='';
-		for(let i in markets){
-			let m=markets[i];
-			if(''!=filter && (''+m.title).toLowerCase().indexOf(filter)===-1){ continue; }
-			data+='<div class="columns-view"><div class="column column-1 shadow grid pm-market-card">';
-			if(m.image){ data+='<div class="center"><img style="max-height:80px" src="'+escape_html(''+m.image)+'" onerror="this.style.display=\'none\'"></div>'; }
-			data+='<div class="bold">'+escape_html(''+m.title)+'</div>';
-			data+='<div class="text-small grey">'+escape_html(''+(m.category||''))+' &middot; '+pm_market_status_label(m)+'</div>';
-			data+='<div class="text-small">'+(ltmp_arr.pm_betting_until||'Betting until')+': '+show_date(m.betting_expiration,true)+ltmp_arr.default_date_utc+'</div>';
-			data+='<div class="wide-buttons captions"><a class="wide-button" data-href="/pm/market/'+m.id+'/">'+(ltmp_arr.pm_open||'Open')+'</a>';
-			if(m.url){ data+='<a class="wide-button" href="'+escape_html(''+m.url)+'" target="_blank">'+(ltmp_arr.pm_source||'Source')+' &#8599;</a>'; }
-			data+='</div></div></div>';
-		}
-		if(reset){ list.html(data||('<p>'+ltmp_arr.default_no_items+'</p>')); }
-		else{ list.append(data); }
+		let seen={}; for(let i=0;i<pm_markets_all.length;i++){ seen[pm_markets_all[i].id]=1; }
+		for(let i in markets){ if(!seen[markets[i].id]){ pm_markets_all.push(markets[i]); } }
+		pm_render_markets();
 		tv.find('.table-footer').css('display',(markets.length>=per_page)?'':'none');
 	});
 }
