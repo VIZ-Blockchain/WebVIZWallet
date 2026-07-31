@@ -1128,8 +1128,7 @@ function setup_keys_backup(){
 	page.find('textarea[name=keys-export-out]').val('');
 	page.find('textarea[name=keys-import-in]').val('');
 	page.find('input[name=keys-export-all]').prop('checked',false);
-	page.find('input[name=keys-import-ignore]').prop('checked',true);
-	page.find('input[name=keys-import-overwrite]').prop('checked',false);
+	page.find('input[name=keys-import-dup][value=ignore]').prop('checked',true);
 	page.find('.keys-export-error,.keys-export-success,.keys-import-error,.keys-import-success').html('');
 	page.find('.icon-check').addClass('hidden');
 }
@@ -1164,7 +1163,7 @@ function keys_import_run(){
 	if(wallet_is_encrypted() && !keys_pass_ok(''+page.find('input[name=keys-import-pass]').val())){
 		page.find('.keys-import-error').html(ltmp_arr.keys_wrong_pass||'Wrong passphrase.'); return;
 	}
-	let overwrite=page.find('input[name=keys-import-overwrite]').prop('checked');
+	let overwrite='overwrite'==page.find('input[name=keys-import-dup]:checked').val();
 	let rows=(''+page.find('textarea[name=keys-import-in]').val()).split(/\r?\n/);
 	let added=0,over=0,skipped=0,invalid=0;
 	for(let i=0;i<rows.length;i++){

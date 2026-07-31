@@ -210,14 +210,14 @@ var ltmp_ru_arr={
 				</p>
 				<p class="red keys-export-error"></p>
 				<p class="green keys-export-success"></p>
-				<p><label class="input-descr"><span class="input-caption">Ключи (account:type:key):</span><textarea name="keys-export-out" class="simple-rounded" rows="8" autocomplete="off" spellcheck="false" readonly></textarea></label></p>
+				<p><label class="input-descr"><span class="input-caption">Ключи (account:type:key):</span><textarea name="keys-export-out" class="simple-rounded wide" wrap="off" rows="8" autocomplete="off" spellcheck="false" readonly></textarea></label></p>
 			</div>
 			<div class="card">
 				<h3>Импорт ключей</h3>
 				<p class="grey">Вставьте строки формата account:type:key (по одной на строку). Неверные строки пропускаются.</p>
-				<p><label class="input-descr"><span class="input-caption">Ключи (account:type:key):</span><textarea name="keys-import-in" class="simple-rounded" rows="8" autocomplete="off" spellcheck="false"></textarea></label></p>
-				<label class="check">Игнорировать дубликаты<input type="checkbox" name="keys-import-ignore" checked="checked"><span class="mark"></span></label>
-				<label class="check">Перезаписать дубликаты<input type="checkbox" name="keys-import-overwrite"><span class="mark"></span></label>
+				<p><label class="input-descr"><span class="input-caption">Ключи (account:type:key):</span><textarea name="keys-import-in" class="simple-rounded wide" wrap="off" rows="8" autocomplete="off" spellcheck="false"></textarea></label></p>
+				<p><label class="radio">Игнорировать дубликаты<input type="radio" name="keys-import-dup" value="ignore" checked><span class="mark"></span></label></p>
+				<p><label class="radio">Перезаписать дубликаты<input type="radio" name="keys-import-dup" value="overwrite"><span class="mark"></span></label></p>
 				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">Парольная фраза (шифрование включено):</span><input type="password" name="keys-import-pass" class="simple-rounded" autocomplete="off"></label></p>
 				<p>
 					<input class="keys-import-action blue-button captions" type="button" value="Импортировать">

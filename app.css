@@ -1342,7 +1342,7 @@ a.submit-button:hover{
 	cursor:pointer;
 	width:28px;
 }
-input.simple-rounded,select.simple-rounded{
+input.simple-rounded,select.simple-rounded,textarea.simple-rounded{
 	padding:8px 16px;
 	margin:8px;
 	margin-left:0;
@@ -2442,7 +2442,7 @@ input.simple-inline.red{
 	input.orange-button{
 		font-size:18px;
 	}
-	input.simple-rounded,select.simple-rounded{
+	input.simple-rounded,select.simple-rounded,textarea.simple-rounded{
 		padding:6px 12px;
 		font-size:14px;
 		border-radius:12px;

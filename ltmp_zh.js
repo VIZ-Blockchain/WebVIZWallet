@@ -211,14 +211,14 @@ var ltmp_zh_arr = {
 				</p>
 				<p class="red keys-export-error"></p>
 				<p class="green keys-export-success"></p>
-				<p><label class="input-descr"><span class="input-caption">密钥 (account:type:key)：</span><textarea name="keys-export-out" class="simple-rounded" rows="8" autocomplete="off" spellcheck="false" readonly></textarea></label></p>
+				<p><label class="input-descr"><span class="input-caption">密钥 (account:type:key)：</span><textarea name="keys-export-out" class="simple-rounded wide" wrap="off" rows="8" autocomplete="off" spellcheck="false" readonly></textarea></label></p>
 			</div>
 			<div class="card">
 				<h3>导入密钥</h3>
 				<p class="grey">粘贴 account:type:key 行（每行一个）。无效行将被跳过。</p>
-				<p><label class="input-descr"><span class="input-caption">密钥 (account:type:key)：</span><textarea name="keys-import-in" class="simple-rounded" rows="8" autocomplete="off" spellcheck="false"></textarea></label></p>
-				<label class="check">忽略重复项<input type="checkbox" name="keys-import-ignore" checked="checked"><span class="mark"></span></label>
-				<label class="check">覆盖重复项<input type="checkbox" name="keys-import-overwrite"><span class="mark"></span></label>
+				<p><label class="input-descr"><span class="input-caption">密钥 (account:type:key)：</span><textarea name="keys-import-in" class="simple-rounded wide" wrap="off" rows="8" autocomplete="off" spellcheck="false"></textarea></label></p>
+				<p><label class="radio">忽略重复项<input type="radio" name="keys-import-dup" value="ignore" checked><span class="mark"></span></label></p>
+				<p><label class="radio">覆盖重复项<input type="radio" name="keys-import-dup" value="overwrite"><span class="mark"></span></label></p>
 				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">口令（已开启加密）：</span><input type="password" name="keys-import-pass" class="simple-rounded" autocomplete="off"></label></p>
 				<p>
 					<input class="keys-import-action blue-button captions" type="button" value="导入">

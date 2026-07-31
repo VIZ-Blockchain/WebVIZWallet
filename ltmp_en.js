@@ -210,14 +210,14 @@ var ltmp_en_arr={
 				</p>
 				<p class="red keys-export-error"></p>
 				<p class="green keys-export-success"></p>
-				<p><label class="input-descr"><span class="input-caption">Keys (account:type:key):</span><textarea name="keys-export-out" class="simple-rounded" rows="8" autocomplete="off" spellcheck="false" readonly></textarea></label></p>
+				<p><label class="input-descr"><span class="input-caption">Keys (account:type:key):</span><textarea name="keys-export-out" class="simple-rounded wide" wrap="off" rows="8" autocomplete="off" spellcheck="false" readonly></textarea></label></p>
 			</div>
 			<div class="card">
 				<h3>Import keys</h3>
 				<p class="grey">Paste account:type:key lines (one per line). Invalid lines are skipped.</p>
-				<p><label class="input-descr"><span class="input-caption">Keys (account:type:key):</span><textarea name="keys-import-in" class="simple-rounded" rows="8" autocomplete="off" spellcheck="false"></textarea></label></p>
-				<label class="check">Ignore duplicates<input type="checkbox" name="keys-import-ignore" checked="checked"><span class="mark"></span></label>
-				<label class="check">Overwrite duplicates<input type="checkbox" name="keys-import-overwrite"><span class="mark"></span></label>
+				<p><label class="input-descr"><span class="input-caption">Keys (account:type:key):</span><textarea name="keys-import-in" class="simple-rounded wide" wrap="off" rows="8" autocomplete="off" spellcheck="false"></textarea></label></p>
+				<p><label class="radio">Ignore duplicates<input type="radio" name="keys-import-dup" value="ignore" checked><span class="mark"></span></label></p>
+				<p><label class="radio">Overwrite duplicates<input type="radio" name="keys-import-dup" value="overwrite"><span class="mark"></span></label></p>
 				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">Passphrase (encryption is on):</span><input type="password" name="keys-import-pass" class="simple-rounded" autocomplete="off"></label></p>
 				<p>
 					<input class="keys-import-action blue-button captions" type="button" value="Import">
