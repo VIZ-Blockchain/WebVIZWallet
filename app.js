@@ -1128,6 +1128,7 @@ function setup_keys_backup(){
 	page.find('textarea[name=keys-export-out]').val('');
 	page.find('textarea[name=keys-import-in]').val('');
 	page.find('input[name=keys-export-all]').prop('checked',false);
+	page.find('input[name=keys-export-file]').prop('checked',false);
 	page.find('input[name=keys-import-dup][value=ignore]').prop('checked',true);
 	page.find('.keys-export-error,.keys-export-success,.keys-import-error,.keys-import-success').html('');
 	page.find('.icon-check').addClass('hidden');
@@ -1156,6 +1157,11 @@ function keys_export_run(){
 	if(!lines.length){ page.find('.keys-export-error').html(ltmp_arr.keys_export_empty||'Nothing to export.'); return; }
 	page.find('textarea[name=keys-export-out]').val(lines.join('\n'));
 	page.find('.keys-export-success').html((ltmp_arr.keys_export_done||'Exported keys:')+' '+lines.length);
+	if(page.find('input[name=keys-export-file]').prop('checked')){
+		let d=new Date();
+		let ymd=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+		download('viz export accounts '+ymd+'.txt',lines.join('\n'));
+	}
 }
 function keys_import_run(){
 	let page=$('.view-settings .page-keys');

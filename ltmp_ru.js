@@ -202,6 +202,7 @@ var ltmp_ru_arr={
 				<h3>Экспорт ключей</h3>
 				<p class="grey">Резервная копия в читаемом виде — по строке на ключ, формат account:type:key (типы: active, regular, memo). Любой, у кого есть эти ключи, управляет аккаунтами — храните копию в надёжном месте.</p>
 				<label class="check">Все подключённые аккаунты (иначе только активный)<input type="checkbox" name="keys-export-all"><span class="mark"></span></label>
+				<label class="check">Скачать файлом<input type="checkbox" name="keys-export-file"><span class="mark"></span></label>
 				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">Парольная фраза (шифрование включено):</span><input type="password" name="keys-export-pass" class="simple-rounded" autocomplete="off"></label></p>
 				<p>
 					<input class="keys-export-action blue-button captions" type="button" value="Экспортировать">

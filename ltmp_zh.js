@@ -203,6 +203,7 @@ var ltmp_zh_arr = {
 				<h3>导出密钥</h3>
 				<p class="grey">可读格式的备份 — 每行一个密钥，格式 account:type:key（类型：active、regular、memo）。任何持有这些密钥的人都能控制账户 — 请妥善保管备份。</p>
 				<label class="check">所有已连接的账户（否则仅当前账户）<input type="checkbox" name="keys-export-all"><span class="mark"></span></label>
+				<label class="check">下载为文件<input type="checkbox" name="keys-export-file"><span class="mark"></span></label>
 				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">口令（已开启加密）：</span><input type="password" name="keys-export-pass" class="simple-rounded" autocomplete="off"></label></p>
 				<p>
 					<input class="keys-export-action blue-button captions" type="button" value="导出">

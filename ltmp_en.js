@@ -202,6 +202,7 @@ var ltmp_en_arr={
 				<h3>Export keys</h3>
 				<p class="grey">Human-readable backup — one key per line, format account:type:key (types: active, regular, memo). Anyone holding these keys controls the accounts — keep the copy in a safe place.</p>
 				<label class="check">All connected accounts (otherwise only the active one)<input type="checkbox" name="keys-export-all"><span class="mark"></span></label>
+				<label class="check">Download as file<input type="checkbox" name="keys-export-file"><span class="mark"></span></label>
 				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">Passphrase (encryption is on):</span><input type="password" name="keys-export-pass" class="simple-rounded" autocomplete="off"></label></p>
 				<p>
 					<input class="keys-export-action blue-button captions" type="button" value="Export">
