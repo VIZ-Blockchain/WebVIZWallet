@@ -149,6 +149,7 @@ var ltmp_zh_arr = {
 							<a class="wide-button" data-href="/settings/reset-access/">重置密钥</a>
 							<a class="wide-button" data-href="/settings/access/">管理访问权限</a>
 								<a class="wide-button" data-href="/settings/security/">加密</a>
+								<a class="wide-button" data-href="/settings/keys/">导出/导入密钥</a>
 						</div>
 					</div>
 				</div>
@@ -194,6 +195,38 @@ var ltmp_zh_arr = {
 					</p>
 				</div>
 				<p class="green enc-note"></p>
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-keys" data-title="导出/导入密钥">
+			<div class="card">
+				<h3>导出密钥</h3>
+				<p class="grey">可读格式的备份 — 每行一个密钥，格式 account:type:key（类型：active、regular、memo）。任何持有这些密钥的人都能控制账户 — 请妥善保管备份。</p>
+				<label class="check">所有已连接的账户（否则仅当前账户）<input type="checkbox" name="keys-export-all"><span class="mark"></span></label>
+				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">口令（已开启加密）：</span><input type="password" name="keys-export-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p>
+					<input class="keys-export-action blue-button captions" type="button" value="导出">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<p class="red keys-export-error"></p>
+				<p class="green keys-export-success"></p>
+				<p><label class="input-descr"><span class="input-caption">密钥 (account:type:key)：</span><textarea name="keys-export-out" class="simple-rounded" rows="8" autocomplete="off" spellcheck="false" readonly></textarea></label></p>
+			</div>
+			<div class="card">
+				<h3>导入密钥</h3>
+				<p class="grey">粘贴 account:type:key 行（每行一个）。无效行将被跳过。</p>
+				<p><label class="input-descr"><span class="input-caption">密钥 (account:type:key)：</span><textarea name="keys-import-in" class="simple-rounded" rows="8" autocomplete="off" spellcheck="false"></textarea></label></p>
+				<label class="check">忽略重复项<input type="checkbox" name="keys-import-ignore" checked="checked"><span class="mark"></span></label>
+				<label class="check">覆盖重复项<input type="checkbox" name="keys-import-overwrite"><span class="mark"></span></label>
+				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">口令（已开启加密）：</span><input type="password" name="keys-import-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p>
+					<input class="keys-import-action blue-button captions" type="button" value="导入">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<p class="red keys-import-error"></p>
+				<p class="green keys-import-success"></p>
 				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -1894,6 +1927,13 @@ var ltmp_zh_arr = {
 	enc_pass_current:'当前口令',
 	enc_pass_new:'新口令',
 	enc_pass_changed:'口令已更改。',
+	keys_wrong_pass:'口令错误。',
+	keys_export_empty:'没有可导出的内容。',
+	keys_export_done:'已导出密钥：',
+	keys_import_added:'已添加',
+	keys_import_over:'已覆盖',
+	keys_import_skipped:'已跳过',
+	keys_import_invalid:'无效',
 	enc_unlock_title:'钱包已加密',
 	enc_unlock_hint:'请输入口令以解锁您的账户。',
 	enc_unlock:'解锁',

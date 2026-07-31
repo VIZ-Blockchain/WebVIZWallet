@@ -1112,6 +1112,85 @@ function wallet_change_pass(){
 	}).catch(function(e){ page.find('.encc-error').html(ltmp_arr.enc_wrong||'Wrong passphrase.'); });
 }
 
+// ── Settings → Export / Import keys ─────────────────────────────────────────
+// Human-readable backup as `account:type:key` lines (type ∈ active|regular|memo — everything the
+// wallet stores per account, memo included). Export all connected accounts (checkbox) or just the
+// active one. Import merges into `users`: a duplicate (same account+type, different key) is skipped
+// unless "overwrite duplicates" is checked. When the wallet is encrypted, both operations require
+// re-entering the passphrase to confirm (verified against the in-memory session passphrase).
+var KEYS_BACKUP_TYPES=['active','regular','memo'];
+function keys_type_field(t){ return t+'_key'; }
+function setup_keys_backup(){
+	let page=$('.view-settings .page-keys'); if(!page.length){ return; }
+	let enc=wallet_is_encrypted();
+	page.find('.keys-enc-row').css('display',enc?'block':'none');
+	page.find('input[name=keys-export-pass],input[name=keys-import-pass]').val('');
+	page.find('textarea[name=keys-export-out]').val('');
+	page.find('textarea[name=keys-import-in]').val('');
+	page.find('input[name=keys-export-all]').prop('checked',false);
+	page.find('input[name=keys-import-ignore]').prop('checked',true);
+	page.find('input[name=keys-import-overwrite]').prop('checked',false);
+	page.find('.keys-export-error,.keys-export-success,.keys-import-error,.keys-import-success').html('');
+	page.find('.icon-check').addClass('hidden');
+}
+// passphrase gate: when encrypted, the entered phrase must match the unlocked session passphrase
+function keys_pass_ok(entered){
+	if(!wallet_is_encrypted()){ return true; }
+	return (null!=wallet_pass && ''+entered===''+wallet_pass);
+}
+function keys_export_run(){
+	let page=$('.view-settings .page-keys');
+	page.find('.keys-export-error').html(''); page.find('.keys-export-success').html('');
+	if(wallet_is_encrypted() && !keys_pass_ok(''+page.find('input[name=keys-export-pass]').val())){
+		page.find('.keys-export-error').html(ltmp_arr.keys_wrong_pass||'Wrong passphrase.'); return;
+	}
+	let all=page.find('input[name=keys-export-all]').prop('checked');
+	let logins=all?Object.keys(users):(current_user?[current_user]:[]);
+	let lines=[];
+	for(let li=0;li<logins.length;li++){
+		let login=logins[li], u=users[login]; if(!u){ continue; }
+		for(let ti=0;ti<KEYS_BACKUP_TYPES.length;ti++){
+			let t=KEYS_BACKUP_TYPES[ti], wif=u[keys_type_field(t)];
+			if(wif){ lines.push(login+':'+t+':'+wif); }
+		}
+	}
+	if(!lines.length){ page.find('.keys-export-error').html(ltmp_arr.keys_export_empty||'Nothing to export.'); return; }
+	page.find('textarea[name=keys-export-out]').val(lines.join('\n'));
+	page.find('.keys-export-success').html((ltmp_arr.keys_export_done||'Exported keys:')+' '+lines.length);
+}
+function keys_import_run(){
+	let page=$('.view-settings .page-keys');
+	page.find('.keys-import-error').html(''); page.find('.keys-import-success').html('');
+	if(wallet_is_encrypted() && !keys_pass_ok(''+page.find('input[name=keys-import-pass]').val())){
+		page.find('.keys-import-error').html(ltmp_arr.keys_wrong_pass||'Wrong passphrase.'); return;
+	}
+	let overwrite=page.find('input[name=keys-import-overwrite]').prop('checked');
+	let rows=(''+page.find('textarea[name=keys-import-in]').val()).split(/\r?\n/);
+	let added=0,over=0,skipped=0,invalid=0;
+	for(let i=0;i<rows.length;i++){
+		let line=rows[i].trim(); if(''==line){ continue; }
+		let parts=line.split(':');
+		if(parts.length<3){ invalid++; continue; }
+		let login=parts[0].toLowerCase().trim();
+		let type=parts[1].toLowerCase().trim();
+		let wif=parts.slice(2).join(':').trim();   // WIFs carry no ':' but stay robust
+		if(''==login || KEYS_BACKUP_TYPES.indexOf(type)<0 || !viz.auth.isWif(wif)){ invalid++; continue; }
+		let field=keys_type_field(type);
+		if(typeof users[login]==='undefined'){ users[login]={}; }
+		if(users[login][field]===wif){ skipped++; }                 // identical → no-op
+		else if(users[login][field]){                               // duplicate, different key
+			if(overwrite){ users[login][field]=wif; over++; } else { skipped++; }
+		}
+		else{ users[login][field]=wif; added++; }                   // new
+		if(''==current_user && 'active'==type){ current_user=login; }
+	}
+	if(added||over){ save_session(); }
+	let msg=(ltmp_arr.keys_import_added||'Added')+': '+added+', '+(ltmp_arr.keys_import_over||'overwritten')+': '+over+', '+(ltmp_arr.keys_import_skipped||'skipped')+': '+skipped;
+	if(invalid){ msg+=', '+(ltmp_arr.keys_import_invalid||'invalid')+': '+invalid; }
+	page.find('.keys-import-success').html(msg);
+	page.find('textarea[name=keys-import-in]').val('');
+}
+
 /* ── Settings → NS records (VIZ DNS): A records + SSL hash + TTL in account json_metadata ──
  * Same mechanism as save_profile: account_metadata op (active key satisfies regular auth); other
  * metadata (profile, …) preserved. Spec: viz-js-lib .qoder/docs/spec/viz-dns-nameserver-spec.md. */
@@ -2825,6 +2904,7 @@ function view_settings(path,params,title){
 				}
 
 				if('security'==path[2]){ setup_wallet_security(); }
+				if('keys'==path[2]){ setup_keys_backup(); }
 				if('ns'==path[2]){ setup_ns(); }
 					if('profile'==path[2]){
 					$('.page-profile input[name=manage-profile-nickname]').val('');
@@ -8362,6 +8442,8 @@ function app_mouse(e){
 	if($(target).hasClass('enc-enable-action')){ wallet_enable_encryption(); }
 	if($(target).hasClass('enc-change-action')){ wallet_change_pass(); }
 	if($(target).hasClass('enc-disable-action')){ wallet_disable_encryption(); }
+	if($(target).hasClass('keys-export-action')){ keys_export_run(); }
+	if($(target).hasClass('keys-import-action')){ keys_import_run(); }
 	if($(target).hasClass('ns-add-a')){ ns_add_a_row(''); }
 	if($(target).hasClass('ns-a-del')){ $(target).closest('.ns-a-row').remove(); }
 	if($(target).hasClass('ns-save-action')){ save_ns(); }

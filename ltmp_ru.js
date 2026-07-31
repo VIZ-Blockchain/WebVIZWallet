@@ -148,6 +148,7 @@ var ltmp_ru_arr={
 							<a class="wide-button" data-href="/settings/reset-access/">Сброс ключей</a>
 							<a class="wide-button" data-href="/settings/access/">Управление доступами</a>
 								<a class="wide-button" data-href="/settings/security/">Шифрование</a>
+								<a class="wide-button" data-href="/settings/keys/">Экспорт/импорт ключей</a>
 						</div>
 					</div>
 				</div>
@@ -193,6 +194,38 @@ var ltmp_ru_arr={
 					</p>
 				</div>
 				<p class="green enc-note"></p>
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-keys" data-title="Экспорт/импорт ключей">
+			<div class="card">
+				<h3>Экспорт ключей</h3>
+				<p class="grey">Резервная копия в читаемом виде — по строке на ключ, формат account:type:key (типы: active, regular, memo). Любой, у кого есть эти ключи, управляет аккаунтами — храните копию в надёжном месте.</p>
+				<label class="check">Все подключённые аккаунты (иначе только активный)<input type="checkbox" name="keys-export-all"><span class="mark"></span></label>
+				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">Парольная фраза (шифрование включено):</span><input type="password" name="keys-export-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p>
+					<input class="keys-export-action blue-button captions" type="button" value="Экспортировать">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<p class="red keys-export-error"></p>
+				<p class="green keys-export-success"></p>
+				<p><label class="input-descr"><span class="input-caption">Ключи (account:type:key):</span><textarea name="keys-export-out" class="simple-rounded" rows="8" autocomplete="off" spellcheck="false" readonly></textarea></label></p>
+			</div>
+			<div class="card">
+				<h3>Импорт ключей</h3>
+				<p class="grey">Вставьте строки формата account:type:key (по одной на строку). Неверные строки пропускаются.</p>
+				<p><label class="input-descr"><span class="input-caption">Ключи (account:type:key):</span><textarea name="keys-import-in" class="simple-rounded" rows="8" autocomplete="off" spellcheck="false"></textarea></label></p>
+				<label class="check">Игнорировать дубликаты<input type="checkbox" name="keys-import-ignore" checked="checked"><span class="mark"></span></label>
+				<label class="check">Перезаписать дубликаты<input type="checkbox" name="keys-import-overwrite"><span class="mark"></span></label>
+				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">Парольная фраза (шифрование включено):</span><input type="password" name="keys-import-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p>
+					<input class="keys-import-action blue-button captions" type="button" value="Импортировать">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<p class="red keys-import-error"></p>
+				<p class="green keys-import-success"></p>
 				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -1894,6 +1927,13 @@ var ltmp_ru_arr={
 	enc_pass_current:'Текущий пароль',
 	enc_pass_new:'Новый пароль',
 	enc_pass_changed:'Пароль изменён.',
+	keys_wrong_pass:'Неверная парольная фраза.',
+	keys_export_empty:'Нечего экспортировать.',
+	keys_export_done:'Экспортировано ключей:',
+	keys_import_added:'Добавлено',
+	keys_import_over:'перезаписано',
+	keys_import_skipped:'пропущено',
+	keys_import_invalid:'неверных',
 	enc_unlock_title:'Кошелёк зашифрован',
 	enc_unlock_hint:'Введите пароль, чтобы разблокировать аккаунты.',
 	enc_unlock:'Разблокировать',

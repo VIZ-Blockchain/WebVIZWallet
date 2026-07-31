@@ -148,6 +148,7 @@ var ltmp_en_arr={
 							<a class="wide-button" data-href="/settings/reset-access/">Reset keys</a>
 							<a class="wide-button" data-href="/settings/access/">Manage access</a>
 								<a class="wide-button" data-href="/settings/security/">Encryption</a>
+								<a class="wide-button" data-href="/settings/keys/">Export/import keys</a>
 						</div>
 					</div>
 				</div>
@@ -193,6 +194,38 @@ var ltmp_en_arr={
 					</p>
 				</div>
 				<p class="green enc-note"></p>
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-keys" data-title="Export/import keys">
+			<div class="card">
+				<h3>Export keys</h3>
+				<p class="grey">Human-readable backup — one key per line, format account:type:key (types: active, regular, memo). Anyone holding these keys controls the accounts — keep the copy in a safe place.</p>
+				<label class="check">All connected accounts (otherwise only the active one)<input type="checkbox" name="keys-export-all"><span class="mark"></span></label>
+				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">Passphrase (encryption is on):</span><input type="password" name="keys-export-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p>
+					<input class="keys-export-action blue-button captions" type="button" value="Export">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<p class="red keys-export-error"></p>
+				<p class="green keys-export-success"></p>
+				<p><label class="input-descr"><span class="input-caption">Keys (account:type:key):</span><textarea name="keys-export-out" class="simple-rounded" rows="8" autocomplete="off" spellcheck="false" readonly></textarea></label></p>
+			</div>
+			<div class="card">
+				<h3>Import keys</h3>
+				<p class="grey">Paste account:type:key lines (one per line). Invalid lines are skipped.</p>
+				<p><label class="input-descr"><span class="input-caption">Keys (account:type:key):</span><textarea name="keys-import-in" class="simple-rounded" rows="8" autocomplete="off" spellcheck="false"></textarea></label></p>
+				<label class="check">Ignore duplicates<input type="checkbox" name="keys-import-ignore" checked="checked"><span class="mark"></span></label>
+				<label class="check">Overwrite duplicates<input type="checkbox" name="keys-import-overwrite"><span class="mark"></span></label>
+				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">Passphrase (encryption is on):</span><input type="password" name="keys-import-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p>
+					<input class="keys-import-action blue-button captions" type="button" value="Import">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<p class="red keys-import-error"></p>
+				<p class="green keys-import-success"></p>
 				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -1900,6 +1933,13 @@ var ltmp_en_arr={
 	enc_pass_current:'Current passphrase',
 	enc_pass_new:'New passphrase',
 	enc_pass_changed:'Passphrase changed.',
+	keys_wrong_pass:'Wrong passphrase.',
+	keys_export_empty:'Nothing to export.',
+	keys_export_done:'Exported keys:',
+	keys_import_added:'Added',
+	keys_import_over:'overwritten',
+	keys_import_skipped:'skipped',
+	keys_import_invalid:'invalid',
 	enc_unlock_title:'Wallet is encrypted',
 	enc_unlock_hint:'Enter your passphrase to unlock your accounts.',
 	enc_unlock:'Unlock',
