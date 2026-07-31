@@ -4025,7 +4025,10 @@ function pm_render_markets(){
 	let arr=pm_markets_all.slice();
 	if('expiration'==pm_sort){ arr.sort(function(x,y){ return pm_close_key(x)-pm_close_key(y); }); }
 	let data='';
-	for(let i=0;i<arr.length;i++){ let m=arr[i]; if(''!=filter && (''+(m.title||'')).toLowerCase().indexOf(filter)===-1){ continue; } data+=pm_market_card_html(m); }
+	for(let i=0;i<arr.length;i++){ let m=arr[i];
+		if(!(''+(m.title||(m.metadata&&m.metadata.title)||'')).trim()){ continue; } // skip metadata-lost markets (no title/question)
+		if(''!=filter && (''+(m.title||'')).toLowerCase().indexOf(filter)===-1){ continue; }
+		data+=pm_market_card_html(m); }
 	list.html(data||('<p>'+ltmp_arr.default_no_items+'</p>'));
 }
 function load_pm_markets(reset){
