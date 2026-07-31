@@ -1025,7 +1025,7 @@ function wallet_unlock_overlay(onSuccess){
 	ov.find('.wallet-unlock-go').on('click',doUnlock);
 	ov.find('input[name=wallet-unlock-pass]').on('keydown',function(e){ if('Enter'==e.key){ doUnlock(); } });
 	if(pk){
-		ov.find('.wallet-unlock-pk').on('click',function(){
+		let doPk=function(){
 			ov.find('.wallet-unlock-pk-error').html('');
 			let cfg=passkey_config();
 			passkey_get_prf(cfg.credId,cfg.salt).then(function(prf){
@@ -1038,7 +1038,11 @@ function wallet_unlock_overlay(onSuccess){
 					users=obj; wallet_pass=pass; ov.remove(); wallet_after_unlock(); onSuccess();
 				});
 			}).catch(function(e){ ov.find('.wallet-unlock-pk-error').html(ltmp_arr.pk_unlock_fail||'Fingerprint unlock failed. Use your passphrase.'); console.log(e); });
-		});
+		};
+		ov.find('.wallet-unlock-pk').on('click',doPk);
+		// auto-invoke biometric when a passkey is saved (owner q#293=B). If the browser blocks it
+		// without a user gesture or the user cancels, the button + passphrase fallback stay usable.
+		setTimeout(doPk,300);
 	}
 	ov.find('.wallet-unlock-forget').on('click',function(){
 		if(confirm(ltmp_arr.enc_forget_confirm||'Erase the encrypted wallet from this device? Accounts without a backup will be lost.')){
@@ -1048,7 +1052,7 @@ function wallet_unlock_overlay(onSuccess){
 			ov.remove(); onSuccess();
 		}
 	});
-	setTimeout(function(){ ov.find('input[name=wallet-unlock-pass]').focus(); },50);
+	setTimeout(function(){ if(!pk){ ov.find('input[name=wallet-unlock-pass]').focus(); } },50);
 }
 
 // Settings → Encryption page: toggle enable/manage sections and clear inputs on entry.
