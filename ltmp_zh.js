@@ -222,6 +222,7 @@ var ltmp_zh_arr = {
 				<label class="check">所有已连接的账户（否则仅当前账户）<input type="checkbox" name="keys-export-all"><span class="mark"></span></label>
 				<label class="check">下载为文件<input type="checkbox" name="keys-export-file"><span class="mark"></span></label>
 				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">口令（已开启加密）：</span><input type="password" name="keys-export-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p class="keys-bio-row"><input class="keys-export-bio-action blue-button captions" type="button" value="👆 用指纹确认"></p>
 				<p>
 					<input class="keys-export-action blue-button captions" type="button" value="导出">
 					<span class="submit-button-ring"></span>
@@ -238,6 +239,7 @@ var ltmp_zh_arr = {
 				<p><label class="radio">忽略重复项<input type="radio" name="keys-import-dup" value="ignore" checked><span class="mark"></span></label></p>
 				<p><label class="radio">覆盖重复项<input type="radio" name="keys-import-dup" value="overwrite"><span class="mark"></span></label></p>
 				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">口令（已开启加密）：</span><input type="password" name="keys-import-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p class="keys-bio-row"><input class="keys-import-bio-action blue-button captions" type="button" value="👆 用指纹确认"></p>
 				<p>
 					<input class="keys-import-action blue-button captions" type="button" value="导入">
 					<span class="submit-button-ring"></span>

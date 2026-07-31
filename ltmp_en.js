@@ -221,6 +221,7 @@ var ltmp_en_arr={
 				<label class="check">All connected accounts (otherwise only the active one)<input type="checkbox" name="keys-export-all"><span class="mark"></span></label>
 				<label class="check">Download as file<input type="checkbox" name="keys-export-file"><span class="mark"></span></label>
 				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">Passphrase (encryption is on):</span><input type="password" name="keys-export-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p class="keys-bio-row"><input class="keys-export-bio-action blue-button captions" type="button" value="👆 Confirm with fingerprint"></p>
 				<p>
 					<input class="keys-export-action blue-button captions" type="button" value="Export">
 					<span class="submit-button-ring"></span>
@@ -237,6 +238,7 @@ var ltmp_en_arr={
 				<p><label class="radio">Ignore duplicates<input type="radio" name="keys-import-dup" value="ignore" checked><span class="mark"></span></label></p>
 				<p><label class="radio">Overwrite duplicates<input type="radio" name="keys-import-dup" value="overwrite"><span class="mark"></span></label></p>
 				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">Passphrase (encryption is on):</span><input type="password" name="keys-import-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p class="keys-bio-row"><input class="keys-import-bio-action blue-button captions" type="button" value="👆 Confirm with fingerprint"></p>
 				<p>
 					<input class="keys-import-action blue-button captions" type="button" value="Import">
 					<span class="submit-button-ring"></span>

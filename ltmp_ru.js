@@ -221,6 +221,7 @@ var ltmp_ru_arr={
 				<label class="check">Все подключённые аккаунты (иначе только активный)<input type="checkbox" name="keys-export-all"><span class="mark"></span></label>
 				<label class="check">Скачать файлом<input type="checkbox" name="keys-export-file"><span class="mark"></span></label>
 				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">Парольная фраза (шифрование включено):</span><input type="password" name="keys-export-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p class="keys-bio-row"><input class="keys-export-bio-action blue-button captions" type="button" value="👆 Подтвердить отпечатком"></p>
 				<p>
 					<input class="keys-export-action blue-button captions" type="button" value="Экспортировать">
 					<span class="submit-button-ring"></span>
@@ -237,6 +238,7 @@ var ltmp_ru_arr={
 				<p><label class="radio">Игнорировать дубликаты<input type="radio" name="keys-import-dup" value="ignore" checked><span class="mark"></span></label></p>
 				<p><label class="radio">Перезаписать дубликаты<input type="radio" name="keys-import-dup" value="overwrite"><span class="mark"></span></label></p>
 				<p class="keys-enc-row"><label class="input-descr"><span class="input-caption">Парольная фраза (шифрование включено):</span><input type="password" name="keys-import-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p class="keys-bio-row"><input class="keys-import-bio-action blue-button captions" type="button" value="👆 Подтвердить отпечатком"></p>
 				<p>
 					<input class="keys-import-action blue-button captions" type="button" value="Импортировать">
 					<span class="submit-button-ring"></span>
