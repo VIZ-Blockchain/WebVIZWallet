@@ -184,6 +184,23 @@ var ltmp_zh_arr = {
 						<span class="submit-button-ring"></span>
 						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 					</p>
+					<div class="passkey-box">
+						<h3>指纹解锁（passkey）</h3>
+						<p class="grey">通过设备 passkey（指纹 / Face ID，WebAuthn）额外解锁。口令仍是主密钥和后备方式 — 若生物识别不可用，可用口令解锁。仅在网站的 HTTPS 版本可用，离线文件中不可用。</p>
+						<div class="passkey-enable">
+							<p>
+								<input class="pk-enable-action blue-button captions" type="button" value="启用指纹解锁">
+								<span class="submit-button-ring"></span>
+								<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+							</p>
+						</div>
+						<div class="passkey-manage">
+							<p class="green">指纹解锁已启用。</p>
+							<p><input class="pk-disable-action blue-button captions" type="button" value="禁用指纹解锁"></p>
+						</div>
+						<p class="red pk-error"></p>
+						<p class="green pk-note"></p>
+					</div>
 					<h3>关闭加密</h3>
 					<p><label class="input-descr"><span class="input-caption">口令：</span><input type="password" name="encd-cur" class="simple-rounded" autocomplete="off"></label></p>
 					<p class="red encd-error"></p>
@@ -1935,6 +1952,15 @@ var ltmp_zh_arr = {
 	keys_import_over:'已覆盖',
 	keys_import_skipped:'已跳过',
 	keys_import_invalid:'无效',
+	pk_unlock:'用指纹解锁',
+	pk_or_pass:'或输入口令：',
+	pk_unlock_fail:'指纹解锁失败。请使用口令。',
+	pk_unsupported:'此设备/浏览器不支持 passkey。',
+	pk_need_enc:'请先启用加密并解锁钱包。',
+	pk_enabled:'指纹解锁已启用。',
+	pk_disabled:'指纹解锁已禁用。',
+	pk_fail:'passkey 设置失败',
+	pk_reenable:'请重新启用指纹解锁。',
 	enc_unlock_title:'钱包已加密',
 	enc_unlock_hint:'请输入口令以解锁您的账户。',
 	enc_unlock:'解锁',

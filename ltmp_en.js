@@ -183,6 +183,23 @@ var ltmp_en_arr={
 						<span class="submit-button-ring"></span>
 						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 					</p>
+					<div class="passkey-box">
+						<h3>Fingerprint unlock (passkey)</h3>
+						<p class="grey">Additional unlock via your device passkey (fingerprint / Face ID, WebAuthn). The passphrase stays the primary key and fallback — if biometrics are unavailable, unlock with the passphrase. Works only on the HTTPS version of the site, not in the offline file.</p>
+						<div class="passkey-enable">
+							<p>
+								<input class="pk-enable-action blue-button captions" type="button" value="Enable fingerprint unlock">
+								<span class="submit-button-ring"></span>
+								<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+							</p>
+						</div>
+						<div class="passkey-manage">
+							<p class="green">Fingerprint unlock is enabled.</p>
+							<p><input class="pk-disable-action blue-button captions" type="button" value="Disable fingerprint unlock"></p>
+						</div>
+						<p class="red pk-error"></p>
+						<p class="green pk-note"></p>
+					</div>
 					<h3>Disable encryption</h3>
 					<p><label class="input-descr"><span class="input-caption">Passphrase:</span><input type="password" name="encd-cur" class="simple-rounded" autocomplete="off"></label></p>
 					<p class="red encd-error"></p>
@@ -1941,6 +1958,15 @@ var ltmp_en_arr={
 	keys_import_over:'overwritten',
 	keys_import_skipped:'skipped',
 	keys_import_invalid:'invalid',
+	pk_unlock:'Unlock with fingerprint',
+	pk_or_pass:'Or enter your passphrase:',
+	pk_unlock_fail:'Fingerprint unlock failed. Use your passphrase.',
+	pk_unsupported:'Passkeys are not supported on this device/browser.',
+	pk_need_enc:'Enable encryption and unlock the wallet first.',
+	pk_enabled:'Fingerprint unlock enabled.',
+	pk_disabled:'Fingerprint unlock disabled.',
+	pk_fail:'Passkey setup failed',
+	pk_reenable:'Re-enable fingerprint unlock.',
 	enc_unlock_title:'Wallet is encrypted',
 	enc_unlock_hint:'Enter your passphrase to unlock your accounts.',
 	enc_unlock:'Unlock',

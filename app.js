@@ -998,9 +998,13 @@ function save_session(){
 function wallet_unlock_overlay(onSuccess){
 	let blob=null; try{ blob=JSON.parse(localStorage.getItem('users_vault')); }catch(e){ blob=null; }
 	if(!blob){ onSuccess(); return; }
+	let pk=passkey_is_set();
 	let h='<div class="wallet-unlock-overlay"><div class="card">'
 		+'<h3>'+(ltmp_arr.enc_unlock_title||'Wallet is encrypted')+'</h3>'
-		+'<p class="grey">'+(ltmp_arr.enc_unlock_hint||'Enter your passphrase to unlock your accounts.')+'</p>'
+		+(pk?('<p><input class="wallet-unlock-pk blue-button captions" type="button" value="'+(ltmp_arr.pk_unlock||'Unlock with fingerprint')+'"></p>'
+			+'<p class="red wallet-unlock-pk-error"></p>'
+			+'<p class="grey">'+(ltmp_arr.pk_or_pass||'Or enter your passphrase:')+'</p>')
+			:('<p class="grey">'+(ltmp_arr.enc_unlock_hint||'Enter your passphrase to unlock your accounts.')+'</p>'))
 		+'<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.enc_pass||'Passphrase')+':</span><input type="password" class="simple-rounded" name="wallet-unlock-pass" autocomplete="off"></label></p>'
 		+'<p class="red wallet-unlock-error"></p>'
 		+'<p><input class="wallet-unlock-go blue-button captions" type="button" value="'+(ltmp_arr.enc_unlock||'Unlock')+'"></p>'
@@ -1020,9 +1024,26 @@ function wallet_unlock_overlay(onSuccess){
 	};
 	ov.find('.wallet-unlock-go').on('click',doUnlock);
 	ov.find('input[name=wallet-unlock-pass]').on('keydown',function(e){ if('Enter'==e.key){ doUnlock(); } });
+	if(pk){
+		ov.find('.wallet-unlock-pk').on('click',function(){
+			ov.find('.wallet-unlock-pk-error').html('');
+			let cfg=passkey_config();
+			passkey_get_prf(cfg.credId,cfg.salt).then(function(prf){
+				return passkey_key_from_prf(prf);
+			}).then(function(key){
+				return crypto.subtle.decrypt({name:'AES-GCM',iv:wallet_unb64(cfg.iv)},key,wallet_unb64(cfg.ct));
+			}).then(function(pt){
+				let pass=new TextDecoder().decode(pt);
+				return wallet_decrypt_vault(blob,pass).then(function(obj){
+					users=obj; wallet_pass=pass; ov.remove(); wallet_after_unlock(); onSuccess();
+				});
+			}).catch(function(e){ ov.find('.wallet-unlock-pk-error').html(ltmp_arr.pk_unlock_fail||'Fingerprint unlock failed. Use your passphrase.'); console.log(e); });
+		});
+	}
 	ov.find('.wallet-unlock-forget').on('click',function(){
 		if(confirm(ltmp_arr.enc_forget_confirm||'Erase the encrypted wallet from this device? Accounts without a backup will be lost.')){
 			localStorage.removeItem('users_vault'); localStorage.removeItem('wallet_encrypted'); localStorage.removeItem('users'); localStorage.removeItem('current_user');
+			passkey_clear();
 			users={}; current_user=''; wallet_pass=null;
 			ov.remove(); onSuccess();
 		}
@@ -1040,6 +1061,13 @@ function setup_wallet_security(){
 	page.find('input[type=password]').val('');
 	page.find('.enc-error,.enc-success,.encc-error,.encc-success,.encd-error,.enc-note').html('');
 	page.find('.icon-check').addClass('hidden');
+	// passkey (fingerprint) section — only meaningful when encrypted AND the platform supports WebAuthn
+	let pkbox=page.find('.passkey-box');
+	pkbox.css('display',(enc&&passkey_supported())?'block':'none');
+	let pkset=passkey_is_set();
+	pkbox.find('.passkey-enable').css('display',pkset?'none':'block');
+	pkbox.find('.passkey-manage').css('display',pkset?'block':'none');
+	page.find('.pk-error,.pk-note').html('');
 }
 function wallet_enable_encryption(){
 	let page=$('.view-settings .page-security');
@@ -1068,6 +1096,7 @@ function wallet_disable_encryption(){
 		users=obj; wallet_pass=null;
 		localStorage.setItem('users',JSON.stringify(users));
 		localStorage.removeItem('users_vault'); localStorage.removeItem('wallet_encrypted');
+		passkey_clear();   // fingerprint unlock wraps the passphrase → useless without a vault
 		wallet_update_lock_btn();
 		setup_wallet_security();
 		page.find('.enc-note').html(ltmp_arr.enc_disabled||'Encryption disabled.');
@@ -1106,10 +1135,75 @@ function wallet_change_pass(){
 		return wallet_encrypt_vault(obj,n1).then(function(nb){
 			localStorage.setItem('users_vault',JSON.stringify(nb));
 			wallet_pass=n1;
-			page.find('.encc-success').html(ltmp_arr.enc_pass_changed||'Passphrase changed.');
+			// the stored passkey wraps the OLD passphrase → stale; drop it, prompt to re-enable
+			let hadpk=passkey_is_set(); passkey_clear();
+			page.find('.encc-success').html((ltmp_arr.enc_pass_changed||'Passphrase changed.')+(hadpk?(' '+(ltmp_arr.pk_reenable||'Re-enable fingerprint unlock.')):''));
 			page.find('input[name=encc-cur],input[name=encc-new1],input[name=encc-new2]').val('');
 		});
 	}).catch(function(e){ page.find('.encc-error').html(ltmp_arr.enc_wrong||'Wrong passphrase.'); });
+}
+
+// ── Passkey (WebAuthn PRF) biometric unlock ─────────────────────────────────
+// Optional SECOND unlock factor layered on the passphrase vault: a platform passkey (phone
+// fingerprint / Face ID / Windows Hello) whose WebAuthn PRF extension yields a stable 32-byte
+// secret gated behind biometric user-verification. We AES-GCM-wrap the vault passphrase under a
+// key derived from that secret and store the blob locally (`wallet_passkey`). The passphrase stays
+// the ground truth / fallback, so a lost or reset biometric never locks the owner out. HTTPS-only
+// (WebAuthn needs a secure context + rp.id — not available in the file:// standalone build).
+function passkey_supported(){ return (typeof window!=='undefined') && !!window.PublicKeyCredential && !!(navigator.credentials&&navigator.credentials.create); }
+function passkey_config(){ try{ return JSON.parse(localStorage.getItem('wallet_passkey')); }catch(e){ return null; } }
+function passkey_is_set(){ let c=passkey_config(); return !!(c&&c.credId&&c.salt&&c.iv&&c.ct); }
+function passkey_clear(){ localStorage.removeItem('wallet_passkey'); }
+async function passkey_key_from_prf(prfBytes){
+	return crypto.subtle.importKey('raw',prfBytes,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+// run a WebAuthn assertion for the stored credential and return the PRF 'first' secret (Uint8Array)
+async function passkey_get_prf(credId,saltB64){
+	let assertion=await navigator.credentials.get({publicKey:{
+		challenge:crypto.getRandomValues(new Uint8Array(32)),
+		allowCredentials:[{id:wallet_unb64(credId),type:'public-key'}],
+		userVerification:'required',
+		timeout:60000,
+		extensions:{prf:{eval:{first:wallet_unb64(saltB64)}}}
+	}});
+	let ext=assertion.getClientExtensionResults();
+	if(!ext||!ext.prf||!ext.prf.results||!ext.prf.results.first){ throw new Error('PRF not supported by this authenticator'); }
+	return new Uint8Array(ext.prf.results.first);
+}
+// enable: register a platform passkey, derive the PRF secret, wrap the current passphrase under it
+function passkey_enable(){
+	let page=$('.view-settings .page-security');
+	page.find('.pk-error').html(''); page.find('.pk-note').html('');
+	if(!passkey_supported()){ page.find('.pk-error').html(ltmp_arr.pk_unsupported||'Passkeys are not supported on this device/browser.'); return; }
+	if(!wallet_is_encrypted() || !wallet_pass){ page.find('.pk-error').html(ltmp_arr.pk_need_enc||'Enable encryption and unlock the wallet first.'); return; }
+	let salt=crypto.getRandomValues(new Uint8Array(32));
+	navigator.credentials.create({publicKey:{
+		challenge:crypto.getRandomValues(new Uint8Array(32)),
+		rp:{name:'VIZ Wallet',id:location.hostname},
+		user:{id:crypto.getRandomValues(new Uint8Array(16)),name:(current_user||'viz-wallet'),displayName:(current_user||'VIZ Wallet')},
+		pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+		authenticatorSelection:{userVerification:'required',residentKey:'preferred'},
+		timeout:60000,
+		extensions:{prf:{}}
+	}}).then(function(cred){
+		let credId=wallet_b64(new Uint8Array(cred.rawId));
+		// obtain the PRF secret via a follow-up assertion (reliable across authenticators)
+		return passkey_get_prf(credId,wallet_b64(salt)).then(function(prf){
+			return passkey_key_from_prf(prf).then(function(key){
+				let iv=crypto.getRandomValues(new Uint8Array(12));
+				return crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,new TextEncoder().encode(''+wallet_pass)).then(function(ct){
+					localStorage.setItem('wallet_passkey',JSON.stringify({v:1,credId:credId,salt:wallet_b64(salt),iv:wallet_b64(iv),ct:wallet_b64(new Uint8Array(ct))}));
+					setup_wallet_security();
+					page.find('.pk-note').html(ltmp_arr.pk_enabled||'Fingerprint unlock enabled.');
+				});
+			});
+		});
+	}).catch(function(e){ page.find('.pk-error').html((ltmp_arr.pk_fail||'Passkey setup failed')+': '+escape_html(''+(e.message||e))); console.log(e); });
+}
+function passkey_disable(){
+	passkey_clear();
+	setup_wallet_security();
+	$('.view-settings .page-security .pk-note').html(ltmp_arr.pk_disabled||'Fingerprint unlock disabled.');
 }
 
 // ── Settings → Export / Import keys ─────────────────────────────────────────
@@ -8447,6 +8541,8 @@ function app_mouse(e){
 	if($(target).hasClass('enc-enable-action')){ wallet_enable_encryption(); }
 	if($(target).hasClass('enc-change-action')){ wallet_change_pass(); }
 	if($(target).hasClass('enc-disable-action')){ wallet_disable_encryption(); }
+	if($(target).hasClass('pk-enable-action')){ passkey_enable(); }
+	if($(target).hasClass('pk-disable-action')){ passkey_disable(); }
 	if($(target).hasClass('keys-export-action')){ keys_export_run(); }
 	if($(target).hasClass('keys-import-action')){ keys_import_run(); }
 	if($(target).hasClass('ns-add-a')){ ns_add_a_row(''); }

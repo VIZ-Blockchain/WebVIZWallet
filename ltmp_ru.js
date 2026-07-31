@@ -183,6 +183,23 @@ var ltmp_ru_arr={
 						<span class="submit-button-ring"></span>
 						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 					</p>
+					<div class="passkey-box">
+						<h3>Вход по отпечатку (passkey)</h3>
+						<p class="grey">Дополнительный вход по отпечатку/лицу через passkey устройства (WebAuthn). Парольная фраза остаётся основной и запасной — если биометрия недоступна, разблокируете фразой. Работает только на HTTPS-версии сайта, не в автономном файле.</p>
+						<div class="passkey-enable">
+							<p>
+								<input class="pk-enable-action blue-button captions" type="button" value="Включить вход по отпечатку">
+								<span class="submit-button-ring"></span>
+								<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+							</p>
+						</div>
+						<div class="passkey-manage">
+							<p class="green">Вход по отпечатку включён.</p>
+							<p><input class="pk-disable-action blue-button captions" type="button" value="Отключить вход по отпечатку"></p>
+						</div>
+						<p class="red pk-error"></p>
+						<p class="green pk-note"></p>
+					</div>
 					<h3>Отключение шифрования</h3>
 					<p><label class="input-descr"><span class="input-caption">Парольная фраза:</span><input type="password" name="encd-cur" class="simple-rounded" autocomplete="off"></label></p>
 					<p class="red encd-error"></p>
@@ -1935,6 +1952,15 @@ var ltmp_ru_arr={
 	keys_import_over:'перезаписано',
 	keys_import_skipped:'пропущено',
 	keys_import_invalid:'неверных',
+	pk_unlock:'Разблокировать отпечатком',
+	pk_or_pass:'Или введите парольную фразу:',
+	pk_unlock_fail:'Не удалось разблокировать отпечатком. Введите парольную фразу.',
+	pk_unsupported:'Passkey не поддерживается этим устройством/браузером.',
+	pk_need_enc:'Сначала включите шифрование и разблокируйте кошелёк.',
+	pk_enabled:'Вход по отпечатку включён.',
+	pk_disabled:'Вход по отпечатку отключён.',
+	pk_fail:'Не удалось настроить passkey',
+	pk_reenable:'Включите вход по отпечатку заново.',
 	enc_unlock_title:'Кошелёк зашифрован',
 	enc_unlock_hint:'Введите пароль, чтобы разблокировать аккаунты.',
 	enc_unlock:'Разблокировать',
