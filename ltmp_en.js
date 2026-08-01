@@ -172,6 +172,10 @@ var ltmp_en_arr={
 				</div>
 				<div class="security-manage">
 					<p class="red">Encryption is on (keys are stored in an encrypted container).</p>
+				</div>
+				<p class="green enc-note"></p>
+			</div>
+			<div class="card security-manage">
 					<h3>Change passphrase</h3>
 					<p><label class="input-descr"><span class="input-caption">Current passphrase:</span><input type="password" name="encc-cur" class="simple-rounded" autocomplete="off"></label></p>
 					<p><label class="input-descr"><span class="input-caption">New passphrase:</span><input type="password" name="encc-new1" class="simple-rounded" autocomplete="new-password"></label></p>
@@ -183,7 +187,8 @@ var ltmp_en_arr={
 						<span class="submit-button-ring"></span>
 						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 					</p>
-					<div class="passkey-box">
+			</div>
+			<div class="card security-manage passkey-box">
 						<h3>Fingerprint unlock (passkey)</h3>
 						<p class="grey">Additional unlock via your device passkey (fingerprint / Face ID, WebAuthn). The passphrase stays the primary key and fallback — if biometrics are unavailable, unlock with the passphrase. Works only on the HTTPS version of the site, not in the offline file.</p>
 						<div class="passkey-enable">
@@ -199,7 +204,8 @@ var ltmp_en_arr={
 						</div>
 						<p class="red pk-error"></p>
 						<p class="green pk-note"></p>
-					</div>
+			</div>
+			<div class="card security-manage">
 					<h3>Disable encryption</h3>
 					<p><label class="input-descr"><span class="input-caption">Passphrase:</span><input type="password" name="encd-cur" class="simple-rounded" autocomplete="off"></label></p>
 					<p class="red encd-error"></p>
@@ -209,10 +215,8 @@ var ltmp_en_arr={
 						<span class="submit-button-ring"></span>
 						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 					</p>
-				</div>
-				<p class="green enc-note"></p>
-				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
+			<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 		</div>
 		<div class="page page-keys" data-title="Export/import keys">
 			<div class="card">

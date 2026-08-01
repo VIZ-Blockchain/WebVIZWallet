@@ -1197,8 +1197,8 @@ function passkey_enable(){
 				let iv=crypto.getRandomValues(new Uint8Array(12));
 				return crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,new TextEncoder().encode(''+wallet_pass)).then(function(ct){
 					localStorage.setItem('wallet_passkey',JSON.stringify({v:1,credId:credId,salt:wallet_b64(salt),iv:wallet_b64(iv),ct:wallet_b64(new Uint8Array(ct))}));
+					// the persistent green status in .passkey-manage already says "enabled" → no duplicate note
 					setup_wallet_security();
-					page.find('.pk-note').html(ltmp_arr.pk_enabled||'Fingerprint unlock enabled.');
 				});
 			});
 		});

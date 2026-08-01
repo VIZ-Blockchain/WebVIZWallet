@@ -173,6 +173,10 @@ var ltmp_zh_arr = {
 				</div>
 				<div class="security-manage">
 					<p class="red">加密已开启（密钥存储在加密容器中）。</p>
+				</div>
+				<p class="green enc-note"></p>
+			</div>
+			<div class="card security-manage">
 					<h3>更改口令</h3>
 					<p><label class="input-descr"><span class="input-caption">当前口令：</span><input type="password" name="encc-cur" class="simple-rounded" autocomplete="off"></label></p>
 					<p><label class="input-descr"><span class="input-caption">新口令：</span><input type="password" name="encc-new1" class="simple-rounded" autocomplete="new-password"></label></p>
@@ -184,7 +188,8 @@ var ltmp_zh_arr = {
 						<span class="submit-button-ring"></span>
 						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 					</p>
-					<div class="passkey-box">
+			</div>
+			<div class="card security-manage passkey-box">
 						<h3>指纹解锁（passkey）</h3>
 						<p class="grey">通过设备 passkey（指纹 / Face ID，WebAuthn）额外解锁。口令仍是主密钥和后备方式 — 若生物识别不可用，可用口令解锁。仅在网站的 HTTPS 版本可用，离线文件中不可用。</p>
 						<div class="passkey-enable">
@@ -200,7 +205,8 @@ var ltmp_zh_arr = {
 						</div>
 						<p class="red pk-error"></p>
 						<p class="green pk-note"></p>
-					</div>
+			</div>
+			<div class="card security-manage">
 					<h3>关闭加密</h3>
 					<p><label class="input-descr"><span class="input-caption">口令：</span><input type="password" name="encd-cur" class="simple-rounded" autocomplete="off"></label></p>
 					<p class="red encd-error"></p>
@@ -210,10 +216,8 @@ var ltmp_zh_arr = {
 						<span class="submit-button-ring"></span>
 						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 					</p>
-				</div>
-				<p class="green enc-note"></p>
-				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
+			<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 		</div>
 		<div class="page page-keys" data-title="导出/导入密钥">
 			<div class="card">

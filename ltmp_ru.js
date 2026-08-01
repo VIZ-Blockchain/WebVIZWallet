@@ -172,6 +172,10 @@ var ltmp_ru_arr={
 				</div>
 				<div class="security-manage">
 					<p class="red">Шифрование включено (ключи хранятся в зашифрованном контейнере).</p>
+				</div>
+				<p class="green enc-note"></p>
+			</div>
+			<div class="card security-manage">
 					<h3>Смена парольной фразы</h3>
 					<p><label class="input-descr"><span class="input-caption">Текущая фраза:</span><input type="password" name="encc-cur" class="simple-rounded" autocomplete="off"></label></p>
 					<p><label class="input-descr"><span class="input-caption">Новая фраза:</span><input type="password" name="encc-new1" class="simple-rounded" autocomplete="new-password"></label></p>
@@ -183,7 +187,8 @@ var ltmp_ru_arr={
 						<span class="submit-button-ring"></span>
 						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 					</p>
-					<div class="passkey-box">
+			</div>
+			<div class="card security-manage passkey-box">
 						<h3>Вход по отпечатку (passkey)</h3>
 						<p class="grey">Дополнительный вход по отпечатку/лицу через passkey устройства (WebAuthn). Парольная фраза остаётся основной и запасной — если биометрия недоступна, разблокируете фразой. Работает только на HTTPS-версии сайта, не в автономном файле.</p>
 						<div class="passkey-enable">
@@ -199,7 +204,8 @@ var ltmp_ru_arr={
 						</div>
 						<p class="red pk-error"></p>
 						<p class="green pk-note"></p>
-					</div>
+			</div>
+			<div class="card security-manage">
 					<h3>Отключение шифрования</h3>
 					<p><label class="input-descr"><span class="input-caption">Парольная фраза:</span><input type="password" name="encd-cur" class="simple-rounded" autocomplete="off"></label></p>
 					<p class="red encd-error"></p>
@@ -209,10 +215,8 @@ var ltmp_ru_arr={
 						<span class="submit-button-ring"></span>
 						<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 					</p>
-				</div>
-				<p class="green enc-note"></p>
-				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
+			<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 		</div>
 		<div class="page page-keys" data-title="Экспорт/импорт ключей">
 			<div class="card">
