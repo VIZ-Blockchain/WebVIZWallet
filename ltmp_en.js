@@ -246,6 +246,29 @@ var ltmp_en_arr={
 				</p>
 				<p class="red keys-import-error"></p>
 				<p class="green keys-import-success"></p>
+			</div>
+			<div class="card">
+				<h3>Whole container (JSON)</h3>
+				<p class="grey">Backup of ALL accounts as one JSON. When encryption is on the container is exported as-is, still encrypted (same cipher) — safe to store anywhere. Import will ask for the container's passphrase to decrypt it.</p>
+				<p>
+					<input class="keys-cexport-action blue-button captions" type="button" value="Export container (JSON)">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<label class="check">Download as file<input type="checkbox" name="keys-cexport-file"><span class="mark"></span></label>
+				<p class="red keys-cexport-error"></p>
+				<p class="green keys-cexport-success"></p>
+				<p><label class="input-descr"><span class="input-caption">Container (JSON):</span><textarea name="keys-container-out" class="simple-rounded wide" wrap="off" rows="6" autocomplete="off" spellcheck="false" readonly></textarea></label></p>
+				<h3>Import container</h3>
+				<p><label class="input-descr"><span class="input-caption">Container (JSON):</span><textarea name="keys-container-in" class="simple-rounded wide" wrap="off" rows="6" autocomplete="off" spellcheck="false"></textarea></label></p>
+				<p><label class="input-descr"><span class="input-caption">Container passphrase:</span><input type="password" name="keys-container-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p>
+					<input class="keys-cimport-action blue-button captions" type="button" value="Import container">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<p class="red keys-cimport-error"></p>
+				<p class="green keys-cimport-success"></p>
 				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -1969,6 +1992,14 @@ var ltmp_en_arr={
 	pk_disabled:'Fingerprint unlock disabled.',
 	pk_fail:'Passkey setup failed',
 	pk_reenable:'Re-enable fingerprint unlock.',
+	keys_cont_novault:'No encrypted container found.',
+	keys_cont_exported:'Encrypted container exported.',
+	keys_cont_exported_plain:'PLAINTEXT container exported (encryption is off).',
+	keys_cont_empty:'Paste a container JSON.',
+	keys_cont_badjson:'Invalid container JSON.',
+	keys_cont_wrongpass:'Wrong container passphrase.',
+	keys_cont_imported:'Imported accounts — new:',
+	keys_cont_updated:'updated:',
 	enc_unlock_title:'Wallet is encrypted',
 	enc_unlock_hint:'Enter your passphrase to unlock your accounts.',
 	enc_unlock:'Unlock',

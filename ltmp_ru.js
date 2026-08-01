@@ -246,6 +246,29 @@ var ltmp_ru_arr={
 				</p>
 				<p class="red keys-import-error"></p>
 				<p class="green keys-import-success"></p>
+			</div>
+			<div class="card">
+				<h3>Контейнер целиком (JSON)</h3>
+				<p class="grey">Резервная копия ВСЕХ аккаунтов одним JSON. Если шифрование включено — контейнер экспортируется как есть, в зашифрованном виде (тем же шифром), можно хранить где угодно. Импорт спросит парольную фразу контейнера для расшифровки.</p>
+				<p>
+					<input class="keys-cexport-action blue-button captions" type="button" value="Экспорт контейнера (JSON)">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<label class="check">Скачать файлом<input type="checkbox" name="keys-cexport-file"><span class="mark"></span></label>
+				<p class="red keys-cexport-error"></p>
+				<p class="green keys-cexport-success"></p>
+				<p><label class="input-descr"><span class="input-caption">Контейнер (JSON):</span><textarea name="keys-container-out" class="simple-rounded wide" wrap="off" rows="6" autocomplete="off" spellcheck="false" readonly></textarea></label></p>
+				<h3>Импорт контейнера</h3>
+				<p><label class="input-descr"><span class="input-caption">Контейнер (JSON):</span><textarea name="keys-container-in" class="simple-rounded wide" wrap="off" rows="6" autocomplete="off" spellcheck="false"></textarea></label></p>
+				<p><label class="input-descr"><span class="input-caption">Парольная фраза контейнера:</span><input type="password" name="keys-container-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p>
+					<input class="keys-cimport-action blue-button captions" type="button" value="Импорт контейнера">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<p class="red keys-cimport-error"></p>
+				<p class="green keys-cimport-success"></p>
 				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -1963,6 +1986,14 @@ var ltmp_ru_arr={
 	pk_disabled:'Вход по отпечатку отключён.',
 	pk_fail:'Не удалось настроить passkey',
 	pk_reenable:'Включите вход по отпечатку заново.',
+	keys_cont_novault:'Зашифрованный контейнер не найден.',
+	keys_cont_exported:'Зашифрованный контейнер экспортирован.',
+	keys_cont_exported_plain:'Контейнер экспортирован в ОТКРЫТОМ виде (шифрование выключено).',
+	keys_cont_empty:'Вставьте JSON контейнера.',
+	keys_cont_badjson:'Некорректный JSON контейнера.',
+	keys_cont_wrongpass:'Неверная парольная фраза контейнера.',
+	keys_cont_imported:'Импортировано аккаунтов — новых:',
+	keys_cont_updated:'обновлено:',
 	enc_unlock_title:'Кошелёк зашифрован',
 	enc_unlock_hint:'Введите пароль, чтобы разблокировать аккаунты.',
 	enc_unlock:'Разблокировать',

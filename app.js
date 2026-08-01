@@ -1231,6 +1231,11 @@ function setup_keys_backup(){
 	page.find('input[name=keys-export-file]').prop('checked',false);
 	page.find('input[name=keys-import-dup][value=ignore]').prop('checked',true);
 	page.find('.keys-export-error,.keys-export-success,.keys-import-error,.keys-import-success').html('');
+	// whole-container (JSON) fields
+	page.find('textarea[name=keys-container-out],textarea[name=keys-container-in]').val('');
+	page.find('input[name=keys-container-pass]').val('');
+	page.find('input[name=keys-cexport-file]').prop('checked',false);
+	page.find('.keys-cexport-error,.keys-cexport-success,.keys-cimport-error,.keys-cimport-success').html('');
 	page.find('.icon-check').addClass('hidden');
 }
 // passphrase gate: when encrypted, the entered phrase must match the unlocked session passphrase
@@ -1328,6 +1333,70 @@ function keys_import_do(){
 	if(invalid){ msg+=', '+(ltmp_arr.keys_import_invalid||'invalid')+': '+invalid; }
 	page.find('.keys-import-success').html(msg);
 	page.find('textarea[name=keys-import-in]').val('');
+}
+
+// ── Settings → whole-container (JSON) export/import ─────────────────────────
+// Full backup/restore of ALL accounts as one JSON. When encryption is on the exported JSON simply
+// wraps the ENCRYPTED vault blob (same cipher, nothing decrypted) — safe to store anywhere. Import
+// parses the JSON and, for an encrypted container, asks for THAT container's passphrase to decrypt
+// it, then merges the accounts into the wallet (re-saved under the local session/encryption).
+function keys_container_export(){
+	let page=$('.view-settings .page-keys');
+	page.find('.keys-cexport-error').html(''); page.find('.keys-cexport-success').html('');
+	let out;
+	if(wallet_is_encrypted()){
+		let blob=localStorage.getItem('users_vault');
+		if(!blob){ page.find('.keys-cexport-error').html(ltmp_arr.keys_cont_novault||'No encrypted container found.'); return; }
+		out=JSON.stringify({viz_wallet_container:1,encrypted:true,vault:JSON.parse(blob)});
+	}
+	else{
+		// no vault when encryption is off → export the accounts as a PLAINTEXT container (clearly flagged)
+		out=JSON.stringify({viz_wallet_container:1,encrypted:false,users:users});
+	}
+	page.find('textarea[name=keys-container-out]').val(out);
+	page.find('.keys-cexport-success').html((wallet_is_encrypted()?(ltmp_arr.keys_cont_exported||'Encrypted container exported.'):(ltmp_arr.keys_cont_exported_plain||'PLAINTEXT container exported (encryption is off).')));
+	if(page.find('input[name=keys-cexport-file]').prop('checked')){
+		let d=new Date();
+		let ymd=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+		download('viz wallet container '+ymd+'.json',out);
+	}
+}
+function keys_container_import(){
+	let page=$('.view-settings .page-keys');
+	page.find('.keys-cimport-error').html(''); page.find('.keys-cimport-success').html('');
+	let raw=(''+page.find('textarea[name=keys-container-in]').val()).trim();
+	if(''==raw){ page.find('.keys-cimport-error').html(ltmp_arr.keys_cont_empty||'Paste a container JSON.'); return; }
+	let obj; try{ obj=JSON.parse(raw); }catch(e){ page.find('.keys-cimport-error').html(ltmp_arr.keys_cont_badjson||'Invalid JSON.'); return; }
+	let vault=null, plain=null;
+	if(obj && obj.viz_wallet_container){ if(obj.encrypted){ vault=obj.vault; } else { plain=obj.users; } }
+	else if(obj && obj.ct && obj.salt && obj.iv){ vault=obj; }            // bare vault blob
+	else if(obj && typeof obj==='object'){ plain=obj; }                   // bare users object
+	if(vault){
+		let pass=''+page.find('input[name=keys-container-pass]').val();
+		wallet_decrypt_vault(vault,pass).then(function(u){ keys_container_merge(u); })
+			.catch(function(e){ page.find('.keys-cimport-error').html(ltmp_arr.keys_cont_wrongpass||'Wrong container passphrase.'); console.log(e); });
+	}
+	else if(plain && typeof plain==='object'){ keys_container_merge(plain); }
+	else{ page.find('.keys-cimport-error').html(ltmp_arr.keys_cont_badjson||'Invalid container.'); }
+}
+function keys_container_merge(imp){
+	let page=$('.view-settings .page-keys');
+	if(!imp || typeof imp!=='object'){ page.find('.keys-cimport-error').html(ltmp_arr.keys_cont_badjson||'Invalid container.'); return; }
+	let added=0,updated=0;
+	for(let login in imp){
+		if(!Object.prototype.hasOwnProperty.call(imp,login)){ continue; }
+		let acc=imp[login]; if(!acc||typeof acc!=='object'){ continue; }
+		let isNew=(typeof users[login]==='undefined');
+		if(isNew){ users[login]={}; }
+		let changed=false;
+		for(let f in acc){ if(Object.prototype.hasOwnProperty.call(acc,f) && users[login][f]!==acc[f]){ users[login][f]=acc[f]; changed=true; } }
+		if(isNew){ added++; } else if(changed){ updated++; }
+		if(''==current_user && acc.active_key){ current_user=login; }
+	}
+	save_session();
+	page.find('.keys-cimport-success').html((ltmp_arr.keys_cont_imported||'Imported accounts — new:')+' '+added+' / '+(ltmp_arr.keys_cont_updated||'updated:')+' '+updated);
+	page.find('textarea[name=keys-container-in]').val('');
+	page.find('input[name=keys-container-pass]').val('');
 }
 
 /* ── Settings → NS records (VIZ DNS): A records + SSL hash + TTL in account json_metadata ──
@@ -8587,6 +8656,8 @@ function app_mouse(e){
 	if($(target).hasClass('keys-export-bio-action')){ keys_export_bio(); }
 	if($(target).hasClass('keys-import-action')){ keys_import_run(); }
 	if($(target).hasClass('keys-import-bio-action')){ keys_import_bio(); }
+	if($(target).hasClass('keys-cexport-action')){ keys_container_export(); }
+	if($(target).hasClass('keys-cimport-action')){ keys_container_import(); }
 	if($(target).hasClass('ns-add-a')){ ns_add_a_row(''); }
 	if($(target).hasClass('ns-a-del')){ $(target).closest('.ns-a-row').remove(); }
 	if($(target).hasClass('ns-save-action')){ save_ns(); }

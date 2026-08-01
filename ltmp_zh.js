@@ -247,6 +247,29 @@ var ltmp_zh_arr = {
 				</p>
 				<p class="red keys-import-error"></p>
 				<p class="green keys-import-success"></p>
+			</div>
+			<div class="card">
+				<h3>整个容器（JSON）</h3>
+				<p class="grey">将所有账户备份为一个 JSON。若已启用加密，容器将按原样以加密形式导出（相同口令）— 可存放于任何位置。导入时会要求输入容器口令以解密。</p>
+				<p>
+					<input class="keys-cexport-action blue-button captions" type="button" value="导出容器（JSON）">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<label class="check">下载为文件<input type="checkbox" name="keys-cexport-file"><span class="mark"></span></label>
+				<p class="red keys-cexport-error"></p>
+				<p class="green keys-cexport-success"></p>
+				<p><label class="input-descr"><span class="input-caption">容器 (JSON)：</span><textarea name="keys-container-out" class="simple-rounded wide" wrap="off" rows="6" autocomplete="off" spellcheck="false" readonly></textarea></label></p>
+				<h3>导入容器</h3>
+				<p><label class="input-descr"><span class="input-caption">容器 (JSON)：</span><textarea name="keys-container-in" class="simple-rounded wide" wrap="off" rows="6" autocomplete="off" spellcheck="false"></textarea></label></p>
+				<p><label class="input-descr"><span class="input-caption">容器口令：</span><input type="password" name="keys-container-pass" class="simple-rounded" autocomplete="off"></label></p>
+				<p>
+					<input class="keys-cimport-action blue-button captions" type="button" value="导入容器">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				<p class="red keys-cimport-error"></p>
+				<p class="green keys-cimport-success"></p>
 				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -1963,6 +1986,14 @@ var ltmp_zh_arr = {
 	pk_disabled:'指纹解锁已禁用。',
 	pk_fail:'passkey 设置失败',
 	pk_reenable:'请重新启用指纹解锁。',
+	keys_cont_novault:'未找到加密容器。',
+	keys_cont_exported:'加密容器已导出。',
+	keys_cont_exported_plain:'已导出明文容器（加密未启用）。',
+	keys_cont_empty:'请粘贴容器 JSON。',
+	keys_cont_badjson:'容器 JSON 无效。',
+	keys_cont_wrongpass:'容器口令错误。',
+	keys_cont_imported:'已导入账户 — 新增：',
+	keys_cont_updated:'更新：',
 	enc_unlock_title:'钱包已加密',
 	enc_unlock_hint:'请输入口令以解锁您的账户。',
 	enc_unlock:'解锁',
