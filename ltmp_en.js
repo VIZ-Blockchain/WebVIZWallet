@@ -18,8 +18,23 @@ var ltmp_en_arr={
 				</p>
 				<p>
 					<label class="input-descr">
+						<span class="input-caption">Private master key:</span>
+						<input type="text" name="master-key" class="simple-rounded">
+						<span class="input-caption text-small grey captions">(optional &mdash; highest authority)</span>
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
 						<span class="input-caption">Private active key:</span>
 						<input type="text" name="active-key" class="simple-rounded">
+						<span class="input-caption text-small grey captions">(required)</span>
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Private regular key:</span>
+						<input type="text" name="regular-key" class="simple-rounded">
+						<span class="input-caption text-small grey captions">(optional)</span>
 					</label>
 				</p>
 				<p>
@@ -76,8 +91,23 @@ var ltmp_en_arr={
 			</p>
 			<p>
 				<label class="input-descr">
+					<span class="input-caption">Private master key:</span>
+					<input type="text" name="master-key" class="simple-rounded">
+					<span class="input-caption text-small grey captions">(optional &mdash; highest authority)</span>
+				</label>
+			</p>
+			<p>
+				<label class="input-descr">
 					<span class="input-caption">Private active key:</span>
 					<input type="text" name="active-key" class="simple-rounded">
+					<span class="input-caption text-small grey captions">(required)</span>
+				</label>
+			</p>
+			<p>
+				<label class="input-descr">
+					<span class="input-caption">Private regular key:</span>
+					<input type="text" name="regular-key" class="simple-rounded">
+					<span class="input-caption text-small grey captions">(optional)</span>
 				</label>
 			</p>
 			<p>
@@ -2722,6 +2752,10 @@ var ltmp_en_arr={
 	login_account_not_found:'Account with this login was not found',
 	login_key_weight_not_enough:'The weight of the active key is not enough for this account to process transactions',
 	login_memo_wif_incorrect:'Memo private key does not match the account',
+	login_master_wif_invalid:'The private master key is invalid',
+	login_master_wif_incorrect:'The private master key does not match the account',
+	login_regular_wif_invalid:'The private regular key is invalid',
+	login_regular_wif_incorrect:'The private regular key does not match the account',
 
 	plural_days_1:' day',
 	plural_days_2:' days',

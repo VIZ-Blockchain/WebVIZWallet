@@ -18,8 +18,23 @@ var ltmp_zh_arr = {
 				</p>
 				<p>
 					<label class="input-descr">
+						<span class="input-caption">主私钥：</span>
+						<input type="text" name="master-key" class="simple-rounded">
+						<span class="input-caption text-small grey captions">（可选 &mdash; 最高权限）</span>
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
 						<span class="input-caption">活跃私钥：</span>
 						<input type="text" name="active-key" class="simple-rounded">
+						<span class="input-caption text-small grey captions">（必填）</span>
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">常规私钥：</span>
+						<input type="text" name="regular-key" class="simple-rounded">
+						<span class="input-caption text-small grey captions">（可选）</span>
 					</label>
 				</p>
 				<p>
@@ -76,8 +91,23 @@ var ltmp_zh_arr = {
 			</p>
 			<p>
 				<label class="input-descr">
+					<span class="input-caption">主私钥：</span>
+					<input type="text" name="master-key" class="simple-rounded">
+					<span class="input-caption text-small grey captions">（可选 &mdash; 最高权限）</span>
+				</label>
+			</p>
+			<p>
+				<label class="input-descr">
 					<span class="input-caption">活跃私钥：</span>
 					<input type="text" name="active-key" class="simple-rounded">
+					<span class="input-caption text-small grey captions">（必填）</span>
+				</label>
+			</p>
+			<p>
+				<label class="input-descr">
+					<span class="input-caption">常规私钥：</span>
+					<input type="text" name="regular-key" class="simple-rounded">
+					<span class="input-caption text-small grey captions">（可选）</span>
 				</label>
 			</p>
 			<p>
@@ -2702,6 +2732,10 @@ var ltmp_zh_arr = {
 	login_account_not_found:'未找到该登录名的账户',
 	login_key_weight_not_enough:'活跃密钥的权重不足以让此账户处理交易',
 	login_memo_wif_incorrect:'备注私钥与账户不匹配',
+	login_master_wif_invalid:'主私钥无效',
+	login_master_wif_incorrect:'主私钥与账户不匹配',
+	login_regular_wif_invalid:'常规私钥无效',
+	login_regular_wif_incorrect:'常规私钥与账户不匹配',
 
 	plural_days_1:' 天',
 	plural_days_2:' 天',

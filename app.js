@@ -887,6 +887,19 @@ function update_shares_balance(el,data){
 	el.find('.effective-vesting-shares').append('<span class="adaptive-show">'+ltmp_arr.social_capital_effective_adaptive_caption+'&nbsp;</span>'+number_thousands((floor_effective_vesting_shares).toFixed(2))+' viz');
 }
 
+// true if the private WIF's public key satisfies the given account authority (weight >= threshold)
+function wif_meets_authority(wif,authority){
+	try{
+		let pub=viz.auth.wifToPublic(wif);
+		let weight=0;
+		for(let i in authority.key_auths){
+			if(authority.key_auths[i][0]==pub){ weight+=authority.key_auths[i][1]; }
+		}
+		return weight>=authority.weight_threshold;
+	}
+	catch(e){ return false; }
+}
+
 function view_login(path,params,title){
 	title=ltmp_arr.login_title+' - '+title;
 	document.title=title;
@@ -901,6 +914,8 @@ function view_login(path,params,title){
 	$('.view-login input[name=back]').val('');
 	$('.view-login input[name=login]').val('');
 	$('.view-login input[name=active-key]').val('');
+	$('.view-login input[name=master-key]').val('');
+	$('.view-login input[name=regular-key]').val('');
 	$('.view-login input[name=memo-key]').val('');
 	$('.view-login .authorized').css('display','none');
 	if(typeof params.back != 'undefined'){
@@ -1211,12 +1226,13 @@ function passkey_disable(){
 }
 
 // ── Settings → Export / Import keys ─────────────────────────────────────────
-// Human-readable backup as `account:type:key` lines (type ∈ active|regular|memo — everything the
-// wallet stores per account, memo included). Export all connected accounts (checkbox) or just the
-// active one. Import merges into `users`: a duplicate (same account+type, different key) is skipped
-// unless "overwrite duplicates" is checked. When the wallet is encrypted, both operations require
-// re-entering the passphrase to confirm (verified against the in-memory session passphrase).
-var KEYS_BACKUP_TYPES=['active','regular','memo'];
+// Human-readable backup as `account:type:key` lines (type ∈ master|active|regular|memo — everything
+// the wallet can store per account; master/regular/memo are optional, only active is required to
+// operate). Export all connected accounts (checkbox) or just the active one. Import merges into
+// `users`: a duplicate (same account+type, different key) is skipped unless "overwrite duplicates" is
+// checked. When the wallet is encrypted, both operations require re-entering the passphrase to confirm
+// (verified against the in-memory session passphrase).
+var KEYS_BACKUP_TYPES=['master','active','regular','memo'];
 function keys_type_field(t){ return t+'_key'; }
 function setup_keys_backup(){
 	let page=$('.view-settings .page-keys'); if(!page.length){ return; }
@@ -7094,7 +7110,7 @@ function invite_create_account(account_login,secret_key,login_el){
 					page.find('.invite-account-keys').css('display','block');
 
 					if(page.find('input[name="invite-create-account-connect"]').prop('checked')){
-						if(connect_created_account(account_login,private_key,private_key,private_key)){
+						if(connect_created_account(account_login,private_key,private_key,private_key,private_key)){
 							page.find('.invite-create-account-connected').css('display','block');
 						}
 					}
@@ -7134,9 +7150,10 @@ function invite_create_account(account_login,secret_key,login_el){
 // "connect to wallet" checkbox on account/subaccount creation). Mirrors the login
 // flow's users[] shape (active_key + optional memo). Persists via save_session();
 // keeps the current user unless the wallet was empty.
-function connect_created_account(login,active_key,regular_key,memo_key){
+function connect_created_account(login,active_key,regular_key,memo_key,master_key){
 	if(''==login||typeof active_key==='undefined'||!active_key){return false;}
 	users[login]={active_key};
+	if(master_key){users[login].master_key=master_key;}
 	if(regular_key){users[login].regular_key=regular_key;}
 	if(memo_key){users[login].memo_key=memo_key;}
 	if(''==current_user){current_user=login;}
@@ -7200,7 +7217,7 @@ function create_account(account_login,token_amount,shares_amount,login_el){
 		page.find('.account-keys').css('display','block');
 
 		if(page.find('input[name="create-account-connect"]').prop('checked')){
-			if(connect_created_account(account_login,keys['active'],keys['regular'],keys['memo'])){
+			if(connect_created_account(account_login,keys['active'],keys['regular'],keys['memo'],keys['master'])){
 				page.find('.create-account-connected').css('display','block');
 			}
 		}
@@ -8080,7 +8097,7 @@ function create_subaccount(account_login,token_amount,shares_amount,login_el){
 		page.find('.account-keys').css('display','block');
 
 		if(page.find('input[name="create-subaccount-connect"]').prop('checked')){
-			if(connect_created_account(account_login,keys['active'],keys['regular'],keys['memo'])){
+			if(connect_created_account(account_login,keys['active'],keys['regular'],keys['memo'],keys['master'])){
 				page.find('.create-subaccount-connected').css('display','block');
 			}
 		}
@@ -9059,6 +9076,8 @@ function app_mouse(e){
 		if($(target).hasClass('user-authentication')){
 			$('.view-'+current_view+' .error').html('');
 			$('.view-'+current_view+' input[name=active-key]').removeClass('red');
+			$('.view-'+current_view+' input[name=master-key]').removeClass('red');
+			$('.view-'+current_view+' input[name=regular-key]').removeClass('red');
 			$('.view-'+current_view+' input[name=memo-key]').removeClass('red');
 			$('.view-'+current_view+' input[name=login]').removeClass('red');
 			let error=false;
@@ -9109,6 +9128,36 @@ function app_mouse(e){
 				memo_key_public=viz.auth.wifToPublic(memo_key);
 			}
 
+			// optional higher/lower authorities — only active is required to use the wallet
+			let master_key=$('.view-'+current_view+' input[name=master-key]').val().trim();
+			$('.view-'+current_view+' input[name=master-key]').val(master_key);
+			if(''!=master_key){
+				try{
+					viz.auth.wifIsValid(master_key);
+				}
+				catch(e){
+					error=ltmp_arr.login_master_wif_invalid;
+					$('.view-'+current_view+' input[name=master-key]').addClass('red');
+					$('.view-'+current_view+' .error').html(''+error);
+					$('.view-'+current_view+' input[name=master-key]').focus();
+					return false;
+				}
+			}
+			let regular_key=$('.view-'+current_view+' input[name=regular-key]').val().trim();
+			$('.view-'+current_view+' input[name=regular-key]').val(regular_key);
+			if(''!=regular_key){
+				try{
+					viz.auth.wifIsValid(regular_key);
+				}
+				catch(e){
+					error=ltmp_arr.login_regular_wif_invalid;
+					$('.view-'+current_view+' input[name=regular-key]').addClass('red');
+					$('.view-'+current_view+' .error').html(''+error);
+					$('.view-'+current_view+' input[name=regular-key]').focus();
+					return false;
+				}
+			}
+
 			let active_key_public=viz.auth.wifToPublic(active_key);
 			viz.api.getAccounts([user_login],function(err,response){
 				if(err){
@@ -9154,7 +9203,23 @@ function app_mouse(e){
 							}
 						}
 						if(key_weight>=active_authority.weight_threshold){
+							if(''!=master_key && !wif_meets_authority(master_key,response[0].master_authority)){
+								$('.view-'+current_view+' input[name=master-key]').addClass('red');
+								$('.view-'+current_view+' .error').html(''+ltmp_arr.login_master_wif_incorrect);
+								return false;
+							}
+							if(''!=regular_key && !wif_meets_authority(regular_key,response[0].regular_authority)){
+								$('.view-'+current_view+' input[name=regular-key]').addClass('red');
+								$('.view-'+current_view+' .error').html(''+ltmp_arr.login_regular_wif_incorrect);
+								return false;
+							}
 							users[user_login]={active_key};
+							if(''!=master_key){
+								users[user_login].master_key=master_key;
+							}
+							if(''!=regular_key){
+								users[user_login].regular_key=regular_key;
+							}
 							if(''!=memo_key){
 								users[user_login].memo_key=memo_key;
 							}
@@ -9162,6 +9227,9 @@ function app_mouse(e){
 							save_session();
 							$('.view-'+current_view+' input[name=login]').val('');
 							$('.view-'+current_view+' input[name=active-key]').val('');
+							$('.view-'+current_view+' input[name=master-key]').val('');
+							$('.view-'+current_view+' input[name=regular-key]').val('');
+							$('.view-'+current_view+' input[name=memo-key]').val('');
 							change_user($('.view-'+current_view+' input[name=back]').val());
 						}
 						else{

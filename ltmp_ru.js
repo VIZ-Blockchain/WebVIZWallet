@@ -18,8 +18,23 @@ var ltmp_ru_arr={
 				</p>
 				<p>
 					<label class="input-descr">
+						<span class="input-caption">Приватный master-ключ:</span>
+						<input type="text" name="master-key" class="simple-rounded">
+						<span class="input-caption text-small grey captions">(опционально &mdash; высший доступ)</span>
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
 						<span class="input-caption">Приватный активный ключ:</span>
 						<input type="text" name="active-key" class="simple-rounded">
+						<span class="input-caption text-small grey captions">(обязательно)</span>
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Приватный regular-ключ:</span>
+						<input type="text" name="regular-key" class="simple-rounded">
+						<span class="input-caption text-small grey captions">(опционально)</span>
 					</label>
 				</p>
 				<p>
@@ -76,8 +91,23 @@ var ltmp_ru_arr={
 			</p>
 			<p>
 				<label class="input-descr">
+					<span class="input-caption">Приватный master-ключ:</span>
+					<input type="text" name="master-key" class="simple-rounded">
+					<span class="input-caption text-small grey captions">(опционально &mdash; высший доступ)</span>
+				</label>
+			</p>
+			<p>
+				<label class="input-descr">
 					<span class="input-caption">Приватный активный ключ:</span>
 					<input type="text" name="active-key" class="simple-rounded">
+					<span class="input-caption text-small grey captions">(обязательно)</span>
+				</label>
+			</p>
+			<p>
+				<label class="input-descr">
+					<span class="input-caption">Приватный regular-ключ:</span>
+					<input type="text" name="regular-key" class="simple-rounded">
+					<span class="input-caption text-small grey captions">(опционально)</span>
 				</label>
 			</p>
 			<p>
@@ -2704,6 +2734,10 @@ var ltmp_ru_arr={
 	login_account_not_found:'Аккаунт с таким логином не найден',
 	login_key_weight_not_enough:'Веса активного ключа недостаточно для выполнения операций этим аккаунтом',
 	login_memo_wif_incorrect:'Приватный ключ заметок не соответствует аккаунту',
+	login_master_wif_invalid:'Приватный master-ключ невалидный',
+	login_master_wif_incorrect:'Приватный master-ключ не соответствует аккаунту',
+	login_regular_wif_invalid:'Приватный regular-ключ невалидный',
+	login_regular_wif_incorrect:'Приватный regular-ключ не соответствует аккаунту',
 
 	plural_days_1:' день',
 	plural_days_2:' дня',
