@@ -1254,6 +1254,23 @@ function setup_keys_backup(){
 	page.find('.keys-cexport-error,.keys-cexport-success,.keys-cimport-error,.keys-cimport-success').html('');
 	page.find('.icon-check').addClass('hidden');
 }
+// reset-access / manage-access key ops: when the master key is stored in the wallet for the target
+// account, hide the paste-master field and show a note (we take users[account].master_key); when
+// encryption is on, reveal the encryption-code field so the passphrase is required before signing.
+function setup_access_gate(page,kind){
+	if(!page||!page.length){ return; }
+	page.find('.access-enc-row').css('display',wallet_is_encrypted()?'block':'none');
+	page.find('.access-enc-row input').val('');
+	access_gate_master_state(page,kind);
+}
+function access_gate_master_state(page,kind){
+	let acc;
+	if('reset'==kind){ acc=(''+page.find('input[name=reset-access-login]').val()).toLowerCase().trim(); }
+	else{ acc=''+page.find('input[name=manage-access-master-key]').attr('data-account'); if(''==acc){ acc=current_user; } }
+	let stored=(''!=acc && typeof users[acc]!=='undefined' && users[acc] && users[acc].master_key)?true:false;
+	page.find('.access-master-row').css('display',stored?'none':'block');
+	page.find('.access-master-stored').css('display',stored?'block':'none');
+}
 // passphrase gate: when encrypted, the entered phrase must match the unlocked session passphrase
 function keys_pass_ok(entered){
 	if(!wallet_is_encrypted()){ return true; }
@@ -3130,6 +3147,12 @@ function view_settings(path,params,title){
 				if('security'==path[2]){ setup_wallet_security(); }
 				if('keys'==path[2]){ setup_keys_backup(); }
 				if('ns'==path[2]){ setup_ns(); }
+					if('reset-access'==path[2]){
+						let rp=$('.page-reset-access');
+						rp.find('input[name=reset-access-login]').val(current_user);
+						rp.find('input[name=reset-access-login]').unbind('input').bind('input',function(){ access_gate_master_state(rp,'reset'); });
+						setup_access_gate(rp,'reset');
+					}
 					if('profile'==path[2]){
 					$('.page-profile input[name=manage-profile-nickname]').val('');
 					$('.page-profile input[name=manage-profile-about]').val('');
@@ -3313,6 +3336,7 @@ function view_settings(path,params,title){
 					});
 				}
 				if('access'==path[2]){
+					setup_access_gate($('.page-access'),'manage');
 					$('.page-access input[name=manage-access-login]').val(current_user);
 					$('.page-access input[name=manage-access-login]').unbind('keypress');
 					$('.page-access input[name=manage-access-login]').bind('keypress',function(e){
@@ -7590,6 +7614,8 @@ function manage_access_preload(account,el){
 			el.find('.account-keys').css('display','block');
 			el.find('.account-keys .account-login').html(account);
 			el.find('.account-keys input[name=manage-access-master-key]').attr('data-account',account);
+			// preloaded account is now known → re-evaluate whether its master is stored in the wallet
+			access_gate_master_state(el,'manage');
 
 			el.find('.account-keys input[name=master-weight-threshold]').val(response[0].master_authority.weight_threshold);
 			el.find('.account-keys input[name=active-weight-threshold]').val(response[0].active_authority.weight_threshold);
@@ -8660,9 +8686,18 @@ function app_mouse(e){
 		save_profile($('.page-profile'));
 	}
 	if($(target).hasClass('reset-access-action')){
-		let account=$('.page-reset-access input[name=reset-access-login]').val().toLowerCase().trim();
-		let master_key=$('.page-reset-access input[name=reset-access-master-key]').val().trim();
-		reset_access(account,master_key,$('.page-reset-access'));
+		let page=$('.page-reset-access');
+		let account=page.find('input[name=reset-access-login]').val().toLowerCase().trim();
+		let master_key=page.find('input[name=reset-access-master-key]').val().trim();
+		// master saved in the wallet for this account → don't ask the user to paste it
+		if(''==master_key && typeof users[account]!=='undefined' && users[account] && users[account].master_key){
+			master_key=users[account].master_key;
+		}
+		// encryption on → require the encryption code (session passphrase) before signing
+		if(wallet_is_encrypted() && !keys_pass_ok(''+page.find('input[name=reset-access-enc-code]').val())){
+			page.find('.reset-access-error').html(ltmp_arr.keys_wrong_pass||'Wrong passphrase.'); return;
+		}
+		reset_access(account,master_key,page);
 	}
 	if($(target).hasClass('enc-enable-action')){ wallet_enable_encryption(); }
 	if($(target).hasClass('enc-change-action')){ wallet_change_pass(); }
@@ -8693,9 +8728,18 @@ function app_mouse(e){
 	}
 
 	if($(target).hasClass('manage-access-save-action')){
-		let account=$('.page-access input[name=manage-access-master-key]').attr('data-account');
-		let master_key=$('.page-access input[name=manage-access-master-key]').val().trim();
-		manage_access_save(account,master_key,$('.page-access'));
+		let page=$('.page-access');
+		let account=page.find('input[name=manage-access-master-key]').attr('data-account');
+		let master_key=page.find('input[name=manage-access-master-key]').val().trim();
+		// master saved in the wallet for this account → don't ask the user to paste it
+		if(''==master_key && typeof users[account]!=='undefined' && users[account] && users[account].master_key){
+			master_key=users[account].master_key;
+		}
+		// encryption on → require the encryption code (session passphrase) before signing
+		if(wallet_is_encrypted() && !keys_pass_ok(''+page.find('input[name=manage-access-enc-code]').val())){
+			page.find('.manage-access-save-error').html(ltmp_arr.keys_wrong_pass||'Wrong passphrase.'); return;
+		}
+		manage_access_save(account,master_key,page);
 	}
 	if($(target).hasClass('delete-auth-action')){
 		let parent=$(target).parent();

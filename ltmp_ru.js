@@ -316,10 +316,17 @@ var ltmp_ru_arr={
 						<input type="text" name="reset-access-login" class="simple-rounded">
 					</label>
 				</p>
-				<p>
+				<p class="access-master-row">
 					<label class="input-descr">
 						<span class="input-caption">Главный ключ (master):</span>
 						<input type="text" name="reset-access-master-key" class="simple-rounded" placeholder="5K...">
+					</label>
+				</p>
+				<p class="green access-master-stored captions" style="display:none">Главный ключ (master) сохранён в кошельке и будет использован автоматически.</p>
+				<p class="access-enc-row" style="display:none">
+					<label class="input-descr">
+						<span class="input-caption">Код шифрования (парольная фраза):</span>
+						<input type="password" name="reset-access-enc-code" class="simple-rounded" autocomplete="off">
 					</label>
 				</p>
 

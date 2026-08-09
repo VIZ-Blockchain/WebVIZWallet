@@ -317,10 +317,17 @@ var ltmp_zh_arr = {
 						<input type="text" name="reset-access-login" class="simple-rounded">
 					</label>
 				</p>
-				<p>
+				<p class="access-master-row">
 					<label class="input-descr">
 						<span class="input-caption">主密钥：</span>
 						<input type="text" name="reset-access-master-key" class="simple-rounded" placeholder="5K...">
+					</label>
+				</p>
+				<p class="green access-master-stored captions" style="display:none">主密钥已保存在此钱包中，将自动使用。</p>
+				<p class="access-enc-row" style="display:none">
+					<label class="input-descr">
+						<span class="input-caption">加密码（口令）：</span>
+						<input type="password" name="reset-access-enc-code" class="simple-rounded" autocomplete="off">
 					</label>
 				</p>
 

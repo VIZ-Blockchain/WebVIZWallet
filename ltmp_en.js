@@ -316,10 +316,17 @@ var ltmp_en_arr={
 						<input type="text" name="reset-access-login" class="simple-rounded">
 					</label>
 				</p>
-				<p>
+				<p class="access-master-row">
 					<label class="input-descr">
 						<span class="input-caption">Master key:</span>
 						<input type="text" name="reset-access-master-key" class="simple-rounded" placeholder="5K...">
+					</label>
+				</p>
+				<p class="green access-master-stored captions" style="display:none">The master key is stored in this wallet and will be used automatically.</p>
+				<p class="access-enc-row" style="display:none">
+					<label class="input-descr">
+						<span class="input-caption">Encryption code (passphrase):</span>
+						<input type="password" name="reset-access-enc-code" class="simple-rounded" autocomplete="off">
 					</label>
 				</p>
 
@@ -631,11 +638,18 @@ var ltmp_en_arr={
 						</label>
 					</p>
 
-					<p>
+					<p class="access-master-row">
 						<label class="input-descr">
 							<span class="input-caption">Current master key <span class="account-login bold"></span>:</span>
 							<input type="text" name="manage-access-master-key" class="simple-rounded" placeholder="5K..." data-account="">
-							<input type="hidden" name="manage-access-json-metadata">
+						</label>
+					</p>
+					<input type="hidden" name="manage-access-json-metadata">
+					<p class="green access-master-stored captions" style="display:none">The master key is stored in this wallet and will be used automatically.</p>
+					<p class="access-enc-row" style="display:none">
+						<label class="input-descr">
+							<span class="input-caption">Encryption code (passphrase):</span>
+							<input type="password" name="manage-access-enc-code" class="simple-rounded" autocomplete="off">
 						</label>
 					</p>
 
