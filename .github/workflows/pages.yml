@@ -43,6 +43,8 @@ jobs:
         run: |
           mkdir -p _site
           cp wallet-viz-world-portable.html _site/index.html
+          # Custom domain — keeps wallet.viz.world bound to this Pages site across deploys.
+          echo 'wallet.viz.world' > _site/CNAME
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
