@@ -1,0 +1,131 @@
+name: Desktop apps (Pake)
+
+# Собирает десктоп-обёртки кошелька через Pake (Tauri) для Windows, macOS и Linux.
+#
+# Источник — тот же standalone-билд, что уходит в Pages: php minify.php собирает
+# ОДИН самодостаточный html (ассеты вшиты data-URI). Его и упаковываем (--use-local-file):
+#   1) приложение работает без интернета и не зависит от доступности Pages;
+#   2) локальный origin не попадает под гейт Local Network Access (Chromium 138+ режет
+#      https → 127.0.0.1), поэтому кошелёк в десктопе может ходить в ноду пользователя.
+#
+# Иконка в системном трее: --show-system-tray + --system-tray-icon (Windows/macOS/Linux).
+#
+# Триггеры: ручной запуск и публикация релиза (тогда сборки прикрепляются к релизу).
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            label: linux
+          - os: windows-latest
+            label: windows
+          - os: macos-latest
+            label: macos
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # WebKitGTK — движок Tauri на Linux; libayatana-appindicator — БЕЗ неё нет иконки в трее.
+      - name: Linux build deps
+        if: matrix.label == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev \
+            librsvg2-dev patchelf file libssl-dev build-essential curl wget
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: pake-${{ matrix.label }}
+
+      - name: Build standalone wallet (minify.php)
+        shell: bash
+        run: |
+          php minify.php > /dev/null
+          mkdir -p dist
+          cp wallet-viz-world-portable.html dist/index.html
+          test -s dist/index.html
+
+      # Иконка приложения: Windows требует .ico, macOS — .icns, Linux берёт .png.
+      - name: Prepare icons
+        shell: bash
+        run: |
+          mkdir -p build
+          cp desktop/tray.png build/tray.png
+          case "${{ matrix.label }}" in
+            windows) cp desktop/icon.ico build/icon.ico ;;
+            linux)   cp desktop/icon.png build/icon.png ;;
+            macos)
+              mkdir -p build/icon.iconset
+              for s in 16 32 64 128 256 512; do
+                sips -z $s $s desktop/icon.png --out build/icon.iconset/icon_${s}x${s}.png >/dev/null
+              done
+              cp desktop/icon.png build/icon.iconset/icon_512x512@2x.png
+              iconutil -c icns build/icon.iconset -o build/icon.icns
+              ;;
+          esac
+
+      - name: Install pake-cli
+        run: npm install -g pake-cli
+
+      - name: Build desktop app
+        shell: bash
+        run: |
+          case "${{ matrix.label }}" in
+            windows) ICON=build/icon.ico ;;
+            macos)   ICON=build/icon.icns ;;
+            *)       ICON=build/icon.png ;;
+          esac
+          pake ./dist \
+            --name "VIZ Wallet" \
+            --icon "$ICON" \
+            --use-local-file \
+            --show-system-tray \
+            --system-tray-icon build/tray.png \
+            --width 1100 \
+            --height 820
+
+      - name: Collect artifacts
+        shell: bash
+        run: |
+          mkdir -p out
+          # Pake кладёт установщик в текущую директорию; расширение зависит от платформы.
+          find . -maxdepth 2 \( -name '*.msi' -o -name '*.exe' -o -name '*.dmg' \
+            -o -name '*.deb' -o -name '*.AppImage' -o -name '*.rpm' \) \
+            -not -path './node_modules/*' -exec cp {} out/ \;
+          ls -la out
+          test -n "$(ls -A out)"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: viz-wallet-${{ matrix.label }}
+          path: out/*
+          if-no-files-found: error
+
+      - name: Attach to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: out/*
