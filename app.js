@@ -50,6 +50,17 @@ var api_nodes=[
 var default_api_node=api_nodes[0];
 var api_nodes_addon={'list':[]};
 
+// A copy opened straight from disk is the one shipped next to a node the user runs
+// themselves (the desktop bundle), and file:// is one of the few origins a browser
+// lets reach 127.0.0.1 at all -- the hosted wallet is blocked from doing so by
+// Local Network Access. Offer that node there, first in the list and preselected.
+// A node the user picked earlier still wins: api_nodes_addon is read further below.
+var local_api_node='http://127.0.0.1:8090/';
+if('file:'==window.location.protocol){
+	api_nodes.unshift(local_api_node);
+	default_api_node=local_api_node;
+}
+
 var dao_request_ranges=[[1,999999]];
 
 var invite_user='invite';
