@@ -126,6 +126,15 @@ function update_testnet_badge(){
 }
 $(function(){ update_testnet_badge(); });
 
+// Стандартное сообщение об отказе говорит про «публичную ноду» и советует зайти позже. Для ноды,
+// которую пользователь поднял у себя (десктоп-бандл рядом с vizd), неверно и то и другое: нода не
+// публичная, а ждать бессмысленно — обычно она просто не запущена. Читаем текст через функцию, а
+// не напрямую из ltmp_arr, потому что при смене языка ltmp_arr переприсваивается целиком.
+function node_error_text(){
+	var local=/^https?:\/\/(127\.0\.0\.1|localhost|\[::1\])(:|\/|$)/i.test(''+default_api_node);
+	return (local&&ltmp_arr.local_node_error)?ltmp_arr.local_node_error:ltmp_arr.default_node_error;
+}
+
 function select_api_node(node){
 	node=typeof node==='undefined'?api_nodes[0]:node;
 	default_api_node=node;
@@ -816,7 +825,7 @@ function update_delegations_tables(){
 			});
 		}
 		else{
-			$('.page-delegate-shares .outcome-delegations .table-data').html('<p>'+ltmp_arr.default_node_error+'</p>');
+			$('.page-delegate-shares .outcome-delegations .table-data').html('<p>'+node_error_text()+'</p>');
 		}
 	});
 	viz.api.getVestingDelegations(current_user,0,1000,1,function(err,response){
@@ -835,7 +844,7 @@ function update_delegations_tables(){
 			$('.page-delegate-shares .income-delegations .table-data').html(result);
 		}
 		else{
-			$('.page-delegate-shares .income-delegations .table-data').html('<div class="columns-view"><div class="column-view column-1">'+ltmp_arr.default_node_error+'</div></div>');
+			$('.page-delegate-shares .income-delegations .table-data').html('<div class="columns-view"><div class="column-view column-1">'+node_error_text()+'</div></div>');
 		}
 	});
 }
@@ -1726,7 +1735,7 @@ function view_index(path,params,title){
 			else{
 				data+=`
 				<div class="columns-view">
-					<div class="column-view column-flex red">`+ltmp_arr.default_node_error+`</div>
+					<div class="column-view column-flex red">`+node_error_text()+`</div>
 				</div>`;
 			}
 			$('.view-index .sessions .table-data').html(data);
@@ -2246,7 +2255,7 @@ function load_inactive_paid_subscriptions(){
 		else{
 			data+=`
 			<div class="columns-view">
-				<div class="column-view column-flex red">`+ltmp_arr.default_node_error+`</div>
+				<div class="column-view column-flex red">`+node_error_text()+`</div>
 			</div>`;
 			console.log(err);
 		}
@@ -2479,7 +2488,7 @@ function view_market(path,params,title){
 								});
 							}
 							else{
-								$('.page-paid-subscriptions .view-paid-subscription .edit-paid-subscription').html('<p class="red">'+ltmp_arr.default_node_error+'</p>');
+								$('.page-paid-subscriptions .view-paid-subscription .edit-paid-subscription').html('<p class="red">'+node_error_text()+'</p>');
 
 								console.log(err);
 							}
@@ -2615,7 +2624,7 @@ function view_market(path,params,title){
 						else{
 							data+=`
 							<div class="columns-view">
-								<div class="column-view column-flex red">`+ltmp_arr.default_node_error+`</div>
+								<div class="column-view column-flex red">`+node_error_text()+`</div>
 							</div>`;
 							console.log(err);
 						}
@@ -3842,7 +3851,7 @@ function view_assets(path,params,title){
 
 					viz.api.getAccounts([current_user],function(err,response){
 						if(err){
-							$('.page-delegate-shares .delegate-shares-error').html(ltmp_arr.default_node_error);
+							$('.page-delegate-shares .delegate-shares-error').html(node_error_text());
 						}
 						else{
 							if(current_user==response[0].name){
@@ -4048,17 +4057,17 @@ function update_validators_list(){
 						$('.page-validators .check input').bind('change',validator_vote_action);
 					}
 					else{
-						$('.validators-list').append('<div><p>'+ltmp_arr.default_node_error+'</p></div>');
+						$('.validators-list').append('<div><p>'+node_error_text()+'</p></div>');
 					}
 					$('.validators-list').find('.loading').css('display','none');
 				});
 			}
 			else{
-				$('.validators-list').append('<div><p>'+ltmp_arr.default_node_error+'</p></div>');
+				$('.validators-list').append('<div><p>'+node_error_text()+'</p></div>');
 			}
 		}
 		else{
-			$('.validators-list').append('<div><p>'+ltmp_arr.default_node_error+'</p></div>');
+			$('.validators-list').append('<div><p>'+node_error_text()+'</p></div>');
 		}
 	});
 }
@@ -4073,7 +4082,7 @@ function update_validator_props(props){
 				}
 			}
 			else{
-				el.html('<p class="red">'+ltmp_arr.default_node_error+'</p>');
+				el.html('<p class="red">'+node_error_text()+'</p>');
 				console.log(err);
 			}
 		});
@@ -4385,7 +4394,7 @@ function load_pm_markets(reset){
 	// 'newest'/'oldest' by id. Legacy default 'oldest' surfaced empty-title placeholders — avoid it as default.
 	viz.api.listMarkets(1,from,per_page,true,pm_sort,function(err,markets){
 		tv.find('.table-header .loading').css('display','none');
-		if(err||!markets){ if(reset){ list.html('<p class="red">'+ltmp_arr.default_node_error+'</p>'); } if(err){console.log(err);} return; }
+		if(err||!markets){ if(reset){ list.html('<p class="red">'+node_error_text()+'</p>'); } if(err){console.log(err);} return; }
 		let seen={}; for(let i=0;i<pm_markets_all.length;i++){ seen[pm_markets_all[i].id]=1; }
 		for(let i in markets){ if(!seen[markets[i].id]){ pm_markets_all.push(markets[i]); } }
 		pm_render_markets();
@@ -4423,7 +4432,7 @@ function load_pm_market(id,prefill){
 	id=parseInt(id);
 	$('.view-pm .page-market .pm-market-detail').html('<p class="center"><span class="submit-button-ring" style="display:inline-block"></span></p>');
 	viz.api.getMarket(id,function(err,m){
-		if(err||!m){ $('.view-pm .page-market .pm-market-detail').html('<p class="red">'+ltmp_arr.default_node_error+'</p>'); if(err){console.log(err);} return; }
+		if(err||!m){ $('.view-pm .page-market .pm-market-detail').html('<p class="red">'+node_error_text()+'</p>'); if(err){console.log(err);} return; }
 		let data='';
 		if(m.image){ data+='<p class="center"><img style="max-height:120px" src="'+escape_html(''+m.image)+'" onerror="this.style.display=\'none\'"></p>'; }
 		data+='<h3>'+escape_html(''+m.title)+'</h3>';
@@ -4650,7 +4659,7 @@ function load_pm_completed(){
 	box.html('');
 	viz.api.getAccountPositions(current_user,0,300,function(err,list){
 		tv.find('.table-header .loading').css('display','none');
-		if(err||!list){ box.html('<div class="columns-view no-results"><div class="column-view column-flex"><span class="red">'+ltmp_arr.default_node_error+'</span></div></div>'); if(err){console.log(err);} return; }
+		if(err||!list){ box.html('<div class="columns-view no-results"><div class="column-view column-flex"><span class="red">'+node_error_text()+'</span></div></div>'); if(err){console.log(err);} return; }
 		let rows='';
 		for(let i in list){
 			let p=pm_norm_position(list[i]);
@@ -4723,7 +4732,7 @@ function update_fund_request(id,votes,votes_update){
 					$('.fund-request[data-id="'+response.request_id+'"]').html(data);
 				}
 				else{
-					$('.fund-request[data-id="'+response.request_id+'"]').html('<p><a data-href="/dao/fund-requests/'+response.request_id+'/">#'+response.request_id+' <span class="red">'+ltmp_arr.default_node_error+'</span></a></p>');
+					$('.fund-request[data-id="'+response.request_id+'"]').html('<p><a data-href="/dao/fund-requests/'+response.request_id+'/">#'+response.request_id+' <span class="red">'+node_error_text()+'</span></a></p>');
 				}
 			}
 			if(0<$('.section-fund-request[data-id="'+response.request_id+'"]').length){
@@ -4907,7 +4916,7 @@ function update_fund_request(id,votes,votes_update){
 						}
 					}
 					else{
-						data+='<p class="red">'+ltmp_arr.default_node_error+'</p>';
+						data+='<p class="red">'+node_error_text()+'</p>';
 					}
 					data+='<hr><a data-href="/dao/fund-requests/">'+ltmp_arr.default_return_link+'</a>';
 					$('.section-fund-request[data-id="'+response.request_id+'"]').html(data);
@@ -4986,7 +4995,7 @@ function update_fund_requests(status){
 			}
 			else{
 				$('.fund-requests[data-status="'+status+'"] .loading').remove();
-				$('.fund-requests[data-status="'+status+'"]').append('<div class="error"><p class="red captions">'+ltmp_arr.default_node_error+'</p></div>');
+				$('.fund-requests[data-status="'+status+'"]').append('<div class="error"><p class="red captions">'+node_error_text()+'</p></div>');
 			}
 		});
 	}
@@ -5072,7 +5081,7 @@ function view_dao(path,params,title){
 							}
 						}
 						else{
-							$('.page-validator-reward-sharing .validator-reward-sharing-error').html(ltmp_arr.default_node_error);
+							$('.page-validator-reward-sharing .validator-reward-sharing-error').html(node_error_text());
 						}
 					});
 				}
@@ -5111,7 +5120,7 @@ function view_dao(path,params,title){
 							}
 						}
 						else{
-							$('.page-validator-params .validator-setup-error').html(ltmp_arr.default_node_error);
+							$('.page-validator-params .validator-setup-error').html(node_error_text());
 						}
 					});
 				}
@@ -5913,7 +5922,7 @@ function set_paid_subscribe(provider,level,amount,period,auto_renewal,agreement,
 			update_balances($('.page-checks .account-balance'));
 		}
 		else{
-			page.find('.paid-subscribe-error').html(ltmp_arr.default_node_error);
+			page.find('.paid-subscribe-error').html(node_error_text());
 
 			page.find('.paid-subscribe-action').removeAttr('disabled');
 			page.find('.submit-button-ring').css('display','none');
@@ -6040,7 +6049,7 @@ function create_paid_subscribe(url_summary,levels,amount,period,agreement,el){
 			page.find('.cancel-paid-subscribe-action').removeAttr('disabled');
 		}
 		else{
-			page.find('.create-paid-subscribe-error').html(ltmp_arr.default_node_error);
+			page.find('.create-paid-subscribe-error').html(node_error_text());
 
 			page.find('.create-paid-subscribe-action').removeAttr('disabled');
 			page.find('.cancel-paid-subscribe-action').removeAttr('disabled');
@@ -6815,7 +6824,7 @@ function validator_set_props(el){
 			});
 		}
 		else{
-			page.find('.validator-set-props-error').html(ltmp_arr.default_node_error);
+			page.find('.validator-set-props-error').html(node_error_text());
 			page.find('.validator-set-props-action').removeAttr('disabled');
 			page.find('.submit-button-ring[rel=set-props]').css('display','none');
 
@@ -6944,7 +6953,7 @@ function undelegate_shares(account,el){
 			balance_el.find('.effective-vesting-shares').html('&hellip;');
 			viz.api.getAccounts([current_user],function(err,response){
 				if(err){
-					$('.page-delegate-shares .delegate-shares-error').html(ltmp_arr.default_node_error);
+					$('.page-delegate-shares .delegate-shares-error').html(node_error_text());
 				}
 				else{
 					if(current_user==response[0].name){
@@ -6995,7 +7004,7 @@ function delegate_shares(account,amount,el){
 			balance_el.find('.effective-vesting-shares').html('&hellip;');
 			viz.api.getAccounts([current_user],function(err,response){
 				if(err){
-					$('.page-delegate-shares .delegate-shares-error').html(ltmp_arr.default_node_error);
+					$('.page-delegate-shares .delegate-shares-error').html(node_error_text());
 				}
 				else{
 					if(current_user==response[0].name){

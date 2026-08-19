@@ -2977,6 +2977,7 @@ var ltmp_ru_arr={
 	default_loading_more:'Загрузить ещё &#10140;',
 	default_node_not_respond:'Ошибка! Публичная нода не отвечает, попробуйте позже обновив страницу.',
 	default_node_error:'Ошибка в получении данных от публичной ноды, попробуйте позже.',
+	local_node_error:'Нода на этой машине не отвечает. Запущен ли vizd и слушает ли он этот адрес?',
 	default_prev_page:'&larr; Предыдущая страница',
 	default_next_page:'Следующая страница &rarr;',
 	default_list_items_counter:'Показано',

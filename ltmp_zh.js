@@ -2975,6 +2975,7 @@ var ltmp_zh_arr = {
 	default_loading_more:'加载更多 &#10140;',
 	default_node_not_respond:'错误！公共节点无响应，请稍后刷新页面重试。',
 	default_node_error:'无法从公共节点接收数据，请稍后重试。',
+	local_node_error:'本机节点无响应。vizd 是否已启动并监听该地址？',
 	default_prev_page:'&larr; 上一页',
 	default_next_page:'下一页 &rarr;',
 	default_list_items_counter:'显示',

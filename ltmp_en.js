@@ -3002,6 +3002,7 @@ var ltmp_en_arr={
 	default_loading_more:'Load more &#10140;',
 	default_node_not_respond:'Error! The public node is not responding, try later by refreshing the page.',
 	default_node_error:'Failed to receive data from public node, try again later.',
+	local_node_error:'No answer from the node on this machine. Is vizd running and listening on that address?',
 	default_prev_page:'&larr; Previous page',
 	default_next_page:'Next page &rarr;',
 	default_list_items_counter:'Shown',
