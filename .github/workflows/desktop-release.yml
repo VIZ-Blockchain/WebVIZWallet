@@ -107,6 +107,25 @@ jobs:
             --width 1100 \
             --height 820
 
+      # Pake прописывает в .desktop собственную заглушку: Name=viz-wallet и Comment «Turn any
+      # webpage into a desktop app with Rust», а Categories оставляет пустым. В меню приложений
+      # это выглядит чужой программой без раздела — переписываем на свои значения.
+      # AppImage несёт такой же .desktop внутри, но его правка требует пересборки образа — не трогаем.
+      - name: Polish Linux desktop entry
+        if: matrix.label == 'linux'
+        shell: bash
+        run: |
+          deb=$(ls *.deb)
+          tmp=$(mktemp -d)
+          dpkg-deb -R "$deb" "$tmp"
+          for f in "$tmp"/usr/share/applications/*.desktop; do
+            sed -i -e 's/^Name=.*/Name=VIZ Wallet/' \
+                   -e 's|^Comment=.*|Comment=Non-custodial VIZ wallet|' \
+                   -e 's/^Categories=.*/Categories=Network;Finance;/' "$f"
+          done
+          dpkg-deb -b "$tmp" "$deb"
+          grep -h '^\(Name\|Comment\|Categories\)=' "$tmp"/usr/share/applications/*.desktop
+
       - name: Collect artifacts
         shell: bash
         run: |
