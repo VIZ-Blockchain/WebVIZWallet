@@ -1531,7 +1531,7 @@ var ltmp_ru_arr={
 					<span class="icon icon-margin hidden icon-color-blue icon-check" rel="pow-create-account"></span>
 				</p>
 				<div class="addon captions">
-					<h3>Бесплатный аккаунт через proof-of-work (без инвайта и капчи). Кошелёк майнит короткий пруф и регистрирует аккаунт через start.viz.world. Занимает ~1–2 минуты.</h3>
+					<h3>Подсказка</h3><p>Бесплатный аккаунт через proof-of-work (без инвайта и капчи). Кошелёк майнит короткий пруф и регистрирует аккаунт через start.viz.world. Занимает ~1–2 минуты.</p>
 				</div>
 				<div class="pow-account-keys hidden">
 					<h3 class="left">Поздравляем!</h3>

@@ -1532,7 +1532,7 @@ var ltmp_zh_arr = {
 					<span class="icon icon-margin hidden icon-color-blue icon-check" rel="pow-create-account"></span>
 				</p>
 				<div class="addon captions">
-					<h3>通过工作量证明免费创建账户（无需邀请，无需验证码）。钱包会计算一个简短的证明并通过 start.viz.world 注册账户。大约需要 1–2 分钟。</h3>
+					<h3>提示</h3><p>通过工作量证明免费创建账户（无需邀请，无需验证码）。钱包会计算一个简短的证明并通过 start.viz.world 注册账户。大约需要 1–2 分钟。</p>
 				</div>
 				<div class="pow-account-keys hidden">
 					<h3 class="left">恭喜！</h3>

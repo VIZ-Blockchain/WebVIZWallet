@@ -1545,7 +1545,7 @@ var ltmp_en_arr={
 					<span class="icon icon-margin hidden icon-color-blue icon-check" rel="pow-create-account"></span>
 				</p>
 				<div class="addon captions">
-					<h3>Free account via proof-of-work (no invite, no captcha). The wallet mines a short proof and registers the account through start.viz.world. Takes ~1–2 minutes.</h3>
+					<h3>Hint</h3><p>Free account via proof-of-work (no invite, no captcha). The wallet mines a short proof and registers the account through start.viz.world. Takes ~1–2 minutes.</p>
 				</div>
 				<div class="pow-account-keys hidden">
 					<h3 class="left">Congratulations!</h3>
