@@ -438,6 +438,15 @@ var validator_props_percent=['bandwidth_reserve_percent','committee_request_appr
 	//params (rendered raw) nor ppm params, to keep display and re-broadcast byte-consistent with C++.
 	'pm_max_oracle_fee_percent','pm_default_time_penalty_percent','pm_dispute_approve_min_percent','pm_oracle_penalty_percent','pm_no_contest_penalty_percent','pm_commit_no_reveal_penalty_percent','pm_lazy_alloc_percent','pm_lazy_max_total_alloc_percent','pm_lazy_recall_step_percent','pm_lazy_emergency_penalty_percent','pm_lazy_min_liquidity_fee_percent','pm_leverage_max_per_position_bp'];
 var validator_props_hf13_defaults={'distribution_epoch_length':28800};
+// #689: the four vote caps (committee + dispute) live in chain_properties_pm (HF14), but the two
+// committee fields are NOT pm_-prefixed. The pm_-prefix checks would drop them from the form, from
+// the seed-from-live-defaults step and from the validator list. This set marks the full pm-section
+// so they stay grouped with the other HF14 params everywhere the pm_ prefix is tested.
+var validator_pm_section_extra_fields=['committee_votes_per_request','committee_vote_min_vesting'];
+function is_pm_section_field(k){
+	k=''+k;
+	return ('pm_'===k.substring(0,3))||(-1!==validator_pm_section_extra_fields.indexOf(k));
+}
 var request_status_arr={
 	'0':ltmp_arr.request_status_arr['0'],
 	'1':ltmp_arr.request_status_arr['1'],
@@ -4024,7 +4033,7 @@ function update_validators_list(){
 							//HF14 prediction-market params this validator has voted → collapsible toggle (hidden by default)
 							let pm_list='';
 							for(let pk in props_item){
-								if('pm_'!==(''+pk).substring(0,3)){ continue; }
+								if(!is_pm_section_field(pk)){ continue; }
 								let pcap=(typeof validator_props_captions[pk]!=='undefined')?validator_props_captions[pk]:((typeof ltmp_arr.validator_props_captions[pk]!=='undefined')?ltmp_arr.validator_props_captions[pk]:(''+pk).replace(/_/g,' '));
 								pm_list+='<p>'+escape_html(pcap)+': <strong data-prop="'+pk+'" data-value="'+escape_html(''+props_item[pk])+'">'+(-1!==validator_props_percent.indexOf(pk)?(parseFloat(props_item[pk])/100)+'%':escape_html(''+props_item[pk]))+'</strong></p>';
 							}
@@ -4092,7 +4101,7 @@ function update_validator_props(props){
 		//if their stored props predate HF14 (median get_chain_properties has no pm fields until
 		//validators actually vote them, so we seed the inputs with the live pm chain defaults).
 		viz.api.getPmChainProperties(function(pmerr,pmprops){
-		if(!pmerr && pmprops){ for(let pk in pmprops){ if('pm_'===(''+pk).substring(0,3) && typeof props[pk]==='undefined'){ props[pk]=pmprops[pk]; } } }
+		if(!pmerr && pmprops){ for(let pk in pmprops){ if(is_pm_section_field(pk) && typeof props[pk]==='undefined'){ props[pk]=pmprops[pk]; } } }
 		let data='';
 		let rendered_props={};
 		for(j_num in ltmp_arr.validator_props_order){
@@ -4126,7 +4135,7 @@ function update_validator_props(props){
 			let is_pct=(-1!==validator_props_percent.indexOf(k));
 			let field='<p><label class="input-descr"><span class="input-caption">'+escape_html(cap)+':</span>'
 				+'<input type="text" name="validator-set-props-'+k+'" class="simple-rounded" placeholder="'+(is_pct?'0.00%':'')+'" value="'+(is_pct?((parseInt(props[k])/100)+'%'):escape_html(''+props[k]))+'"></label></p>';
-			if('pm_'===(''+k).substring(0,3)){ pm_data+=field; } else { data+=field; }
+			if(is_pm_section_field(k)){ pm_data+=field; } else { data+=field; }
 		}
 		if(pm_data){
 			data+='<p><a class="validator-pm-props-action inline-button grey small">'+(ltmp_arr.validator_pm_props_toggle||'Prediction market params (HF14)')+'</a></p>';
@@ -6774,7 +6783,7 @@ function validator_set_props(el){
 			viz.api.getPmChainProperties(function(pmerr,pmprops){
 			//merge HF14 pm params (the form seeds them from chain defaults) so they are read from the
 			//inputs below and submitted as a v5 versioned_chain_properties vote
-			if(!pmerr && pmprops){ for(let pk in pmprops){ if('pm_'===(''+pk).substring(0,3) && typeof props[pk]==='undefined'){ props[pk]=pmprops[pk]; } } }
+			if(!pmerr && pmprops){ for(let pk in pmprops){ if(is_pm_section_field(pk) && typeof props[pk]==='undefined'){ props[pk]=pmprops[pk]; } } }
 			for(i in props){
 				let prop_orig_type=typeof props[i];
 				props[i]=page.find('input[name="validator-set-props-'+i+'"]').val();
