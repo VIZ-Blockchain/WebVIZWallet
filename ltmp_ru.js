@@ -1917,6 +1917,7 @@ var ltmp_ru_arr={
 	pm_dispute_vote_outcome:'Исход голоса',
 	pm_dispute_vote_success:'Голос отправлен!',
 	pm_dispute_vote_weight:'Вес %',
+	pm_vote_min_vesting_notice:'Минимальный эффективный вестинг для голоса:',
 	pm_load_more:'Загрузить ещё',
 	pm_memo:'Заметка (опц.)',
 	pm_my_positions:'Мои позиции',

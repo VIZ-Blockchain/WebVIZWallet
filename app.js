@@ -4629,6 +4629,25 @@ function pm_dispute_create_action(btn){
 		setTimeout(function(){ load_pm_market(market_id); },1500);
 	});
 }
+// Cached read of the HF14 pm chain properties (used for the vote vesting floors #689).
+var pm_chain_props_cache=null;
+function pm_get_chain_props(cb){
+	if(pm_chain_props_cache){ cb(pm_chain_props_cache); return; }
+	viz.api.getPmChainProperties(function(err,r){
+		if(!err && r){ pm_chain_props_cache=r; cb(r); }
+		else{ cb(null); }
+	});
+}
+// Fill el with the current minimum effective-vesting floor for a vote (Sybil gate): label is an i18n
+// sentence, field is 'pm_dispute_vote_min_vesting' or 'committee_vote_min_vesting'.
+function pm_vote_vesting_notice(el,field,label){
+	el.html(escape_html(label)+' <span class="bold pm-vesting-val">&hellip;</span>');
+	pm_get_chain_props(function(r){
+		if(r && typeof r[field]!=='undefined'){
+			el.find('.pm-vesting-val').html(escape_html(''+r[field]));
+		}
+	});
+}
 // Vote in an open dispute (pm_dispute_vote). vote_outcome: -1 = uphold original, else outcome index.
 // vote_percent in basis points (100% -> 10000). Signed with active key (accepted for regular auth).
 function pm_dispute_vote_form(market_id,ocs){
@@ -4636,11 +4655,13 @@ function pm_dispute_vote_form(market_id,ocs){
 	let opts='<option value="-1">'+(ltmp_arr.pm_dispute_uphold||'Uphold original')+'</option>';
 	for(let i in ocs){ opts+='<option value="'+parseInt(ocs[i].outcome_index)+'">'+escape_html(''+ocs[i].label)+'</option>'; }
 	let html='<h4 class="captions">'+(ltmp_arr.pm_dispute_vote||'Vote in dispute')+'</h4>';
+	html+='<p class="grey pm-dvote-vesting"></p>';
 	html+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_dispute_vote_outcome||'Vote outcome')+':</span><select name="pm-dvote-oc" class="simple-rounded simple-rounded-size">'+opts+'</select></label></p>';
 	html+='<p><label class="input-descr"><span class="input-caption">'+(ltmp_arr.pm_dispute_vote_weight||'Weight %')+':</span><input type="text" name="pm-dvote-pct" class="simple-rounded" value="100"></label></p>';
 	html+='<p class="red pm-dvote-error"></p><p class="green pm-dvote-success"></p>';
 	html+='<p><input class="pm-dvote-send blue-button captions" type="button" value="'+(ltmp_arr.pm_dispute_vote||'Vote')+'" data-market="'+market_id+'"><span class="submit-button-ring"></span><span class="icon icon-margin hidden icon-color-blue icon-check"></span></p>';
 	f.html(html).css('display','block');
+	pm_vote_vesting_notice(f.find('.pm-dvote-vesting'),'pm_dispute_vote_min_vesting',ltmp_arr.pm_vote_min_vesting_notice||'Minimum effective vesting to vote:');
 	f.find('.pm-dvote-send').off('click.pmdvs').on('click.pmdvs',function(){ pm_dispute_vote_action($(this)); });
 }
 function pm_dispute_vote_action(btn){
@@ -4865,6 +4886,7 @@ function update_fund_request(id,votes,votes_update){
 										</span>
 									</label>
 								</p>
+								<p class="grey fund-vote-vesting"></p>
 								<p class="red fund-vote-request-error"></p>
 								<p class="green fund-vote-request-success"></p>
 								<p>
@@ -4929,6 +4951,8 @@ function update_fund_request(id,votes,votes_update){
 					}
 					data+='<hr><a data-href="/dao/fund-requests/">'+ltmp_arr.default_return_link+'</a>';
 					$('.section-fund-request[data-id="'+response.request_id+'"]').html(data);
+					let fund_vesting_note=$('.section-fund-request[data-id="'+response.request_id+'"] .fund-vote-vesting');
+					if(fund_vesting_note.length){ pm_vote_vesting_notice(fund_vesting_note,'committee_vote_min_vesting',ltmp_arr.pm_vote_min_vesting_notice||'Minimum effective vesting to vote:'); }
 					//binds
 					if(0<$('input[name=fund-vote-request-percent]').length){
 						$('input[name=fund-vote-request-percent]').unbind('keyup');

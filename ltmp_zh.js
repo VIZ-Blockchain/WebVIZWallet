@@ -1917,6 +1917,7 @@ var ltmp_zh_arr = {
 	pm_dispute_vote_outcome:'投票结果',
 	pm_dispute_vote_success:'投票已提交！',
 	pm_dispute_vote_weight:'权重 %',
+	pm_vote_min_vesting_notice:'投票所需的最低有效 vesting：',
 	pm_load_more:'加载更多',
 	pm_memo:'备注（可选）',
 	pm_my_positions:'我的持仓',

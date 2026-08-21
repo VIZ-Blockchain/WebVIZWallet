@@ -1930,6 +1930,7 @@ var ltmp_en_arr={
 	pm_dispute_vote_outcome:'Vote outcome',
 	pm_dispute_vote_success:'Vote submitted!',
 	pm_dispute_vote_weight:'Weight %',
+	pm_vote_min_vesting_notice:'Minimum effective vesting to vote:',
 	pm_load_more:'Load more',
 	pm_memo:'Memo (optional)',
 	pm_my_positions:'My positions',
