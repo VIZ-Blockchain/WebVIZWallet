@@ -7294,7 +7294,10 @@ function pow_create_account(account_login,login_el){
 
 	let keys=viz.auth.getPrivateKeys(account_login,pow_pass_gen(100),['regular','active','master','memo']);
 
-	pow_api('get-challenge').then(function(ch){
+	pow_api('check-login-available',{account_login:account_login}).then(function(av){
+		if(av.result!=='success'){ throw new Error('login not available'); }
+		return pow_api('get-challenge');
+	}).then(function(ch){
 		return pow_grind(ch.id,ch.challenge).then(function(nonce){ return {ch:ch, nonce:nonce}; });
 	}).then(function(r){
 		return pow_api('account-create',{
@@ -7327,10 +7330,13 @@ function pow_create_account(account_login,login_el){
 		download('viz-registration.txt','VIZ registration\r\nAccount: '+account_login+'\r\nMaster: '+keys['master']+'\r\nActive: '+keys['active']+'\r\nRegular: '+keys['regular']+'\r\nMemo: '+keys['memo']+'\r\n');
 	}).catch(function(e){
 		page.find('.submit-button-ring[rel="pow-create-account"]').css('display','none');
-		let msg=(e && e.message==='login not available') ? ltmp_arr.pow_login_taken
-			: (e && e.message==='too much attempts') ? ltmp_arr.pow_too_many
-			: ltmp_arr.create_account_error;
-		page.find('.pow-create-account-error').html(msg);
+		if(e && e.message==='login not available'){
+			page.find('.pow-create-account-error').html('');
+			page.find('.pow-create-account-available').html(ltmp_arr.pow_login_taken);
+		}else{
+			page.find('.pow-create-account-available').html('');
+			page.find('.pow-create-account-error').html((e && e.message==='too much attempts') ? ltmp_arr.pow_too_many : ltmp_arr.create_account_error);
+		}
 		page.find('.pow-create-account-action').removeAttr('disabled');
 	});
 }
