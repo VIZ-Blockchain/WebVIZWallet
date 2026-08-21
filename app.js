@@ -4646,6 +4646,9 @@ function pm_vote_vesting_notice(el,field,label){
 		if(r && typeof r[field]!=='undefined'){
 			el.find('.pm-vesting-val').html(escape_html(''+r[field]));
 		}
+		else{
+			el.hide(); // field absent on this node (pre-HF14 / no pm props) — hide the notice
+		}
 	});
 }
 // Vote in an open dispute (pm_dispute_vote). vote_outcome: -1 = uphold original, else outcome index.
