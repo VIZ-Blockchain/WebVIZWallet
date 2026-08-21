@@ -1513,6 +1513,37 @@ var ltmp_zh_arr = {
 
 					<p>请立即保存您的密钥！</p>
 				</div>
+				<hr>
+				<p>
+					<label class="input-descr">
+					<span class="input-caption">新账户（免费，工作量证明）：</span>
+					<input type="text" name="pow-create-account-login" class="simple-rounded">
+					</label>
+				</p>
+				<p class="red pow-create-account-available"></p>
+				<p class="red pow-create-account-error"></p>
+				<p>
+					<label class="check">创建后将此账户连接到钱包<input type="checkbox" name="pow-create-account-connect" checked="checked"><span class="mark"></span></label>
+				</p>
+				<p class="green pow-create-account-connected hidden">账户已连接到钱包。</p>
+				<p>
+					<input class="pow-create-account-action blue-button captions" type="button" value="创建免费账户">
+					<span class="submit-button-ring" rel="pow-create-account"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check" rel="pow-create-account"></span>
+				</p>
+				<div class="addon captions">
+					<h3>通过工作量证明免费创建账户（无需邀请，无需验证码）。钱包会计算一个简短的证明并通过 start.viz.world 注册账户。大约需要 1–2 分钟。</h3>
+				</div>
+				<div class="pow-account-keys hidden">
+					<h3 class="left">恭喜！</h3>
+					<p>已创建账户： <span class="green account-login"></span></p>
+					<p>密钥：</p>
+					<p><span class="master-key captions">&hellip;</span> &mdash; master</p>
+					<p><span class="active-key captions">&hellip;</span> &mdash; active</p>
+					<p><span class="regular-key captions">&hellip;</span> &mdash; regular</p>
+					<p><span class="memo-key captions">&hellip;</span> &mdash; memo</p>
+					<p>请立即保存密钥！文件 viz-registration.txt 已下载。</p>
+				</div>
 
 				<p><hr><a data-href="/account/">%%default_return_link%%</a></p>
 			</div>
@@ -2842,6 +2873,9 @@ var ltmp_zh_arr = {
 	sell_subaccount_success:'子账户销售条件已成功更改',
 	set_account_price_success:'账户销售条件已成功更改',
 	create_account_error:'创建账户时出错',
+	pow_login_invalid:'账户名：3–16 个字符，a–z 0–9 或连字符',
+	pow_login_taken:'该账户名已被占用',
+	pow_too_many:'此 IP 尝试次数过多——请稍后再试',
 	transfer_error:'转账错误',
 	transfer_success:'转账成功完成',
 	transfer_amount_success:'{amount} 转账成功',

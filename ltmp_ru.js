@@ -1512,6 +1512,37 @@ var ltmp_ru_arr={
 
 					<p>Сохраните ключи прямо сейчас!</p>
 				</div>
+				<hr>
+				<p>
+					<label class="input-descr">
+					<span class="input-caption">Новый аккаунт (бесплатный, proof-of-work):</span>
+					<input type="text" name="pow-create-account-login" class="simple-rounded">
+					</label>
+				</p>
+				<p class="red pow-create-account-available"></p>
+				<p class="red pow-create-account-error"></p>
+				<p>
+					<label class="check">Подключить этот аккаунт к кошельку после создания<input type="checkbox" name="pow-create-account-connect" checked="checked"><span class="mark"></span></label>
+				</p>
+				<p class="green pow-create-account-connected hidden">Аккаунт подключён к кошельку.</p>
+				<p>
+					<input class="pow-create-account-action blue-button captions" type="button" value="Создать бесплатный аккаунт">
+					<span class="submit-button-ring" rel="pow-create-account"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check" rel="pow-create-account"></span>
+				</p>
+				<div class="addon captions">
+					<h3>Бесплатный аккаунт через proof-of-work (без инвайта и капчи). Кошелёк майнит короткий пруф и регистрирует аккаунт через start.viz.world. Занимает ~1–2 минуты.</h3>
+				</div>
+				<div class="pow-account-keys hidden">
+					<h3 class="left">Поздравляем!</h3>
+					<p>Создан аккаунт: <span class="green account-login"></span></p>
+					<p>Ключи:</p>
+					<p><span class="master-key captions">&hellip;</span> &mdash; master</p>
+					<p><span class="active-key captions">&hellip;</span> &mdash; active</p>
+					<p><span class="regular-key captions">&hellip;</span> &mdash; regular</p>
+					<p><span class="memo-key captions">&hellip;</span> &mdash; memo</p>
+					<p>Сохраните ключи прямо сейчас! Файл viz-registration.txt был скачан.</p>
+				</div>
 
 				<p><hr><a data-href="/account/">%%default_return_link%%</a></p>
 			</div>
@@ -2844,6 +2875,9 @@ var ltmp_ru_arr={
 	sell_subaccount_success:'Условия продажи субаккаунтов успешно изменены',
 	set_account_price_success:'Условия продажи аккаунта успешно изменены',
 	create_account_error:'Ошибка при создании аккаунта',
+	pow_login_invalid:'Имя аккаунта: 3–16 символов, a–z 0–9 или дефис',
+	pow_login_taken:'Это имя аккаунта уже занято',
+	pow_too_many:'Слишком много попыток с этого IP — попробуй позже',
 	transfer_error:'Ошибка при переводе',
 	transfer_success:'Перевод успешно выполнен',
 	transfer_amount_success:'Перевод {amount} выполнен успешно',

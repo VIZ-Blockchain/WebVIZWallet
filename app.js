@@ -66,6 +66,13 @@ var dao_request_ranges=[[1,999999]];
 var invite_user='invite';
 var invite_active_key='5KcfoRuDfkhrLCxVcE9x51J6KN9aM9fpb78tLrvvFckxVV6FyFW';
 
+/* Free account registration via the start.viz.world proof-of-work open API. The account
+   is created on the VIZ MAINNET (the faucet), independent of the node this wallet points at. */
+var reg_base='https://start.viz.world';
+var reg_pow_offset=3;     // must match config.pow.offset on the server
+var reg_pow_prefix='51';  // must match config.pow.prefix
+var reg_grind_chunk=400;
+
 var standalone=false;
 var standalone_fullpath='';
 var standalone_path='';
@@ -7240,6 +7247,93 @@ function connect_created_account(login,active_key,regular_key,memo_key,master_ke
 	save_session();
 	return true;
 }
+/* ------------------------------------------ free account (PoW open API) */
+function pow_pass_gen(length){
+	length=typeof length==='undefined'?100:length;
+	let charset='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-=_:;.,@!^&*$';
+	let out='', rnd=new Uint32Array(length); crypto.getRandomValues(rnd);
+	for(let i=0;i<length;i++){ out+=charset.charAt(rnd[i]%charset.length); }
+	return out;
+}
+function pow_api(action,data){
+	return fetch(reg_base+'/ajax/'+action+'/',{
+		method:'POST',
+		headers:{'Content-Type':'application/x-www-form-urlencoded'},
+		body:new URLSearchParams(data||{}).toString()
+	}).then(function(r){ return r.json(); });
+}
+function pow_grind(id,challenge){
+	return new Promise(function(resolve){
+		let nonce=0;
+		function step(){
+			for(let i=0;i<reg_grind_chunk;i++){
+				nonce++;
+				let wif=viz.auth.toWif(''+id,''+challenge,nonce);
+				if(viz.auth.wifToPublic(wif).substr(reg_pow_offset,reg_pow_prefix.length)===reg_pow_prefix){ resolve(nonce); return; }
+			}
+			setTimeout(step,0);
+		}
+		step();
+	});
+}
+function pow_create_account(account_login,login_el){
+	let page=login_el.closest('.page');
+	page.find('.pow-create-account-action').attr('disabled','disabled');
+	page.find('.icon-check[rel="pow-create-account"]').css('display','none');
+	page.find('.submit-button-ring[rel="pow-create-account"]').css('display','inline-block');
+	page.find('.pow-create-account-error').html('');
+	page.find('.pow-create-account-available').html('');
+
+	account_login=(account_login||'').trim().toLowerCase();
+	if(!/^[a-z0-9-]{3,16}$/.test(account_login)){
+		page.find('.pow-create-account-error').html(ltmp_arr.pow_login_invalid);
+		page.find('.pow-create-account-action').removeAttr('disabled');
+		page.find('.submit-button-ring[rel="pow-create-account"]').css('display','none');
+		return;
+	}
+
+	let keys=viz.auth.getPrivateKeys(account_login,pow_pass_gen(100),['regular','active','master','memo']);
+
+	pow_api('get-challenge').then(function(ch){
+		return pow_grind(ch.id,ch.challenge).then(function(nonce){ return {ch:ch, nonce:nonce}; });
+	}).then(function(r){
+		return pow_api('account-create',{
+			challenge_id:r.ch.id, challenge_resolver:r.nonce, account_login:account_login,
+			public_master:keys.masterPubkey, public_active:keys.activePubkey,
+			public_regular:keys.regularPubkey, public_memo:keys.memoPubkey
+		});
+	}).then(function(res){
+		if('success'!==res.result){ throw new Error(res.result||'unknown'); }
+		page.find('.submit-button-ring[rel="pow-create-account"]').css('display','none');
+		page.find('.icon-check[rel="pow-create-account"]').css('display','inline-block');
+		page.find('.pow-create-account-error').html('');
+		login_el.val('');
+		login_el.css('border-color','');
+		page.find('.pow-create-account-action').removeAttr('disabled');
+
+		page.find('.pow-account-keys .account-login').html(account_login);
+		page.find('.pow-account-keys .master-key').html(keys['master']);
+		page.find('.pow-account-keys .active-key').html(keys['active']);
+		page.find('.pow-account-keys .regular-key').html(keys['regular']);
+		page.find('.pow-account-keys .memo-key').html(keys['memo']);
+		page.find('.pow-account-keys').css('display','block');
+
+		if(page.find('input[name="pow-create-account-connect"]').prop('checked')){
+			if(connect_created_account(account_login,keys['active'],keys['regular'],keys['memo'],keys['master'])){
+				page.find('.pow-create-account-connected').css('display','block');
+			}
+		}
+
+		download('viz-registration.txt','VIZ registration\r\nAccount: '+account_login+'\r\nMaster: '+keys['master']+'\r\nActive: '+keys['active']+'\r\nRegular: '+keys['regular']+'\r\nMemo: '+keys['memo']+'\r\n');
+	}).catch(function(e){
+		page.find('.submit-button-ring[rel="pow-create-account"]').css('display','none');
+		let msg=(e && e.message==='login not available') ? ltmp_arr.pow_login_taken
+			: (e && e.message==='too much attempts') ? ltmp_arr.pow_too_many
+			: ltmp_arr.create_account_error;
+		page.find('.pow-create-account-error').html(msg);
+		page.find('.pow-create-account-action').removeAttr('disabled');
+	});
+}
 function create_account(account_login,token_amount,shares_amount,login_el){
 	let page=login_el.closest('.page');
 	page.find('.create-account-action').attr('disabled','disabled');
@@ -8695,6 +8789,12 @@ function app_mouse(e){
 			let account_login=$('.page-create-account input[name=invite-create-account-login]').val().toLowerCase().trim();
 			let secret_key=$('.page-create-account input[name=invite-create-account-secret-key]').val().trim();
 			invite_create_account(account_login,secret_key,$('.page-create-account input[name=invite-create-account-login]'));
+		}
+	}
+	if($(target).hasClass('pow-create-account-action')){
+		if($(target).closest('.page-create-account').length){
+			let account_login=$('.page-create-account input[name=pow-create-account-login]').val().toLowerCase().trim();
+			pow_create_account(account_login,$('.page-create-account input[name=pow-create-account-login]'));
 		}
 	}
 	if($(target).hasClass('create-subaccount-action')){

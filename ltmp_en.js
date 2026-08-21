@@ -1526,6 +1526,37 @@ var ltmp_en_arr={
 
 					<p>Save your keys right now!</p>
 				</div>
+				<hr>
+				<p>
+					<label class="input-descr">
+					<span class="input-caption">New account (free, proof-of-work):</span>
+					<input type="text" name="pow-create-account-login" class="simple-rounded">
+					</label>
+				</p>
+				<p class="red pow-create-account-available"></p>
+				<p class="red pow-create-account-error"></p>
+				<p>
+					<label class="check">Connect this account to the wallet after creation<input type="checkbox" name="pow-create-account-connect" checked="checked"><span class="mark"></span></label>
+				</p>
+				<p class="green pow-create-account-connected hidden">Account connected to this wallet.</p>
+				<p>
+					<input class="pow-create-account-action blue-button captions" type="button" value="Create free account">
+					<span class="submit-button-ring" rel="pow-create-account"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check" rel="pow-create-account"></span>
+				</p>
+				<div class="addon captions">
+					<h3>Free account via proof-of-work (no invite, no captcha). The wallet mines a short proof and registers the account through start.viz.world. Takes ~1–2 minutes.</h3>
+				</div>
+				<div class="pow-account-keys hidden">
+					<h3 class="left">Congratulations!</h3>
+					<p>Created account: <span class="green account-login"></span></p>
+					<p>Keys:</p>
+					<p><span class="master-key captions">&hellip;</span> &mdash; master</p>
+					<p><span class="active-key captions">&hellip;</span> &mdash; active</p>
+					<p><span class="regular-key captions">&hellip;</span> &mdash; regular</p>
+					<p><span class="memo-key captions">&hellip;</span> &mdash; memo</p>
+					<p>Save your keys right now! The file viz-registration.txt was downloaded.</p>
+				</div>
 
 				<p><hr><a data-href="/account/">%%default_return_link%%</a></p>
 			</div>
@@ -2869,6 +2900,9 @@ var ltmp_en_arr={
 	sell_subaccount_success:'Subaccount sales conditions have been successfully changed',
 	set_account_price_success:'Conditions for the sale of the account have been successfully changed',
 	create_account_error:'Error when creating an account',
+	pow_login_invalid:'Account name: 3–16 chars, a–z 0–9 or dash',
+	pow_login_taken:'This account name is already taken',
+	pow_too_many:'Too many attempts from this IP — try later',
 	transfer_error:'Transfer error',
 	transfer_success:'Transfer successfully completed',
 	transfer_amount_success:'Transfer of {amount} was successful',
