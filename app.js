@@ -5163,11 +5163,19 @@ function view_dao(path,params,title){
 								if(typeof response.owner != 'undefined' && current_user==response.owner){
 									$('.page-validator-params input[name=validator-setup-url]').val(response.url);
 									$('.page-validator-params input[name=validator-setup-signing-key]').val(response.signing_key);
+									if(response.signing_key && 'VIZ1111111111111111111111111111111114T1Anm'!=response.signing_key){
+										localStorage.setItem('validator_signing_key_'+current_user,response.signing_key);
+									}
 								}
 								else{
 									$('.page-validator-params .validator-setup-error').html(ltmp_arr.account_not_validator);
 								}
 								update_validator_props(response.props);
+							}
+							var _vsk=localStorage.getItem('validator_signing_key_'+current_user);
+							var _field=$('.page-validator-params input[name=validator-setup-signing-key]').val().trim();
+							if(_vsk && (''==_field || 'VIZ1111111111111111111111111111111114T1Anm'==_field)){
+								$('.page-validator-params .validator-setup-use-prev-key-wrap').css('display','inline');
 							}
 						}
 						else{
@@ -6925,6 +6933,10 @@ function validator_setup(url,public_key,private_key,el){
 	viz.broadcast.validatorUpdate(users[current_user].active_key,current_user,url,public_key,function(err,result){
 		if(!err){
 			page.find('.validator-setup-success').html(ltmp_arr.default_successful_operation+(''!=private_key?ltmp_arr.validator_save_signing_key+private_key:'')+(deactivation?ltmp_arr.validator_was_disabled:''));
+
+			if(!deactivation && 'VIZ1111111111111111111111111111111114T1Anm'!=public_key){
+				localStorage.setItem('validator_signing_key_'+current_user,public_key);
+			}
 
 			page.find('.validator-setup-action').removeAttr('disabled');
 			page.find('.submit-button-ring[rel=setup]').css('display','none');
@@ -8974,6 +8986,14 @@ function app_mouse(e){
 			private_key=$('.page-validator-params input[name=validator-setup-signing-key]').attr('data-private-key');
 		}
 		validator_setup(url,public_key,private_key,$('.page-validator-params .validator-setup-action'));
+	}
+	if($(target).hasClass('validator-setup-use-prev-key')){
+		e.preventDefault();
+		var _saved=localStorage.getItem('validator_signing_key_'+current_user);
+		if(_saved){
+			$('.page-validator-params input[name=validator-setup-signing-key]').val(_saved);
+			$('.page-validator-params .validator-setup-use-prev-key-wrap').css('display','none');
+		}
 	}
 	if($(target).hasClass('validator-setup-signing-key-action')){
 		e.preventDefault();

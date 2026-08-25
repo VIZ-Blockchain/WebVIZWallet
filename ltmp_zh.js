@@ -1258,6 +1258,7 @@ var ltmp_zh_arr = {
 					<label class="input-descr">
 						<span class="input-caption">签名密钥（公钥）：</span>
 						<input type="text" name="validator-setup-signing-key" class="simple-rounded" placeholder="VIZ...">
+						<span class="input-caption text-small grey captions validator-setup-use-prev-key-wrap" style="display:none">（<a class="validator-setup-use-prev-key unselectable">使用上一个</a>）</span>
 						<span class="input-caption text-small grey captions validator-setup-signing-key-action">（生成：<span class="validator-setup-signing-private-key">&mdash;</span>）</span>
 					</label>
 				</p>

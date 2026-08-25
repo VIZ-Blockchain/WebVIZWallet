@@ -1271,6 +1271,7 @@ var ltmp_en_arr={
 					<label class="input-descr">
 						<span class="input-caption">Signing key (public):</span>
 						<input type="text" name="validator-setup-signing-key" class="simple-rounded" placeholder="VIZ...">
+						<span class="input-caption text-small grey captions validator-setup-use-prev-key-wrap" style="display:none">(<a class="validator-setup-use-prev-key unselectable">use previous</a>)</span>
 						<span class="input-caption text-small grey captions validator-setup-signing-key-action">(generate: <span class="validator-setup-signing-private-key">&mdash;</span>)</span>
 					</label>
 				</p>
