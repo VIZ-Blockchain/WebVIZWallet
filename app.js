@@ -1595,28 +1595,33 @@ function logout(user,location){
 	change_user(location);
 }
 
+function refresh_user_menu(){
+	if(''==current_user){return;}
+	$('.header').css('display','block');
+	$('.header .user-menu .login').html(current_user);
+	$('.users-drop-down').html('');
+	let user_list=Object.keys(users);
+	user_list.sort();
+	let user_list_html='';
+	for(i in user_list){
+		if(current_user!=user_list[i]){
+			user_list_html+='<a class="select-user" rel="'+user_list[i]+'">'+user_list[i]+'</a>';
+		}
+	}
+	$('.users-drop-down').html(user_list_html);
+	if(Object.keys(users).length>1){
+		$('.header .user-menu .user-buttons .drop-down').css('display','inline-block');
+	}
+	else{
+		$('.header .user-menu .user-buttons .drop-down').css('display','none');
+	}
+	$('.header .user-menu .user-buttons').css('display','inline-block');
+}
+
 function change_user(location){
 	location=typeof location==='undefined'?'':location;
 	if(''!=current_user){
-		$('.header').css('display','block');
-		$('.header .user-menu .login').html(current_user);
-		$('.users-drop-down').html('');
-		let user_list=Object.keys(users);
-		user_list.sort();
-		let user_list_html='';
-		for(i in user_list){
-			if(current_user!=user_list[i]){
-				user_list_html+='<a class="select-user" rel="'+user_list[i]+'">'+user_list[i]+'</a>';
-			}
-		}
-		$('.users-drop-down').html(user_list_html);
-		if(Object.keys(users).length>1){
-			$('.header .user-menu .user-buttons .drop-down').css('display','inline-block');
-		}
-		else{
-			$('.header .user-menu .user-buttons .drop-down').css('display','none');
-		}
-		$('.header .user-menu .user-buttons').css('display','inline-block');
+		refresh_user_menu();
 		if(standalone){
 			parse_standalone_fullpath();
 			change_state(''!=location?location:''+standalone_path+encodeURIComponent(standalone_search),{},true);
@@ -7245,6 +7250,7 @@ function connect_created_account(login,active_key,regular_key,memo_key,master_ke
 	if(memo_key){users[login].memo_key=memo_key;}
 	if(''==current_user){current_user=login;}
 	save_session();
+	refresh_user_menu();
 	return true;
 }
 /* ------------------------------------------ free account (PoW open API) */
