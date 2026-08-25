@@ -1171,7 +1171,7 @@ function wallet_lock(){
 }
 // show/hide the header quick-lock button: visible only when encrypted AND unlocked
 function wallet_update_lock_btn(){
-	if(wallet_is_encrypted() && wallet_pass){ $('.wallet-lock-btn').css('display',''); }
+	if(wallet_is_encrypted() && wallet_pass){ $('.wallet-lock-btn').css('display','').attr('title',ltmp_arr.header_lock_wallet); }
 	else{ $('.wallet-lock-btn').css('display','none'); }
 }
 function wallet_after_unlock(){ wallet_mark_activity(); wallet_update_lock_btn(); }
@@ -1616,6 +1616,9 @@ function refresh_user_menu(){
 		$('.header .user-menu .user-buttons .drop-down').css('display','none');
 	}
 	$('.header .user-menu .user-buttons').css('display','inline-block');
+	$('.user-buttons .add-account').attr('title',ltmp_arr.header_add_account);
+	$('.user-buttons .drop-down').attr('title',ltmp_arr.header_switch_account);
+	$('.user-buttons .logout').attr('title',ltmp_arr.header_logout);
 }
 
 function change_user(location){
