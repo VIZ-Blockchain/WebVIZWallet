@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -23,29 +23,30 @@
 	<script type="text/javascript" src="/app.js?<?=filemtime('app.js')?>"></script>
 </head>
 <body>
-<div class="header shadow unselectable">
+<a class="skip-link captions" href="#main-content">Skip to main content</a>
+<header class="header shadow unselectable" role="banner">
 	<div class="horizontal-view">
-		<div class="menu-button menu-button-action"><img class="menu-button-action" src="/icons/menu.svg"></div>
+		<button type="button" class="menu-button menu-button-action" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-navigation"><img class="menu-button-action" src="/icons/menu.svg" alt=""></button>
 		<div class="logo">
 			<a data-href="/" class="prefix">wallet</a><a href="https://promo.viz.world/"><img src="/icons/logo-viz-simple.svg" alt="VIZ World"></a><span class="testnet-badge" style="display:none">testnet</span>
 		</div>
 		<div class="user-menu">
 			<div class="login">&hellip;</div>
 			<div class="user-buttons">
-				<img class="add-account" src="/icons/circle-plus.svg">
-				<img class="drop-down" src="/icons/drop-down.svg">
-				<div class="users-drop-down"></div>
-				<img class="logout" src="/icons/logout.svg">
-				<a class="wallet-lock-btn" style="display:none">&#128274;</a>
+				<button type="button" class="icon-button add-account" aria-label="Add account"><img src="/icons/circle-plus.svg" alt=""></button>
+				<button type="button" class="icon-button drop-down" aria-label="Switch account" aria-expanded="false"><img src="/icons/drop-down.svg" alt=""></button>
+				<div class="users-drop-down" role="menu"></div>
+				<button type="button" class="icon-button logout" aria-label="Log out"><img src="/icons/logout.svg" alt=""></button>
+				<button type="button" class="icon-button wallet-lock-btn" style="display:none" aria-label="Lock wallet">&#128274;</button>
 			</div>
 		</div>
-		<div class="menu-list captions">
+		<nav class="menu-list captions" aria-label="Primary navigation">
 			<div class="menu-bg"></div>
-		</div>
+		</nav>
 	</div>
-</div>
+</header>
 
-<div class="horizontal-view vertical-view">
+<main id="main-content" class="horizontal-view vertical-view" tabindex="-1">
 	<div class="cards-view">
 		<div class="cards-container">
 			<div class="node-down-notice"><span class="node-down-text"></span> <a class="switch-node-btn select-api-node" rel="#">Switch</a></div>
@@ -62,10 +63,10 @@
 			<div class="view view-multisig"></div>
 		</div>
 	</div>
-</div>
-<div class="go-top adaptive-show-block">&uarr;</div>
-<div class="absolute-view menu-list captions">
+</main>
+<button type="button" class="go-top adaptive-show-block" aria-label="Back to top">&uarr;</button>
+<nav id="mobile-navigation" class="absolute-view menu-list captions" aria-label="Mobile navigation" aria-hidden="true">
 	<div class="menu-bg"></div>
-</div>
+</nav>
 </body>
 </html>

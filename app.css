@@ -97,6 +97,33 @@ input[type=button] {width: auto; overflow: visible;}
 a, input{
 	outline:none;
 }
+button{
+	font:inherit;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible{
+	outline:3px solid #111;
+	outline-offset:3px;
+	box-shadow:0 0 0 6px #ffbf47 !important;
+}
+.skip-link{
+	position:fixed;
+	top:8px;
+	left:8px;
+	z-index:10001;
+	padding:10px 14px;
+	background:#111;
+	color:#fff;
+	border-radius:6px;
+	transform:translateY(-150%);
+}
+.skip-link:focus{
+	transform:translateY(0);
+}
 hr{
 	display:block;
 	height:1px;
@@ -188,6 +215,11 @@ a:hover{
 .header .menu-button{
 	display:none;
 	vertical-align:top;
+	border:0;
+	background:transparent;
+	height:64px;
+	padding:0;
+	cursor:pointer;
 }
 .header .menu-button img{
 	vertical-align:middle;
@@ -362,6 +394,21 @@ a:hover{
 	border:0;
 	outline:none;
 	box-shadow:none;
+}
+.header .user-buttons .icon-button{
+	display:inline-block;
+	vertical-align:middle;
+	border:0;
+	background:transparent;
+	padding:0;
+	margin:0;
+	width:auto;
+	height:auto;
+	line-height:1;
+	cursor:pointer;
+}
+.header .user-buttons .icon-button img{
+	vertical-align:middle;
 }
 .header .users-drop-down{
 	display:none;
@@ -1916,6 +1963,9 @@ input.simple-inline.red{
 	margin-bottom:0;
 }
 .go-top{
+	border:0;
+	padding:0;
+	background:transparent;
 	font-family:sans-serif;
 	position:absolute;
 	margin-top:-75px;
