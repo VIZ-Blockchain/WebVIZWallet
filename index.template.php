@@ -33,8 +33,8 @@
 		<div class="user-menu">
 			<div class="login">&hellip;</div>
 			<div class="user-buttons">
-				<button type="button" class="icon-button add-account" aria-label="Add account"><img src="/icons/circle-plus.svg" alt=""></button>
 				<button type="button" class="icon-button drop-down" aria-label="Switch account" aria-expanded="false"><img src="/icons/drop-down.svg" alt=""></button>
+				<button type="button" class="icon-button add-account" aria-label="Add account"><img src="/icons/circle-plus.svg" alt=""></button>
 				<div class="users-drop-down" role="menu"></div>
 				<button type="button" class="icon-button logout" aria-label="Log out"><img src="/icons/logout.svg" alt=""></button>
 				<button type="button" class="icon-button wallet-lock-btn" style="display:none" aria-label="Lock wallet">&#128274;</button>

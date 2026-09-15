@@ -19,28 +19,28 @@ var ltmp_ru_arr={
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Приватный master-ключ:</span>
-						<input type="text" name="master-key" class="simple-rounded">
+						<input type="password" name="master-key" class="simple-rounded">
 						<span class="input-caption text-small grey captions">(опционально &mdash; высший доступ)</span>
 					</label>
 				</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Приватный активный ключ:</span>
-						<input type="text" name="active-key" class="simple-rounded">
+						<input type="password" name="active-key" class="simple-rounded">
 						<span class="input-caption text-small grey captions">(обязательно)</span>
 					</label>
 				</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Приватный regular-ключ:</span>
-						<input type="text" name="regular-key" class="simple-rounded">
+						<input type="password" name="regular-key" class="simple-rounded">
 						<span class="input-caption text-small grey captions">(опционально)</span>
 					</label>
 				</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Приватный ключ заметок:</span>
-						<input type="text" name="memo-key" class="simple-rounded">
+						<input type="password" name="memo-key" class="simple-rounded">
 						<span class="input-caption text-small grey captions">(опционально)</span>
 					</label>
 				</p>
@@ -92,28 +92,28 @@ var ltmp_ru_arr={
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">Приватный master-ключ:</span>
-					<input type="text" name="master-key" class="simple-rounded">
+					<input type="password" name="master-key" class="simple-rounded">
 					<span class="input-caption text-small grey captions">(опционально &mdash; высший доступ)</span>
 				</label>
 			</p>
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">Приватный активный ключ:</span>
-					<input type="text" name="active-key" class="simple-rounded">
+					<input type="password" name="active-key" class="simple-rounded">
 					<span class="input-caption text-small grey captions">(обязательно)</span>
 				</label>
 			</p>
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">Приватный regular-ключ:</span>
-					<input type="text" name="regular-key" class="simple-rounded">
+					<input type="password" name="regular-key" class="simple-rounded">
 					<span class="input-caption text-small grey captions">(опционально)</span>
 				</label>
 			</p>
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">Приватный ключ заметок:</span>
-					<input type="text" name="memo-key" class="simple-rounded">
+					<input type="password" name="memo-key" class="simple-rounded">
 					<span class="input-caption text-small grey captions">(опционально)</span>
 				</label>
 			</p>
@@ -141,7 +141,7 @@ var ltmp_ru_arr={
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">Приватный ключ заметок:</span>
-					<input type="text" name="memo-key" class="simple-rounded">
+					<input type="password" name="memo-key" class="simple-rounded">
 				</label>
 				<br><span class="input-caption text-small grey captions">(<a class="memo-gen-new-key unselectable">сгенерировать новый</a>)</span>
 			</p>
@@ -173,7 +173,7 @@ var ltmp_ru_arr={
 			<p class="signreq-key-row" style="display:none">
 				<label class="input-descr">
 					<span class="input-caption">Приватный regular-ключ:</span>
-					<input type="text" name="signreq-regular-key" class="simple-rounded">
+					<input type="password" name="signreq-regular-key" class="simple-rounded">
 				</label>
 				<br><label class="check">Запомнить ключ в кошельке для этого аккаунта<input type="checkbox" name="signreq-remember-key"><span class="mark"></span></label>
 			</p>
@@ -351,7 +351,7 @@ var ltmp_ru_arr={
 				<p class="access-master-row">
 					<label class="input-descr">
 						<span class="input-caption">Главный ключ (master):</span>
-						<input type="text" name="reset-access-master-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="reset-access-master-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="green access-master-stored captions" style="display:none">Главный ключ (master) сохранён в кошельке и будет использован автоматически.</p>
@@ -582,7 +582,7 @@ var ltmp_ru_arr={
 						</div>
 						<div class="add-key-auths">
 							<input class="simple-inline" type="text" name="public-key" placeholder="публичный ключ">
-							<input class="simple-inline" type="text" name="private-key" placeholder="приватный ключ">
+							<input class="simple-inline" type="password" name="private-key" placeholder="приватный ключ">
 							<input class="simple-inline" type="text" name="weight" placeholder="вес">
 							<a class="gen-key-auths-action blue-button-inline unselectable" rel="master">сгенерировать</a>
 							<a class="add-key-auths-action blue-button-inline unselectable" rel="master">добавить ключ</a>
@@ -614,7 +614,7 @@ var ltmp_ru_arr={
 						</div>
 						<div class="add-key-auths">
 							<input class="simple-inline" type="text" name="public-key" placeholder="публичный ключ">
-							<input class="simple-inline" type="text" name="private-key" placeholder="приватный ключ">
+							<input class="simple-inline" type="password" name="private-key" placeholder="приватный ключ">
 							<input class="simple-inline" type="text" name="weight" placeholder="вес">
 							<a class="gen-key-auths-action blue-button-inline unselectable" rel="active">сгенерировать</a>
 							<a class="add-key-auths-action blue-button-inline unselectable" rel="active">добавить ключ</a>
@@ -646,7 +646,7 @@ var ltmp_ru_arr={
 						</div>
 						<div class="add-key-auths">
 							<input class="simple-inline" type="text" name="public-key" placeholder="публичный ключ">
-							<input class="simple-inline" type="text" name="private-key" placeholder="приватный ключ">
+							<input class="simple-inline" type="password" name="private-key" placeholder="приватный ключ">
 							<input class="simple-inline" type="text" name="weight" placeholder="вес">
 							<a class="gen-key-auths-action blue-button-inline unselectable" rel="regular">сгенерировать</a>
 							<a class="add-key-auths-action blue-button-inline unselectable" rel="regular">добавить ключ</a>
@@ -673,7 +673,7 @@ var ltmp_ru_arr={
 					<p>
 						<label class="input-descr">
 							<span class="input-caption">Главный ключ (master) для аккаунта <span class="account-login bold"></span>:</span>
-							<input type="text" name="manage-access-master-key" class="simple-rounded" placeholder="5K..." data-account="">
+							<input type="password" name="manage-access-master-key" class="simple-rounded" placeholder="5K..." data-account="">
 							<input type="hidden" name="manage-access-json-metadata">
 						</label>
 					</p>
@@ -984,7 +984,7 @@ var ltmp_ru_arr={
 				<p class="memo-key-optional">
 					<label class="input-descr">
 						<span class="input-caption">Ключ заметок:</span>
-						<input type="text" name="memo-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="memo-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="red transfer-error"></p>
@@ -1116,7 +1116,7 @@ var ltmp_ru_arr={
 				<p class="memo-key-optional">
 					<label class="input-descr">
 						<span class="input-caption">Ключ заметок:</span>
-						<input type="text" name="memo-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="memo-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="red award-error"></p>
@@ -1185,7 +1185,7 @@ var ltmp_ru_arr={
 				<p class="memo-key-optional">
 					<label class="input-descr">
 						<span class="input-caption">Ключ заметок:</span>
-						<input type="text" name="memo-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="memo-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="red fixed-award-error"></p>
@@ -1513,7 +1513,7 @@ var ltmp_ru_arr={
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Инвайт:</span>
-						<input type="text" name="invite-create-account-secret-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="invite-create-account-secret-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="red invite-create-account-available"></p>
@@ -1883,7 +1883,7 @@ var ltmp_ru_arr={
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Главный ключ (master) от аккаунта на продажу:</span>
-						<input type="text" name="set-account-master-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="set-account-master-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p>
@@ -1928,7 +1928,7 @@ var ltmp_ru_arr={
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Главный ключ (master):</span>
-						<input type="text" name="set-subaccount-master-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="set-subaccount-master-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p>

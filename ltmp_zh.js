@@ -19,28 +19,28 @@ var ltmp_zh_arr = {
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">主私钥：</span>
-						<input type="text" name="master-key" class="simple-rounded">
+						<input type="password" name="master-key" class="simple-rounded">
 						<span class="input-caption text-small grey captions">（可选 &mdash; 最高权限）</span>
 					</label>
 				</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">活跃私钥：</span>
-						<input type="text" name="active-key" class="simple-rounded">
+						<input type="password" name="active-key" class="simple-rounded">
 						<span class="input-caption text-small grey captions">（必填）</span>
 					</label>
 				</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">常规私钥：</span>
-						<input type="text" name="regular-key" class="simple-rounded">
+						<input type="password" name="regular-key" class="simple-rounded">
 						<span class="input-caption text-small grey captions">（可选）</span>
 					</label>
 				</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">备注私钥：</span>
-						<input type="text" name="memo-key" class="simple-rounded">
+						<input type="password" name="memo-key" class="simple-rounded">
 						<span class="input-caption text-small grey captions">（可选）</span>
 					</label>
 				</p>
@@ -92,28 +92,28 @@ var ltmp_zh_arr = {
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">主私钥：</span>
-					<input type="text" name="master-key" class="simple-rounded">
+					<input type="password" name="master-key" class="simple-rounded">
 					<span class="input-caption text-small grey captions">（可选 &mdash; 最高权限）</span>
 				</label>
 			</p>
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">活跃私钥：</span>
-					<input type="text" name="active-key" class="simple-rounded">
+					<input type="password" name="active-key" class="simple-rounded">
 					<span class="input-caption text-small grey captions">（必填）</span>
 				</label>
 			</p>
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">常规私钥：</span>
-					<input type="text" name="regular-key" class="simple-rounded">
+					<input type="password" name="regular-key" class="simple-rounded">
 					<span class="input-caption text-small grey captions">（可选）</span>
 				</label>
 			</p>
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">备注私钥：</span>
-					<input type="text" name="memo-key" class="simple-rounded">
+					<input type="password" name="memo-key" class="simple-rounded">
 					<span class="input-caption text-small grey captions">（可选）</span>
 				</label>
 			</p>
@@ -141,7 +141,7 @@ var ltmp_zh_arr = {
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">备注私钥：</span>
-					<input type="text" name="memo-key" class="simple-rounded">
+					<input type="password" name="memo-key" class="simple-rounded">
 				</label>
 				<br><span class="input-caption text-small grey captions">（<a class="memo-gen-new-key unselectable">生成新的</a>）</span>
 			</p>
@@ -173,7 +173,7 @@ var ltmp_zh_arr = {
 			<p class="signreq-key-row" style="display:none">
 				<label class="input-descr">
 					<span class="input-caption">Regular私钥：</span>
-					<input type="text" name="signreq-regular-key" class="simple-rounded">
+					<input type="password" name="signreq-regular-key" class="simple-rounded">
 				</label>
 				<br><label class="check">在钱包中为此账户记住该密钥<input type="checkbox" name="signreq-remember-key"><span class="mark"></span></label>
 			</p>
@@ -352,7 +352,7 @@ var ltmp_zh_arr = {
 				<p class="access-master-row">
 					<label class="input-descr">
 						<span class="input-caption">主密钥：</span>
-						<input type="text" name="reset-access-master-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="reset-access-master-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="green access-master-stored captions" style="display:none">主密钥已保存在此钱包中，将自动使用。</p>
@@ -583,7 +583,7 @@ var ltmp_zh_arr = {
 						</div>
 						<div class="add-key-auths">
 							<input class="simple-inline" type="text" name="public-key" placeholder="公钥">
-							<input class="simple-inline" type="text" name="private-key" placeholder="私钥">
+							<input class="simple-inline" type="password" name="private-key" placeholder="私钥">
 							<input class="simple-inline" type="text" name="weight" placeholder="权重">
 							<a class="gen-key-auths-action blue-button-inline unselectable" rel="master">生成</a>
 							<a class="add-key-auths-action blue-button-inline unselectable" rel="master">添加密钥</a>
@@ -615,7 +615,7 @@ var ltmp_zh_arr = {
 						</div>
 						<div class="add-key-auths">
 							<input class="simple-inline" type="text" name="public-key" placeholder="公钥">
-							<input class="simple-inline" type="text" name="private-key" placeholder="私钥">
+							<input class="simple-inline" type="password" name="private-key" placeholder="私钥">
 							<input class="simple-inline" type="text" name="weight" placeholder="权重">
 							<a class="gen-key-auths-action blue-button-inline unselectable" rel="active">生成</a>
 							<a class="add-key-auths-action blue-button-inline unselectable" rel="active">添加密钥</a>
@@ -647,7 +647,7 @@ var ltmp_zh_arr = {
 						</div>
 						<div class="add-key-auths">
 							<input class="simple-inline" type="text" name="public-key" placeholder="公钥">
-							<input class="simple-inline" type="text" name="private-key" placeholder="私钥">
+							<input class="simple-inline" type="password" name="private-key" placeholder="私钥">
 							<input class="simple-inline" type="text" name="weight" placeholder="权重">
 							<a class="gen-key-auths-action blue-button-inline unselectable" rel="regular">生成</a>
 							<a class="add-key-auths-action blue-button-inline unselectable" rel="regular">添加密钥</a>
@@ -674,7 +674,7 @@ var ltmp_zh_arr = {
 					<p>
 						<label class="input-descr">
 							<span class="input-caption">当前 <span class="account-login bold"></span> 的主密钥：</span>
-							<input type="text" name="manage-access-master-key" class="simple-rounded" placeholder="5K..." data-account="">
+							<input type="password" name="manage-access-master-key" class="simple-rounded" placeholder="5K..." data-account="">
 							<input type="hidden" name="manage-access-json-metadata">
 						</label>
 					</p>
@@ -985,7 +985,7 @@ var ltmp_zh_arr = {
 				<p class="memo-key-optional">
 					<label class="input-descr">
 						<span class="input-caption">备注密钥：</span>
-						<input type="text" name="memo-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="memo-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="red transfer-error"></p>
@@ -1117,7 +1117,7 @@ var ltmp_zh_arr = {
 				<p class="memo-key-optional">
 					<label class="input-descr">
 						<span class="input-caption">备注密钥：</span>
-						<input type="text" name="memo-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="memo-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="red award-error"></p>
@@ -1186,7 +1186,7 @@ var ltmp_zh_arr = {
 				<p class="memo-key-optional">
 					<label class="input-descr">
 						<span class="input-caption">备注密钥：</span>
-						<input type="text" name="memo-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="memo-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="red fixed-award-error"></p>
@@ -1514,7 +1514,7 @@ var ltmp_zh_arr = {
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">邀请：</span>
-						<input type="text" name="invite-create-account-secret-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="invite-create-account-secret-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="red invite-create-account-available"></p>
@@ -1883,7 +1883,7 @@ var ltmp_zh_arr = {
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">待售账户的主密钥：</span>
-						<input type="text" name="set-account-master-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="set-account-master-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p>
@@ -1928,7 +1928,7 @@ var ltmp_zh_arr = {
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">主密钥：</span>
-						<input type="text" name="set-subaccount-master-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="set-subaccount-master-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p>

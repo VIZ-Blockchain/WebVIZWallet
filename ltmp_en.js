@@ -19,28 +19,28 @@ var ltmp_en_arr={
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Private master key:</span>
-						<input type="text" name="master-key" class="simple-rounded">
+						<input type="password" name="master-key" class="simple-rounded">
 						<span class="input-caption text-small grey captions">(optional &mdash; highest authority)</span>
 					</label>
 				</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Private active key:</span>
-						<input type="text" name="active-key" class="simple-rounded">
+						<input type="password" name="active-key" class="simple-rounded">
 						<span class="input-caption text-small grey captions">(required)</span>
 					</label>
 				</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Private regular key:</span>
-						<input type="text" name="regular-key" class="simple-rounded">
+						<input type="password" name="regular-key" class="simple-rounded">
 						<span class="input-caption text-small grey captions">(optional)</span>
 					</label>
 				</p>
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Private memo key:</span>
-						<input type="text" name="memo-key" class="simple-rounded">
+						<input type="password" name="memo-key" class="simple-rounded">
 						<span class="input-caption text-small grey captions">(optional)</span>
 					</label>
 				</p>
@@ -92,28 +92,28 @@ var ltmp_en_arr={
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">Private master key:</span>
-					<input type="text" name="master-key" class="simple-rounded">
+					<input type="password" name="master-key" class="simple-rounded">
 					<span class="input-caption text-small grey captions">(optional &mdash; highest authority)</span>
 				</label>
 			</p>
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">Private active key:</span>
-					<input type="text" name="active-key" class="simple-rounded">
+					<input type="password" name="active-key" class="simple-rounded">
 					<span class="input-caption text-small grey captions">(required)</span>
 				</label>
 			</p>
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">Private regular key:</span>
-					<input type="text" name="regular-key" class="simple-rounded">
+					<input type="password" name="regular-key" class="simple-rounded">
 					<span class="input-caption text-small grey captions">(optional)</span>
 				</label>
 			</p>
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">Private memo key:</span>
-					<input type="text" name="memo-key" class="simple-rounded">
+					<input type="password" name="memo-key" class="simple-rounded">
 					<span class="input-caption text-small grey captions">(optional)</span>
 				</label>
 			</p>
@@ -141,7 +141,7 @@ var ltmp_en_arr={
 			<p>
 				<label class="input-descr">
 					<span class="input-caption">Private memo key:</span>
-					<input type="text" name="memo-key" class="simple-rounded">
+					<input type="password" name="memo-key" class="simple-rounded">
 				</label>
 				<br><span class="input-caption text-small grey captions">(<a class="memo-gen-new-key unselectable">generate a new</a>)</span>
 			</p>
@@ -173,7 +173,7 @@ var ltmp_en_arr={
 			<p class="signreq-key-row" style="display:none">
 				<label class="input-descr">
 					<span class="input-caption">Private regular key:</span>
-					<input type="text" name="signreq-regular-key" class="simple-rounded">
+					<input type="password" name="signreq-regular-key" class="simple-rounded">
 				</label>
 				<br><label class="check">Remember this key in the wallet for this account<input type="checkbox" name="signreq-remember-key"><span class="mark"></span></label>
 			</p>
@@ -351,7 +351,7 @@ var ltmp_en_arr={
 				<p class="access-master-row">
 					<label class="input-descr">
 						<span class="input-caption">Master key:</span>
-						<input type="text" name="reset-access-master-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="reset-access-master-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="green access-master-stored captions" style="display:none">The master key is stored in this wallet and will be used automatically.</p>
@@ -582,7 +582,7 @@ var ltmp_en_arr={
 						</div>
 						<div class="add-key-auths">
 							<input class="simple-inline" type="text" name="public-key" placeholder="public key">
-							<input class="simple-inline" type="text" name="private-key" placeholder="private key">
+							<input class="simple-inline" type="password" name="private-key" placeholder="private key">
 							<input class="simple-inline" type="text" name="weight" placeholder="weight">
 							<a class="gen-key-auths-action blue-button-inline unselectable" rel="master">generate</a>
 							<a class="add-key-auths-action blue-button-inline unselectable" rel="master">add key</a>
@@ -614,7 +614,7 @@ var ltmp_en_arr={
 						</div>
 						<div class="add-key-auths">
 							<input class="simple-inline" type="text" name="public-key" placeholder="public key">
-							<input class="simple-inline" type="text" name="private-key" placeholder="private key">
+							<input class="simple-inline" type="password" name="private-key" placeholder="private key">
 							<input class="simple-inline" type="text" name="weight" placeholder="weight">
 							<a class="gen-key-auths-action blue-button-inline unselectable" rel="active">generate</a>
 							<a class="add-key-auths-action blue-button-inline unselectable" rel="active">add key</a>
@@ -646,7 +646,7 @@ var ltmp_en_arr={
 						</div>
 						<div class="add-key-auths">
 							<input class="simple-inline" type="text" name="public-key" placeholder="public key">
-							<input class="simple-inline" type="text" name="private-key" placeholder="private key">
+							<input class="simple-inline" type="password" name="private-key" placeholder="private key">
 							<input class="simple-inline" type="text" name="weight" placeholder="weight">
 							<a class="gen-key-auths-action blue-button-inline unselectable" rel="regular">generate</a>
 							<a class="add-key-auths-action blue-button-inline unselectable" rel="regular">add key</a>
@@ -673,7 +673,7 @@ var ltmp_en_arr={
 					<p class="access-master-row">
 						<label class="input-descr">
 							<span class="input-caption">Current master key <span class="account-login bold"></span>:</span>
-							<input type="text" name="manage-access-master-key" class="simple-rounded" placeholder="5K..." data-account="">
+							<input type="password" name="manage-access-master-key" class="simple-rounded" placeholder="5K..." data-account="">
 						</label>
 					</p>
 					<input type="hidden" name="manage-access-json-metadata">
@@ -998,7 +998,7 @@ var ltmp_en_arr={
 				<p class="memo-key-optional">
 					<label class="input-descr">
 						<span class="input-caption">Memo key:</span>
-						<input type="text" name="memo-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="memo-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="red transfer-error"></p>
@@ -1130,7 +1130,7 @@ var ltmp_en_arr={
 				<p class="memo-key-optional">
 					<label class="input-descr">
 						<span class="input-caption">Memo key:</span>
-						<input type="text" name="memo-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="memo-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="red award-error"></p>
@@ -1199,7 +1199,7 @@ var ltmp_en_arr={
 				<p class="memo-key-optional">
 					<label class="input-descr">
 						<span class="input-caption">Memo key:</span>
-						<input type="text" name="memo-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="memo-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="red fixed-award-error"></p>
@@ -1527,7 +1527,7 @@ var ltmp_en_arr={
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Invite:</span>
-						<input type="text" name="invite-create-account-secret-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="invite-create-account-secret-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p class="red invite-create-account-available"></p>
@@ -1896,7 +1896,7 @@ var ltmp_en_arr={
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Master key of the account for sale:</span>
-						<input type="text" name="set-account-master-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="set-account-master-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p>
@@ -1941,7 +1941,7 @@ var ltmp_en_arr={
 				<p>
 					<label class="input-descr">
 						<span class="input-caption">Master key:</span>
-						<input type="text" name="set-subaccount-master-key" class="simple-rounded" placeholder="5K...">
+						<input type="password" name="set-subaccount-master-key" class="simple-rounded" placeholder="5K...">
 					</label>
 				</p>
 				<p>
