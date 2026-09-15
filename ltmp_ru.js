@@ -3081,6 +3081,9 @@ var ltmp_ru_arr={
 
 	node_down_notice:'Текущая нода не отвечает. Переключитесь на резервную ноду:',
 	node_down_switch_btn:'Переключиться на {node}',
+	deeplink_account_switched:'Внимание! Текущий аккаунт переключен на @{account}, так как это запросил dapp по ссылке которого вы перешли.',
+	deeplink_account_missing:'dapp запросил аккаунт @{account}, но в текущей сессии его нет.',
+	deeplink_account_add_btn:'Добавить аккаунт',
 
 	enter_memo_link:'<a data-href="/memo/?back={link}">Введите приватный ключ заметок</a> для дешифрования',
 	error_update_memo_link:'Неверный приватный ключ заметок, попробуйте снова или <a data-href="/memo/?back={link}">обновите ключ</a>',

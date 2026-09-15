@@ -553,6 +553,52 @@ ul.simple li:before{
 .node-down-notice .switch-node-btn:hover{
 	background:#fff3d0;
 }
+.deeplink-account-notice{
+	display:none;
+	padding:12px 20px;
+	margin-bottom:15px;
+	border-radius:8px;
+	background:#fff8e1;
+	color:#8b5e00;
+	font-size:16px;
+	line-height:24px;
+	box-shadow:inset 0 0 0 1px #f0d080;
+	text-align:center;
+}
+.deeplink-account-notice.red{
+	background:#fdeceb;
+	color:#a4231b;
+	box-shadow:inset 0 0 0 1px #edb3ac;
+}
+.deeplink-account-notice .deeplink-account-text{
+	display:inline;
+}
+.deeplink-account-notice .deeplink-account-add{
+	display:none;
+	padding:4px 14px;
+	margin-left:10px;
+	background:#fff6e0;
+	color:#a65d00;
+	border:1px solid #e0a830;
+	border-radius:16px;
+	cursor:pointer;
+	font-size:14px;
+	font-weight:600;
+	text-decoration:none;
+	vertical-align:middle;
+	box-shadow:none;
+}
+.deeplink-account-notice.red .deeplink-account-add{
+	background:#fff0ee;
+	color:#a4231b;
+	border:1px solid #edb3ac;
+}
+.deeplink-account-notice .deeplink-account-add:hover{
+	background:#fff3d0;
+}
+.deeplink-account-notice.red .deeplink-account-add:hover{
+	background:#ffe3df;
+}
 .card{
 	padding:15px 25px 25px;
 	margin-bottom:20px;

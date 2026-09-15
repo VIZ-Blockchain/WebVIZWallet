@@ -102,7 +102,6 @@
 		$favicon_base64=base64_encode(file_get_contents('favicon.ico'));
 		$main=str_replace('href="/favicon.ico"','href="data:image/x-icon;base64,'.$favicon_base64.'"',$main);
 
-		$main=preg_replace('~<a class="menu-el color-red" data-href="/market/">(.*)</a>~','',$main);
 		$main=str_replace('portable-version-card ','portable-version-card hidden ',$main);
 		//$main=preg_replace('~<div class="select-lang captions">(.*)</div>~','',$main);
 

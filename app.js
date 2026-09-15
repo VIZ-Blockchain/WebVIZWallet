@@ -982,7 +982,7 @@ function view_login(path,params,title){
 	}
 	$('.view-login').css('display','block');
 	$('.view-login input[name=back]').val('');
-	$('.view-login input[name=login]').val('');
+	$('.view-login input[name=login]').val(typeof params.login != 'undefined' ? params.login : '');
 	$('.view-login input[name=active-key]').val('');
 	$('.view-login input[name=master-key]').val('');
 	$('.view-login input[name=regular-key]').val('');
@@ -5900,6 +5900,34 @@ function change_state(location,state,save_state){
 		}
 	}
 	console.log('change_state',location,params);
+
+	// ── Deep-link "act as account" (?as=<account>): a dapp (e.g. VIZ Hub) can ask the wallet
+	// to perform the linked action from a specific account. If we hold it, switch immediately
+	// (yellow notice explains why the active account just changed under the user). If we don't,
+	// leave current_user untouched (never silently drop into an account we have no keys for) and
+	// offer an "add account" link pre-filled with the requested login, back=this exact deep link
+	// so the flow resumes here once the key is added.
+	$('.deeplink-account-notice').css('display','none').removeClass('red');
+	$('.deeplink-account-notice .deeplink-account-add').css('display','none');
+	if(typeof params['as'] != 'undefined' && ''!=params['as']){
+		let requested_account=(''+params['as']).toLowerCase().trim();
+		if(requested_account!=current_user){
+			if(typeof users[requested_account] != 'undefined'){
+				current_user=requested_account;
+				save_session();
+				refresh_user_menu();
+				$('.deeplink-account-notice .deeplink-account-text').html(ltmp(ltmp_arr.deeplink_account_switched,{account:escape_html(requested_account)}));
+				$('.deeplink-account-notice').css('display','block');
+			}
+			else{
+				$('.deeplink-account-notice .deeplink-account-text').html(ltmp(ltmp_arr.deeplink_account_missing,{account:escape_html(requested_account)}));
+				$('.deeplink-account-notice .deeplink-account-add').attr('data-href','/login/?login='+encodeURIComponent(requested_account)+'&back='+encodeURIComponent(location));
+				$('.deeplink-account-notice .deeplink-account-add').html(ltmp_arr.deeplink_account_add_btn);
+				$('.deeplink-account-notice .deeplink-account-add').css('display','inline-block');
+				$('.deeplink-account-notice').addClass('red').css('display','block');
+			}
+		}
+	}
 
 	if(typeof state.title == 'undefined'){
 		if(''==path[1]){

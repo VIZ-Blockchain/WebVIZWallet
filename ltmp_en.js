@@ -3106,6 +3106,9 @@ var ltmp_en_arr={
 
 	node_down_notice:'The current node is not responding. Switch to a backup node:',
 	node_down_switch_btn:'Switch to {node}',
+	deeplink_account_switched:'Note! The current account was switched to @{account} because it was requested by the dapp linked from.',
+	deeplink_account_missing:'The dapp requested account @{account}, but it is not in the current session.',
+	deeplink_account_add_btn:'Add account',
 
 	enter_memo_link:'<a data-href="/memo/?back={link}">Enter the private memo key</a> for decryption',
 	error_update_memo_link:'Invalid memo private key, try again or <a data-href="/memo/?back={link}">update key</a>',

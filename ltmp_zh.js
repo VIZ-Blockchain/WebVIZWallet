@@ -3079,6 +3079,9 @@ var ltmp_zh_arr = {
 
 	node_down_notice:'当前节点无响应。请切换到备用节点：',
 	node_down_switch_btn:'切换到 {node}',
+	deeplink_account_switched:'注意！当前账户已切换为 @{account}，因为您点击的 dapp 链接请求了该账户。',
+	deeplink_account_missing:'dapp 请求了账户 @{account}，但当前会话中没有该账户。',
+	deeplink_account_add_btn:'添加账户',
 
 	enter_memo_link:'<a data-href="/memo/?back={link}">输入私备注密钥</a> 进行解密',
 	error_update_memo_link:'备注私钥无效，请重试或 <a data-href="/memo/?back={link}">更新密钥</a>',

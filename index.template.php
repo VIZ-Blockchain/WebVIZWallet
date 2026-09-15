@@ -50,6 +50,7 @@
 	<div class="cards-view">
 		<div class="cards-container">
 			<div class="node-down-notice"><span class="node-down-text"></span> <a class="switch-node-btn select-api-node" rel="#">Switch</a></div>
+			<div class="deeplink-account-notice"><span class="deeplink-account-text"></span> <a class="deeplink-account-add" data-href="#"></a></div>
 			<div class="view view-index"></div>
 			<div class="view view-portable"></div>
 			<div class="view view-login"></div>
