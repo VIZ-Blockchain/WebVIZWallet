@@ -2124,316 +2124,17 @@ function update_balances(el){
 		}
 	});
 }
-var load_paid_subscriptions_timer=0;
-function load_paid_subscriptions(page){
-	page=typeof page==='undefined'?0:page;
-	if(page<0){
-		page=0;
-	}
-	let per_page=10;
-	let offset=page*per_page;
-	let search=$('.page-paid-subscriptions .view-paid-subscriptions input[name=provider-filter]').val().trim();
-	let descr=$('.page-paid-subscriptions .view-paid-subscriptions input[name=descr-filter]').val().trim();
-	let order=$('.page-paid-subscriptions .view-paid-subscriptions select[name=order] option:checked').val();
-	$('.page-paid-subscriptions .view-paid-subscriptions .table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
-	$.ajax({
-		type:'GET',
-		url:'https://wallet.viz.world/ajax.php',
-		data:{'action':'get_paid_subscriptions',page,search,descr,order},
-		success:function(response_data){
-			let data='';
-			try{
-				response=JSON.parse(response_data);
-			}
-			catch(err){
-				data='<p class="red">'+ltmp_arr.default_incorrect_response+'</p>';
 
-				console.log(err);
-			}
-			for(i in response){
-				let provider=response[i];
-				let active=false;
-				if(-1!=current_user_active_paid_subscribes.indexOf(provider.account)){
-					active=true;
-				}
-				let descr='';
-				let url='';
-				if(-1!=provider.descr.indexOf('https://')){
-					descr=provider.descr.substring(0,provider.descr.indexOf('https://'));
-					url=provider.descr.substring(provider.descr.indexOf('https://'));
-				}
-				else{
-					if(-1!=provider.descr.indexOf('http://')){
-						descr=provider.descr.substring(0,provider.descr.indexOf('http://'));
-						url=provider.descr.substring(provider.descr.indexOf('http://'));
-					}
-					else{
-						descr=provider.descr;
-					}
-				}
-				if(''!=descr){
-					descr=escape_html(descr);
-					descr='<div>'+descr+'</div>';
-				}
-				if(0!=provider.sub_count){
-					descr+='<div>'+ltmp_arr.ps_sub_count_caption+provider.sub_count+'</div>';
-				}
-				if(0!=provider.sub_amount){
-					descr+='<div>'+ltmp_arr.ps_sub_amount_caption+number_thousands(show_price_in_tokens(provider.sub_amount/1000,true))+'</div>';
-				}
-				if(''!=url){
-					descr+='<div><a href="'+escape_html(url)+'" class="small inline-button red no-margin" target="_blank">'+ltmp_arr.ps_agreement_link+'</a></div>';
-				}
-				descr+='<div><a data-href="/market/paid-subscriptions/'+provider.account+'/" class="small inline-button red no-margin" target="_blank">'+ltmp_arr.ps_view_link+'</a></div>';
-				data+='<div class="columns-view">';
-				data+='<div class="column-view column-flex column-overflow-scroll">';
-					data+='<div class="desktop-view-list"><span class="desktop-float-left">'+ltmp_arr.ps_adaptive_provider+'&nbsp;</span><div class="desktop-after-float-left-margin"><span class="bold">'+provider.account+'</span>'+(active?'<span class="icon icon-18px icon-small-margin icon-vtop icon-color-red icon-check" title="'+ltmp_arr.ps_icon_signed_caption+'"></span> ':'')+'</div></div>';
-					data+='<div class="desktop-view-list"><span class="desktop-float-left">'+ltmp_arr.ps_adaptive_period+'&nbsp;</span><div class="desktop-after-float-left-margin"><span class="bold">'+provider.period+plural_str(provider.period,ltmp_arr.plural_days_1,ltmp_arr.plural_days_2,ltmp_arr.plural_days_5)+'</span></div></div>';
-					data+='<div class="desktop-view-list"><span class="desktop-float-left">'+ltmp_arr.ps_adaptive_levels+'&nbsp;</span><div class="desktop-after-float-left-margin"><span class="bold">'+provider.levels+'</span></div></div>';
-					data+='<div class="desktop-view-list"><span class="desktop-float-left">'+ltmp_arr.ps_adaptive_amount+'&nbsp;</span><div class="desktop-after-float-left-margin"><span class="bold">'+show_price_in_tokens(provider.amount,true)+'</span></div></div>';
-					data+='<div class="desktop-view-list"><span class="desktop-float-left">'+ltmp_arr.ps_adaptive_descr+'&nbsp;</span><div class="desktop-after-float-left-margin">'+descr+'</div></div>';
-				data+='</div>';
-				data+='</div>';
-			}
-			if(''==data){
-				data+='<div class="columns-view"><div class="column-view column-1">';
-				data+=ltmp_arr.default_no_items;
-				data+=(page!=0?ltmp_arr.default_no_items_try_other_page+(''!=search?ltmp_arr.default_no_items_try_other_search:'')+ltmp_arr.default_no_items_try_other_end:'');
-				data+='</div></div>';
-				let prev_page=false;
-				if(offset>=per_page){
-					prev_page=true;
-				}
-				if(prev_page){
-					$('.page-paid-subscriptions .view-paid-subscriptions .table-footer').html((prev_page?'<a class="view-paid-subscriptions-page-action inline-button red" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':''));
-				}
-				else{
-					$('.page-paid-subscriptions .view-paid-subscriptions .table-footer').html('');
-				}
-			}
-			else{
-				let prev_page=false;
-				if(offset>=per_page){
-					prev_page=true;
-				}
-				let next_page=false;
-				if(response.length>=per_page){
-					next_page=true;
-				}
-				$('.page-paid-subscriptions .view-paid-subscriptions .table-footer').html(
-					(prev_page?'<a class="view-paid-subscriptions-page-action inline-button red" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':'')+
-					ltmp_arr.default_list_items_counter+': '+(offset+1)+'-'+(offset+response.length)+
-					(next_page?' <a class="view-paid-subscriptions-page-action inline-button red" data-page="'+(2+page)+'">'+ltmp_arr.default_next_page+'</a>':'')
-				);
-			}
-			$('.page-paid-subscriptions .view-paid-subscriptions .table-data').attr('data-page',page);
-			$('.page-paid-subscriptions .view-paid-subscriptions .table-data').html(data);
-		}
-	});
+// Marketplace browse/search used to go through a MySQL-backed index behind ajax.php; the wallet
+// is now a thin client (viz-js-lib / node RPC only), that index is gone. Direct-by-name lookups
+// (buy-account/<name>, buy-short-account/<name>, buy-subaccount/<name>, paid-subscriptions/<provider>)
+// stay fully on-chain and keep working — only the "browse everything" listing is unavailable.
+function market_search_unavailable(container){
+	container.find('input, select').prop('disabled',true);
+	container.find('.table-footer').html('');
+	container.find('.table-data').html('<div class="columns-view"><div class="column-view column-flex"><p class="red">'+ltmp_arr.market_search_unavailable+'</p></div></div>');
 }
-var load_accounts_on_sale_timer=0;
-function load_accounts_on_sale(page){
-	page=typeof page==='undefined'?0:page;
-	if(page<0){
-		page=0;
-	}
-	let per_page=10;
-	let offset=page*per_page;
-	let search=$('.page-buy-account .accounts-on-sale input[name=account-filter]').val().trim();
-	let order=$('.page-buy-account .accounts-on-sale select[name=order] option:checked').val();
-	$('.page-buy-account .accounts-on-sale .table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
-	$.ajax({
-		type:'GET',
-		url:'https://wallet.viz.world/ajax.php',
-		data:{'action':'get_accounts_on_sale',page,search,order},
-		success:function(response_data){
-			let data='';
-			try{
-				response=JSON.parse(response_data);
-			}
-			catch(err){
-				data='<p class="red">'+ltmp_arr.default_incorrect_response+'</p>';
 
-				console.log(err);
-			}
-			for(i in response){
-				data+='<div class="columns-view">';
-				data+='<div class="column-view column-4">'+response[i].account+'</div>';
-				//data+='<div class="column-view column-4">'+response[i].account_seller+'</div>';
-				data+='<div class="column-view column-flex"><a data-href="/account/buy-account/'+response[i].account+'/" class="inline-button no-margin">'+show_price_in_tokens(response[i].price,true)+'</a></div>';
-				data+='</div>';
-			}
-			if(''==data){
-				data+='<div class="columns-view"><div class="column-view column-1">';
-				data+=ltmp_arr.default_no_items;
-				data+=(page!=0?ltmp_arr.default_no_items_try_other_page+(''!=search?ltmp_arr.default_no_items_try_other_search:'')+ltmp_arr.default_no_items_try_other_end:'');
-				data+='</div></div>';
-				let prev_page=false;
-				if(offset>=per_page){
-					prev_page=true;
-				}
-				if(prev_page){
-					$('.page-buy-account .accounts-on-sale .table-footer').html((prev_page?'<a class="accounts-on-sale-page-action inline-button" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':''));
-				}
-				else{
-					$('.page-buy-account .accounts-on-sale .table-footer').html('');
-				}
-			}
-			else{
-				let prev_page=false;
-				if(offset>=per_page){
-					prev_page=true;
-				}
-				let next_page=false;
-				if(response.length>=per_page){
-					next_page=true;
-				}
-				$('.page-buy-account .accounts-on-sale .table-footer').html(
-					(prev_page?'<a class="accounts-on-sale-page-action inline-button" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':'')+
-					ltmp_arr.default_list_items_counter+': '+(offset+1)+'-'+(offset+response.length)+
-					(next_page?' <a class="accounts-on-sale-page-action inline-button" data-page="'+(2+page)+'">'+ltmp_arr.default_next_page+'</a>':'')
-				);
-			}
-			$('.page-buy-account .accounts-on-sale .table-data').attr('data-page',page);
-			$('.page-buy-account .accounts-on-sale .table-data').html(data);
-		}
-	});
-}
-var load_short_accounts_on_sale_timer=0;
-function load_short_accounts_on_sale(page){
-	page=typeof page==='undefined'?0:page;
-	if(page<0){
-		page=0;
-	}
-	let per_page=10;
-	let offset=page*per_page;
-	let search=$('.page-buy-short-account .accounts-on-sale input[name=account-filter]').val().trim();
-	$('.page-buy-short-account .accounts-on-sale .table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
-	$.ajax({
-		type:'GET',
-		url:'https://wallet.viz.world/ajax.php',
-		data:{'action':'get_short_accounts_on_sale',page,search},
-		success:function(response_data){
-			let data='';
-			try{
-				response=JSON.parse(response_data);
-			}
-			catch(err){
-				data='<p class="red">'+ltmp_arr.default_incorrect_response+'</p>';
-
-				console.log(err);
-			}
-			for(i in response){
-				data+='<div class="columns-view">';
-				data+='<div class="column-view column-4">'+response[i].account+'</div>';
-				//data+='<div class="column-view column-4">'+response[i].account_seller+'</div>';
-				data+='<div class="column-view column-flex"><a data-href="/account/buy-short-account/'+response[i].account+'/" class="inline-button no-margin">'+show_price_in_tokens(response[i].price,true)+'</a></div>';
-				data+='</div>';
-			}
-			if(''==data){
-				data+='<div class="columns-view"><div class="column-view column-1">';
-				data+=ltmp_arr.default_no_items;
-				data+=(page!=0?ltmp_arr.default_no_items_try_other_page+(''!=search?ltmp_arr.default_no_items_try_other_search:'')+ltmp_arr.default_no_items_try_other_end:'');
-				data+='</div></div>';
-				let prev_page=false;
-				if(offset>=per_page){
-					prev_page=true;
-				}
-				if(prev_page){
-					$('.page-buy-short-account .accounts-on-sale .table-footer').html((prev_page?'<a class="short-accounts-on-sale-page-action inline-button" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':''));
-				}
-				else{
-					$('.page-buy-short-account .accounts-on-sale .table-footer').html('');
-				}
-			}
-			else{
-				let prev_page=false;
-				if(offset>=per_page){
-					prev_page=true;
-				}
-				let next_page=false;
-				if(response.length>=per_page){
-					next_page=true;
-				}
-				$('.page-buy-short-account .accounts-on-sale .table-footer').html(
-					(prev_page?'<a class="short-accounts-on-sale-page-action inline-button" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':'')+
-					ltmp_arr.default_list_items_counter+': '+(offset+1)+'-'+(offset+response.length)+
-					(next_page?' <a class="short-accounts-on-sale-page-action inline-button" data-page="'+(2+page)+'">'+ltmp_arr.default_next_page+'</a>':'')
-				);
-			}
-			$('.page-buy-short-account .accounts-on-sale .table-data').attr('data-page',page);
-			$('.page-buy-short-account .accounts-on-sale .table-data').html(data);
-		}
-	});
-}
-var load_subaccounts_on_sale_timer=0;
-function load_subaccounts_on_sale(page){
-	page=typeof page==='undefined'?0:page;
-	if(page<0){
-		page=0;
-	}
-	let per_page=10;
-	let offset=page*per_page;
-	let search=$('.page-buy-subaccount .subaccounts-on-sale input[name=subaccount-filter]').val().trim();
-	let order=$('.page-buy-subaccount .subaccounts-on-sale select[name=order] option:checked').val();
-	$('.page-buy-subaccount .subaccounts-on-sale .table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
-	$.ajax({
-		type:'GET',
-		url:'https://wallet.viz.world/ajax.php',
-		data:{'action':'get_subaccounts_on_sale',page,search,order},
-		success:function(response_data){
-			let data='';
-			try{
-				response=JSON.parse(response_data);
-			}
-			catch(err){
-				data='<p class="red">'+ltmp_arr.default_incorrect_response+'</p>';
-
-				console.log(err);
-			}
-			for(i in response){
-				data+='<div class="columns-view">';
-				data+='<div class="column-view column-4">'+response[i].account+'</div>';
-				//data+='<div class="column-view column-4">'+response[i].account_seller+'</div>';
-				data+='<div class="column-view column-flex"><a data-href="/account/buy-subaccount/'+response[i].account+'/" class="inline-button no-margin">'+show_price_in_tokens(response[i].price,true)+'</a></div>';
-				data+='</div>';
-			}
-			if(''==data){
-				data+='<div class="columns-view"><div class="column-view column-1">';
-				data+=ltmp_arr.default_no_items
-				data+=(page!=0?ltmp_arr.default_no_items_try_other_page+(''!=search?ltmp_arr.default_no_items_try_other_search:'')+ltmp_arr.default_no_items_try_other_end:'');
-				data+='</div></div>';
-				let prev_page=false;
-				if(offset>=per_page){
-					prev_page=true;
-				}
-				if(prev_page){
-					$('.page-buy-subaccount .subaccounts-on-sale .table-footer').html((prev_page?'<a class="subaccounts-on-sale-page-action inline-button" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':''));
-				}
-				else{
-					$('.page-buy-subaccount .subaccounts-on-sale .table-footer').html('');
-				}
-			}
-			else{
-				let prev_page=false;
-				if(offset>=per_page){
-					prev_page=true;
-				}
-				let next_page=false;
-				if(response.length>=per_page){
-					next_page=true;
-				}
-				$('.page-buy-subaccount .subaccounts-on-sale .table-footer').html(
-					(prev_page?'<a class="subaccounts-on-sale-page-action inline-button" data-page="'+(page)+'">'+ltmp_arr.default_prev_page+'</a> ':'')+
-					ltmp_arr.default_list_items_counter+': '+(offset+1)+'-'+(offset+response.length)+
-					(next_page?' <a class="subaccounts-on-sale-page-action inline-button" data-page="'+(2+page)+'">'+ltmp_arr.default_next_page+'</a>':'')
-				);
-			}
-			$('.page-buy-subaccount .subaccounts-on-sale .table-data').attr('data-page',page);
-			$('.page-buy-subaccount .subaccounts-on-sale .table-data').html(data);
-		}
-	});
-}
 function load_inactive_paid_subscriptions(){
 	$('.page-active-paid-subscriptions .inactive-paid-subscriptions .table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
 	viz.api.getInactivePaidSubscriptions(current_user,function(err,response){
@@ -2699,35 +2400,7 @@ function view_market(path,params,title){
 					else{
 						$('.page-paid-subscriptions .section').css('display','none');
 						$('.page-paid-subscriptions .view-paid-subscriptions').css('display','block');
-						let page=0;
-						if(typeof params.page != 'undefined'){
-							page=parseInt(params.page)-1;
-						}
-						viz.api.getActivePaidSubscriptions(current_user,function(err,response){
-							if(!err){
-								current_user_active_paid_subscribes=response;
-								load_paid_subscriptions(page);
-							}
-							else{
-								load_paid_subscriptions(page);
-							}
-						});
-
-						$('.page-paid-subscriptions .view-paid-subscriptions input[name=provider-filter]').unbind('keyup');
-						$('.page-paid-subscriptions .view-paid-subscriptions input[name=provider-filter]').bind('keyup',function(){
-							clearTimeout(load_paid_subscriptions_timer);
-							load_paid_subscriptions_timer=setTimeout(load_paid_subscriptions,200,0);
-						});
-
-						$('.page-paid-subscriptions .view-paid-subscriptions input[name=descr-filter]').unbind('keyup');
-						$('.page-paid-subscriptions .view-paid-subscriptions input[name=descr-filter]').bind('keyup',function(){
-							clearTimeout(load_paid_subscriptions_timer);
-							load_paid_subscriptions_timer=setTimeout(load_paid_subscriptions,200,0);
-						});
-						$('.page-paid-subscriptions .view-paid-subscriptions select[name=order]').unbind('change');
-						$('.page-paid-subscriptions .view-paid-subscriptions select[name=order]').bind('change',function(){
-							load_paid_subscriptions(0);
-						});
+						market_search_unavailable($('.page-paid-subscriptions .view-paid-subscriptions'));
 					}
 				}
 				if('create-paid-subscribe'==path[2]){
@@ -3023,21 +2696,7 @@ function view_account(path,params,title){
 					else{
 						$('.view-'+path[1]+' .page-'+path[2]+' .section').css('display','none');
 						$('.view-'+path[1]+' .page-'+path[2]+' .accounts-on-sale').css('display','block');
-
-						let page=0;
-						if(typeof params.page != 'undefined'){
-							page=parseInt(params.page)-1;
-						}
-						load_accounts_on_sale(page);
-						$('.page-buy-account .accounts-on-sale input[name=account-filter]').unbind('keyup');
-						$('.page-buy-account .accounts-on-sale input[name=account-filter]').bind('keyup',function(){
-							clearTimeout(load_accounts_on_sale_timer);
-							load_accounts_on_sale_timer=setTimeout(load_accounts_on_sale,200,0);
-						});
-						$('.page-buy-account .accounts-on-sale select[name=order]').unbind('change');
-						$('.page-buy-account .accounts-on-sale select[name=order]').bind('change',function(){
-							load_accounts_on_sale(0);
-						});
+						market_search_unavailable($('.page-buy-account .accounts-on-sale'));
 					}
 				}
 
@@ -3075,17 +2734,7 @@ function view_account(path,params,title){
 					else{
 						$('.view-'+path[1]+' .page-'+path[2]+' .section').css('display','none');
 						$('.view-'+path[1]+' .page-'+path[2]+' .accounts-on-sale').css('display','block');
-
-						let page=0;
-						if(typeof params.page != 'undefined'){
-							page=parseInt(params.page)-1;
-						}
-						load_short_accounts_on_sale(page);
-						$('.page-buy-short-account .accounts-on-sale input[name=account-filter]').unbind('keyup');
-						$('.page-buy-short-account .accounts-on-sale input[name=account-filter]').bind('keyup',function(){
-							clearTimeout(load_short_accounts_on_sale_timer);
-							load_short_accounts_on_sale_timer=setTimeout(load_short_accounts_on_sale,200,0);
-						});
+						market_search_unavailable($('.page-buy-short-account .accounts-on-sale'));
 					}
 				}
 
@@ -3132,20 +2781,7 @@ function view_account(path,params,title){
 					else{
 						$('.view-'+path[1]+' .page-'+path[2]+' .section').css('display','none');
 						$('.view-'+path[1]+' .page-'+path[2]+' .subaccounts-on-sale').css('display','block');
-						let page=0;
-						if(typeof params.page != 'undefined'){
-							page=parseInt(params.page)-1;
-						}
-						load_subaccounts_on_sale(page);
-						$('.page-buy-subaccount .subaccounts-on-sale input[name=subaccount-filter]').unbind('keyup');
-						$('.page-buy-subaccount .subaccounts-on-sale input[name=subaccount-filter]').bind('keyup',function(){
-							clearTimeout(load_subaccounts_on_sale_timer);
-							load_subaccounts_on_sale_timer=setTimeout(load_subaccounts_on_sale,200,0);
-						});
-						$('.page-buy-subaccount .subaccounts-on-sale select[name=order]').unbind('change');
-						$('.page-buy-subaccount .subaccounts-on-sale select[name=order]').bind('change',function(){
-							load_subaccounts_on_sale(0);
-						});
+						market_search_unavailable($('.page-buy-subaccount .subaccounts-on-sale'));
 					}
 				}
 
@@ -8694,21 +8330,6 @@ function app_mouse(e){
 		else{
 			$('.page-create-paid-subscribe .create-paid-subscribe-error').html(ltmp_arr.ps_need_sign_agreement);
 		}
-	}
-	if($(target).hasClass('accounts-on-sale-page-action')){
-		let page=parseInt($(target).attr('data-page'));
-		page--;
-		load_accounts_on_sale(page);
-	}
-	if($(target).hasClass('short-accounts-on-sale-page-action')){
-		let page=parseInt($(target).attr('data-page'));
-		page--;
-		load_short_accounts_on_sale(page);
-	}
-	if($(target).hasClass('subaccounts-on-sale-page-action')){
-		let page=parseInt($(target).attr('data-page'));
-		page--;
-		load_subaccounts_on_sale(page);
 	}
 	if($(target).hasClass('show-inactive-paid-subscriptions-action')){
 		$(target).css('display','none');

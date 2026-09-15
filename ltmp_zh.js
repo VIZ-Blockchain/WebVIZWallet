@@ -2644,6 +2644,7 @@ var ltmp_zh_arr = {
 	ba_response_error:'未找到此账户，请稍后重试',
 	ba_account_not_found:'未找到此账户',
 	ba_account_not_on_sale:'此账户未挂牌出售',
+	market_search_unavailable:'市场搜索暂不可用。请使用指向所需服务商/账户的直接链接。',
 	bsa_response_error:'未找到卖方账户，请稍后重试',
 	bsa_account_not_found:'未找到此卖方账户',
 	bsa_accounts_not_on_sale:'此子账户不可购买',

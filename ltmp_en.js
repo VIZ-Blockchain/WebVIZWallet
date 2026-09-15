@@ -2671,6 +2671,7 @@ var ltmp_en_arr={
 	ba_response_error:'This account was not found, try again later',
 	ba_account_not_found:'This account was not found',
 	ba_account_not_on_sale:'This account was not offered for sale',
+	market_search_unavailable:'Marketplace search is currently unavailable. Use a direct link to the provider/account you need.',
 	bsa_response_error:'Seller account was not found, try again later',
 	bsa_account_not_found:'This seller’s account was not found',
 	bsa_accounts_not_on_sale:'This subaccount is not available for purchase',
