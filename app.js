@@ -2125,14 +2125,158 @@ function update_balances(el){
 	});
 }
 
-// Marketplace browse/search used to go through a MySQL-backed index behind ajax.php; the wallet
-// is now a thin client (viz-js-lib / node RPC only), that index is gone. Direct-by-name lookups
-// (buy-account/<name>, buy-short-account/<name>, buy-subaccount/<name>, paid-subscriptions/<provider>)
-// stay fully on-chain and keep working — only the "browse everything" listing is unavailable.
-function market_search_unavailable(container){
-	container.find('input, select').prop('disabled',true);
-	container.find('.table-footer').html('');
-	container.find('.table-data').html('<div class="columns-view"><div class="column-view column-flex"><p class="red">'+ltmp_arr.market_search_unavailable+'</p></div></div>');
+// Marketplace browse used to go through a MySQL-backed index behind ajax.php; the wallet is now
+// a thin client (viz-js-lib / node RPC only), that index is gone. But the node itself already
+// keeps cheap ordered indexes for all four listings below (by_account_on_sale/by_subaccount_on_sale/
+// by_creator) — one bounded read (limit<=1000, enforced node-side) per page-open is all it costs,
+// no per-keystroke network traffic. Filtering/sorting the fetched batch happens entirely client-side
+// (no server-side WHERE — that part of the old backend genuinely doesn't have a node equivalent).
+var market_filter_timer=0;
+function market_row_loading(container){
+	container.find('.table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
+}
+function market_row_error(container){
+	container.find('.table-data').html('<div class="columns-view"><div class="column-view column-flex red">'+node_error_text()+'</div></div>');
+}
+function market_row_empty(container){
+	container.find('.table-data').html('<div class="columns-view"><div class="column-view column-flex">'+ltmp_arr.default_nothing_found+'</div></div>');
+}
+
+function load_paid_subscriptions(){
+	let container=$('.page-paid-subscriptions .view-paid-subscriptions');
+	market_row_loading(container);
+	viz.api.getPaidSubscriptions(0,1000,function(err,response){
+		if(err){ market_row_error(container); console.log(err); return; }
+		container.data('rows',response||[]);
+		render_paid_subscriptions_rows();
+	});
+}
+function render_paid_subscriptions_rows(){
+	let container=$('.page-paid-subscriptions .view-paid-subscriptions');
+	let rows=container.data('rows')||[];
+	let search=container.find('input[name=provider-filter]').val().trim().toLowerCase();
+	let urlq=container.find('input[name=descr-filter]').val().trim().toLowerCase();
+	let order=container.find('select[name=order] option:checked').val();
+	let filtered=rows.filter(function(r){
+		if(search && -1===r.creator.toLowerCase().indexOf(search)){ return false; }
+		if(urlq && -1===(r.url||'').toLowerCase().indexOf(urlq)){ return false; }
+		return true;
+	});
+	filtered.sort(function(a,b){
+		if('+provider'==order){ return a.creator<b.creator?-1:(a.creator>b.creator?1:0); }
+		if('-provider'==order){ return a.creator>b.creator?-1:(a.creator<b.creator?1:0); }
+		if('+amount'==order){ return a.amount-b.amount; }
+		if('-amount'==order){ return b.amount-a.amount; }
+		return 0;
+	});
+	if(0==filtered.length){ market_row_empty(container); return; }
+	let data='';
+	for(let i in filtered){
+		let provider=filtered[i];
+		let active=(-1!=current_user_active_paid_subscribes.indexOf(provider.creator));
+		data+=`
+		<div class="columns-view${active?' green':''}">
+			<div class="column-view column-5"><span class="adaptive-show">`+ltmp_arr.ps_provider_adaptive_caption+`&nbsp;</span><a data-href="/market/paid-subscriptions/${provider.creator}/">${escape_html(provider.creator)}</a></div>
+			<div class="column-view column-5"><span class="adaptive-show">`+ltmp_arr.ps_period_adaptive_caption+`&nbsp;</span>${provider.period}${plural_str(provider.period,ltmp_arr.plural_days_1,ltmp_arr.plural_days_2,ltmp_arr.plural_days_5)}</div>
+			<div class="column-view column-5"><span class="adaptive-show">`+ltmp_arr.ps_level_adaptive_caption+`&nbsp;</span>${provider.levels}</div>
+			<div class="column-view column-5"><span class="adaptive-show">`+ltmp_arr.ps_amount_adaptive_caption+`&nbsp;</span>${number_thousands(show_price_in_tokens(provider.amount/1000,true))}</div>
+			<div class="column-view column-flex">${provider.url?'<a href="'+escape_html(provider.url)+'" target="_blank" rel="noopener">'+escape_html(provider.url)+'</a>':''}</div>
+		</div>`;
+	}
+	container.find('.table-data').html(data);
+}
+
+function load_accounts_on_sale(){
+	let container=$('.page-buy-account .accounts-on-sale');
+	market_row_loading(container);
+	viz.api.getAccountsOnSale(0,1000,function(err,response){
+		if(err){ market_row_error(container); console.log(err); return; }
+		container.data('rows',(response||[]).filter(function(r){ return ''==r.target_buyer; }));
+		render_accounts_on_sale_rows();
+	});
+}
+function render_accounts_on_sale_rows(){
+	let container=$('.page-buy-account .accounts-on-sale');
+	let rows=container.data('rows')||[];
+	let search=container.find('input[name=account-filter]').val().trim().toLowerCase();
+	let order=container.find('select[name=order] option:checked').val();
+	let filtered=rows.filter(function(r){ return !search || -1!=r.account.toLowerCase().indexOf(search); });
+	filtered.sort(function(a,b){
+		let pa=parseFloat(a.account_offer_price), pb=parseFloat(b.account_offer_price);
+		return '-price'==order?(pb-pa):(pa-pb);
+	});
+	if(0==filtered.length){ market_row_empty(container); return; }
+	let data='';
+	for(let i in filtered){
+		let row=filtered[i];
+		data+=`
+		<div class="columns-view">
+			<div class="column-view column-4"><a data-href="/account/buy-account/${row.account}">${escape_html(row.account)}</a></div>
+			<div class="column-view column-flex">${number_thousands(show_price_in_tokens(row.account_offer_price,true))}</div>
+		</div>`;
+	}
+	container.find('.table-data').html(data);
+}
+
+function load_short_accounts_on_sale(){
+	let container=$('.page-buy-short-account .accounts-on-sale');
+	market_row_loading(container);
+	viz.api.getAccountsOnAuction(0,1000,function(err,response){
+		if(err){ market_row_error(container); console.log(err); return; }
+		container.data('rows',response||[]);
+		render_short_accounts_on_sale_rows();
+	});
+}
+function render_short_accounts_on_sale_rows(){
+	let container=$('.page-buy-short-account .accounts-on-sale');
+	let rows=container.data('rows')||[];
+	let search=container.find('input[name=account-filter]').val().trim().toLowerCase();
+	let filtered=rows.filter(function(r){ return !search || -1!=r.account.toLowerCase().indexOf(search); });
+	filtered.sort(function(a,b){ return a.account.length-b.account.length || (parseFloat(a.current_bid||a.account_offer_price)-parseFloat(b.current_bid||b.account_offer_price)); });
+	if(0==filtered.length){ market_row_empty(container); return; }
+	let data='';
+	for(let i in filtered){
+		let row=filtered[i];
+		let price=parseFloat(row.current_bid)>0?row.current_bid:row.account_offer_price;
+		data+=`
+		<div class="columns-view">
+			<div class="column-view column-4"><a data-href="/account/buy-short-account/${row.account}">${escape_html(row.account)}</a></div>
+			<div class="column-view column-flex">${number_thousands(show_price_in_tokens(price,true))}</div>
+		</div>`;
+	}
+	container.find('.table-data').html(data);
+}
+
+function load_subaccounts_on_sale(){
+	let container=$('.page-buy-subaccount .subaccounts-on-sale');
+	market_row_loading(container);
+	viz.api.getSubaccountsOnSale(0,1000,function(err,response){
+		if(err){ market_row_error(container); console.log(err); return; }
+		container.data('rows',response||[]);
+		render_subaccounts_on_sale_rows();
+	});
+}
+function render_subaccounts_on_sale_rows(){
+	let container=$('.page-buy-subaccount .subaccounts-on-sale');
+	let rows=container.data('rows')||[];
+	let search=container.find('input[name=subaccount-filter]').val().trim().toLowerCase();
+	let order=container.find('select[name=order] option:checked').val();
+	let filtered=rows.filter(function(r){ return !search || -1!=r.account.toLowerCase().indexOf(search); });
+	filtered.sort(function(a,b){
+		let pa=parseFloat(a.subaccount_offer_price), pb=parseFloat(b.subaccount_offer_price);
+		return '-price'==order?(pb-pa):(pa-pb);
+	});
+	if(0==filtered.length){ market_row_empty(container); return; }
+	let data='';
+	for(let i in filtered){
+		let row=filtered[i];
+		data+=`
+		<div class="columns-view">
+			<div class="column-view column-4"><a data-href="/account/buy-subaccount/${row.account}">${escape_html(row.account)}</a></div>
+			<div class="column-view column-flex">${number_thousands(show_price_in_tokens(row.subaccount_offer_price,true))}</div>
+		</div>`;
+	}
+	container.find('.table-data').html(data);
 }
 
 function load_inactive_paid_subscriptions(){
@@ -2400,7 +2544,19 @@ function view_market(path,params,title){
 					else{
 						$('.page-paid-subscriptions .section').css('display','none');
 						$('.page-paid-subscriptions .view-paid-subscriptions').css('display','block');
-						market_search_unavailable($('.page-paid-subscriptions .view-paid-subscriptions'));
+						viz.api.getActivePaidSubscriptions(current_user,function(err,response){
+							current_user_active_paid_subscribes=err?[]:response;
+							load_paid_subscriptions();
+						});
+						$('.page-paid-subscriptions .view-paid-subscriptions input[name=provider-filter]').unbind('keyup').bind('keyup',function(){
+							clearTimeout(market_filter_timer);
+							market_filter_timer=setTimeout(render_paid_subscriptions_rows,200);
+						});
+						$('.page-paid-subscriptions .view-paid-subscriptions input[name=descr-filter]').unbind('keyup').bind('keyup',function(){
+							clearTimeout(market_filter_timer);
+							market_filter_timer=setTimeout(render_paid_subscriptions_rows,200);
+						});
+						$('.page-paid-subscriptions .view-paid-subscriptions select[name=order]').unbind('change').bind('change',render_paid_subscriptions_rows);
 					}
 				}
 				if('create-paid-subscribe'==path[2]){
@@ -2696,7 +2852,12 @@ function view_account(path,params,title){
 					else{
 						$('.view-'+path[1]+' .page-'+path[2]+' .section').css('display','none');
 						$('.view-'+path[1]+' .page-'+path[2]+' .accounts-on-sale').css('display','block');
-						market_search_unavailable($('.page-buy-account .accounts-on-sale'));
+						load_accounts_on_sale();
+						$('.page-buy-account .accounts-on-sale input[name=account-filter]').unbind('keyup').bind('keyup',function(){
+							clearTimeout(market_filter_timer);
+							market_filter_timer=setTimeout(render_accounts_on_sale_rows,200);
+						});
+						$('.page-buy-account .accounts-on-sale select[name=order]').unbind('change').bind('change',render_accounts_on_sale_rows);
 					}
 				}
 
@@ -2734,7 +2895,11 @@ function view_account(path,params,title){
 					else{
 						$('.view-'+path[1]+' .page-'+path[2]+' .section').css('display','none');
 						$('.view-'+path[1]+' .page-'+path[2]+' .accounts-on-sale').css('display','block');
-						market_search_unavailable($('.page-buy-short-account .accounts-on-sale'));
+						load_short_accounts_on_sale();
+						$('.page-buy-short-account .accounts-on-sale input[name=account-filter]').unbind('keyup').bind('keyup',function(){
+							clearTimeout(market_filter_timer);
+							market_filter_timer=setTimeout(render_short_accounts_on_sale_rows,200);
+						});
 					}
 				}
 
@@ -2781,7 +2946,12 @@ function view_account(path,params,title){
 					else{
 						$('.view-'+path[1]+' .page-'+path[2]+' .section').css('display','none');
 						$('.view-'+path[1]+' .page-'+path[2]+' .subaccounts-on-sale').css('display','block');
-						market_search_unavailable($('.page-buy-subaccount .subaccounts-on-sale'));
+						load_subaccounts_on_sale();
+						$('.page-buy-subaccount .subaccounts-on-sale input[name=subaccount-filter]').unbind('keyup').bind('keyup',function(){
+							clearTimeout(market_filter_timer);
+							market_filter_timer=setTimeout(render_subaccounts_on_sale_rows,200);
+						});
+						$('.page-buy-subaccount .subaccounts-on-sale select[name=order]').unbind('change').bind('change',render_subaccounts_on_sale_rows);
 					}
 				}
 

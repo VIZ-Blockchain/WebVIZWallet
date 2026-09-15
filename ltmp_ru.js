@@ -2346,7 +2346,7 @@ var ltmp_ru_arr={
 						<p>
 							<label>
 								<input name="descr-filter" class="simple-rounded simple-rounded-size">
-								&mdash; Поиск по описанию
+								&mdash; Поиск по ссылке подписки
 							</label>
 						</p>
 						<p>
@@ -2356,10 +2356,6 @@ var ltmp_ru_arr={
 									<option value="-provider">Аккаунт провайдера по убыванию</option>
 									<option value="+amount">Цена по возрастанию</option>
 									<option value="-amount">Цена по убыванию</option>
-									<option value="+sub_count">Количество подписчиков по возрастанию</option>
-									<option value="-sub_count">Количество подписчиков по убыванию</option>
-									<option value="+sub_amount">Сумма платежей по возрастанию</option>
-									<option value="-sub_amount">Сумма платежей по убыванию</option>
 								</select>
 								&mdash; Сортировка
 							</label>
@@ -2645,7 +2641,6 @@ var ltmp_ru_arr={
 	ba_response_error:'Такой аккаунт не найден, попробуйте позже',
 	ba_account_not_found:'Такой аккаунт не найден',
 	ba_account_not_on_sale:'Данный аккаунт не был выставлен на продажу',
-	market_search_unavailable:'Поиск по маркетплейсу временно недоступен. Перейдите по прямой ссылке на нужного провайдера/аккаунт.',
 	bsa_response_error:'Аккаунт продавца не найден, попробуйте позже',
 	bsa_account_not_found:'Такой аккаунт продавца не найден',
 	bsa_accounts_not_on_sale:'Данный субаккаунт не доступен к покупке',
@@ -3059,6 +3054,7 @@ var ltmp_ru_arr={
 	default_incorrect_response:'Ошибка в запросе, попробуйте позже',
 	default_account_not_found_or_incorrect_response:'Аккаунт не найден или ошибка в запросе',
 	default_loading:'Загрузка&hellip;',
+	default_nothing_found:'Ничего не найдено.',
 	default_loading_more:'Загрузить ещё &#10140;',
 	default_node_not_respond:'Ошибка! Публичная нода не отвечает, попробуйте позже обновив страницу.',
 	default_node_error:'Ошибка в получении данных от публичной ноды, попробуйте позже.',

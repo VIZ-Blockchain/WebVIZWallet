@@ -2373,7 +2373,7 @@ var ltmp_en_arr={
 						<p>
 							<label>
 								<input name="descr-filter" class="simple-rounded simple-rounded-size">
-								&mdash; Search by description
+								&mdash; Search by subscription link
 							</label>
 						</p>
 						<p>
@@ -2383,10 +2383,6 @@ var ltmp_en_arr={
 									<option value="-provider">Provider account by descending</option>
 									<option value="+amount">Price ascending</option>
 									<option value="-amount">Price descending</option>
-									<option value="+sub_count">Number of subscribers by ascending</option>
-									<option value="-sub_count">Number of subscribers by descending</option>
-									<option value="+sub_amount">Amount of payments by ascending</option>
-									<option value="-sub_amount">Amount of payments by descending</option>
 								</select>
 								&mdash; Sort by
 							</label>
@@ -2671,7 +2667,6 @@ var ltmp_en_arr={
 	ba_response_error:'This account was not found, try again later',
 	ba_account_not_found:'This account was not found',
 	ba_account_not_on_sale:'This account was not offered for sale',
-	market_search_unavailable:'Marketplace search is currently unavailable. Use a direct link to the provider/account you need.',
 	bsa_response_error:'Seller account was not found, try again later',
 	bsa_account_not_found:'This seller’s account was not found',
 	bsa_accounts_not_on_sale:'This subaccount is not available for purchase',
@@ -3084,6 +3079,7 @@ var ltmp_en_arr={
 	default_incorrect_response:'Error in the request, try again later',
 	default_account_not_found_or_incorrect_response:'Account not found or error in request',
 	default_loading:'Loading&hellip;',
+	default_nothing_found:'Nothing found.',
 	default_loading_more:'Load more &#10140;',
 	default_node_not_respond:'Error! The public node is not responding, try later by refreshing the page.',
 	default_node_error:'Failed to receive data from public node, try again later.',

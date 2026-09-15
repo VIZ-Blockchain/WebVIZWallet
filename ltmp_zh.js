@@ -2346,7 +2346,7 @@ var ltmp_zh_arr = {
 						<p>
 							<label>
 								<input name="descr-filter" class="simple-rounded simple-rounded-size">
-								— 按描述搜索
+								— 按订阅链接搜索
 							</label>
 						</p>
 						<p>
@@ -2356,10 +2356,6 @@ var ltmp_zh_arr = {
 									<option value="-provider">提供者账户降序</option>
 									<option value="+amount">价格升序</option>
 									<option value="-amount">价格降序</option>
-									<option value="+sub_count">订阅者数量升序</option>
-									<option value="-sub_count">订阅者数量降序</option>
-									<option value="+sub_amount">支付金额升序</option>
-									<option value="-sub_amount">支付金额降序</option>
 								</select>
 								— 排序方式
 							</label>
@@ -2644,7 +2640,6 @@ var ltmp_zh_arr = {
 	ba_response_error:'未找到此账户，请稍后重试',
 	ba_account_not_found:'未找到此账户',
 	ba_account_not_on_sale:'此账户未挂牌出售',
-	market_search_unavailable:'市场搜索暂不可用。请使用指向所需服务商/账户的直接链接。',
 	bsa_response_error:'未找到卖方账户，请稍后重试',
 	bsa_account_not_found:'未找到此卖方账户',
 	bsa_accounts_not_on_sale:'此子账户不可购买',
@@ -3057,6 +3052,7 @@ var ltmp_zh_arr = {
 	default_incorrect_response:'请求错误，请稍后重试',
 	default_account_not_found_or_incorrect_response:'未找到账户或请求错误',
 	default_loading:'加载中&hellip;',
+	default_nothing_found:'未找到结果。',
 	default_loading_more:'加载更多 &#10140;',
 	default_node_not_respond:'错误！公共节点无响应，请稍后刷新页面重试。',
 	default_node_error:'无法从公共节点接收数据，请稍后重试。',
