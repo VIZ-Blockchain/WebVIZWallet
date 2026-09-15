@@ -2132,22 +2132,46 @@ function update_balances(el){
 // no per-keystroke network traffic. Filtering/sorting the fetched batch happens entirely client-side
 // (no server-side WHERE — that part of the old backend genuinely doesn't have a node equivalent).
 var market_filter_timer=0;
+// Node caps a single listing call at 1000 rows, so "browse everything" is a sequence of pages.
+// The node's `from` is an offset over rows it actually returned (it skips only the ones passing
+// the same visibility filter), so accumulating pages this way stays consistent.
+var market_page_size=1000;
+function market_footer_more(container, action_class){
+	if(container.data('more')){
+		container.find('.table-footer').html('<a class="inline-button '+action_class+'">'+ltmp_arr.default_loading_more+'</a>');
+	}
+	else{
+		container.find('.table-footer').html('');
+	}
+}
+// `raw` is what the node returned (its rows are what the next call's offset counts); `displayed`
+// is the subset we actually render — some listings drop rows client-side (e.g. accounts already
+// reserved for a specific buyer), so the two counts must never be conflated or paging loops.
+function market_append_page(container, raw, displayed){
+	container.data('node_offset',(container.data('node_offset')||0)+(raw||[]).length);
+	container.data('rows',(container.data('rows')||[]).concat(displayed||[]));
+	container.data('more',(raw||[]).length>=market_page_size);
+}
 function market_row_loading(container){
+	container.find('.table-footer').html('');
 	container.find('.table-data').html('<div class="columns-view"><div class="column-view column-flex"><p><span class="submit-button-ring" style="display:inline-block"></span> '+ltmp_arr.default_loading+'</p></div></div>');
 }
 function market_row_error(container){
+	container.find('.table-footer').html('');
 	container.find('.table-data').html('<div class="columns-view"><div class="column-view column-flex red">'+node_error_text()+'</div></div>');
 }
 function market_row_empty(container){
 	container.find('.table-data').html('<div class="columns-view"><div class="column-view column-flex">'+ltmp_arr.default_nothing_found+'</div></div>');
 }
 
-function load_paid_subscriptions(){
+function load_paid_subscriptions(reset){
 	let container=$('.page-paid-subscriptions .view-paid-subscriptions');
+	if(reset){ container.data('rows',[]); container.data('node_offset',0); }
+	if(!container.data('rows')){ container.data('rows',[]); }
 	market_row_loading(container);
-	viz.api.getPaidSubscriptions(0,1000,function(err,response){
+	viz.api.getPaidSubscriptions(container.data('node_offset')||0, market_page_size, function(err,response){
 		if(err){ market_row_error(container); console.log(err); return; }
-		container.data('rows',response||[]);
+		market_append_page(container,response,response);
 		render_paid_subscriptions_rows();
 	});
 }
@@ -2169,6 +2193,7 @@ function render_paid_subscriptions_rows(){
 		if('-amount'==order){ return b.amount-a.amount; }
 		return 0;
 	});
+	market_footer_more(container,'paid-subscriptions-load-more-action');
 	if(0==filtered.length){ market_row_empty(container); return; }
 	let data='';
 	for(let i in filtered){
@@ -2186,12 +2211,14 @@ function render_paid_subscriptions_rows(){
 	container.find('.table-data').html(data);
 }
 
-function load_accounts_on_sale(){
+function load_accounts_on_sale(reset){
 	let container=$('.page-buy-account .accounts-on-sale');
+	if(reset){ container.data('rows',[]); container.data('node_offset',0); }
+	if(!container.data('rows')){ container.data('rows',[]); }
 	market_row_loading(container);
-	viz.api.getAccountsOnSale(0,1000,function(err,response){
+	viz.api.getAccountsOnSale(container.data('node_offset')||0, market_page_size, function(err,response){
 		if(err){ market_row_error(container); console.log(err); return; }
-		container.data('rows',(response||[]).filter(function(r){ return ''==r.target_buyer; }));
+		market_append_page(container,response,(response||[]).filter(function(r){ return ''==r.target_buyer; }));
 		render_accounts_on_sale_rows();
 	});
 }
@@ -2205,6 +2232,7 @@ function render_accounts_on_sale_rows(){
 		let pa=parseFloat(a.account_offer_price), pb=parseFloat(b.account_offer_price);
 		return '-price'==order?(pb-pa):(pa-pb);
 	});
+	market_footer_more(container,'accounts-on-sale-load-more-action');
 	if(0==filtered.length){ market_row_empty(container); return; }
 	let data='';
 	for(let i in filtered){
@@ -2218,12 +2246,14 @@ function render_accounts_on_sale_rows(){
 	container.find('.table-data').html(data);
 }
 
-function load_short_accounts_on_sale(){
+function load_short_accounts_on_sale(reset){
 	let container=$('.page-buy-short-account .accounts-on-sale');
+	if(reset){ container.data('rows',[]); container.data('node_offset',0); }
+	if(!container.data('rows')){ container.data('rows',[]); }
 	market_row_loading(container);
-	viz.api.getAccountsOnAuction(0,1000,function(err,response){
+	viz.api.getAccountsOnAuction(container.data('node_offset')||0, market_page_size, function(err,response){
 		if(err){ market_row_error(container); console.log(err); return; }
-		container.data('rows',response||[]);
+		market_append_page(container,response,response);
 		render_short_accounts_on_sale_rows();
 	});
 }
@@ -2233,6 +2263,7 @@ function render_short_accounts_on_sale_rows(){
 	let search=container.find('input[name=account-filter]').val().trim().toLowerCase();
 	let filtered=rows.filter(function(r){ return !search || -1!=r.account.toLowerCase().indexOf(search); });
 	filtered.sort(function(a,b){ return a.account.length-b.account.length || (parseFloat(a.current_bid||a.account_offer_price)-parseFloat(b.current_bid||b.account_offer_price)); });
+	market_footer_more(container,'short-accounts-on-sale-load-more-action');
 	if(0==filtered.length){ market_row_empty(container); return; }
 	let data='';
 	for(let i in filtered){
@@ -2247,12 +2278,14 @@ function render_short_accounts_on_sale_rows(){
 	container.find('.table-data').html(data);
 }
 
-function load_subaccounts_on_sale(){
+function load_subaccounts_on_sale(reset){
 	let container=$('.page-buy-subaccount .subaccounts-on-sale');
+	if(reset){ container.data('rows',[]); container.data('node_offset',0); }
+	if(!container.data('rows')){ container.data('rows',[]); }
 	market_row_loading(container);
-	viz.api.getSubaccountsOnSale(0,1000,function(err,response){
+	viz.api.getSubaccountsOnSale(container.data('node_offset')||0, market_page_size, function(err,response){
 		if(err){ market_row_error(container); console.log(err); return; }
-		container.data('rows',response||[]);
+		market_append_page(container,response,response);
 		render_subaccounts_on_sale_rows();
 	});
 }
@@ -2266,6 +2299,7 @@ function render_subaccounts_on_sale_rows(){
 		let pa=parseFloat(a.subaccount_offer_price), pb=parseFloat(b.subaccount_offer_price);
 		return '-price'==order?(pb-pa):(pa-pb);
 	});
+	market_footer_more(container,'subaccounts-on-sale-load-more-action');
 	if(0==filtered.length){ market_row_empty(container); return; }
 	let data='';
 	for(let i in filtered){
@@ -2546,7 +2580,7 @@ function view_market(path,params,title){
 						$('.page-paid-subscriptions .view-paid-subscriptions').css('display','block');
 						viz.api.getActivePaidSubscriptions(current_user,function(err,response){
 							current_user_active_paid_subscribes=err?[]:response;
-							load_paid_subscriptions();
+							load_paid_subscriptions(true);
 						});
 						$('.page-paid-subscriptions .view-paid-subscriptions input[name=provider-filter]').unbind('keyup').bind('keyup',function(){
 							clearTimeout(market_filter_timer);
@@ -2852,7 +2886,7 @@ function view_account(path,params,title){
 					else{
 						$('.view-'+path[1]+' .page-'+path[2]+' .section').css('display','none');
 						$('.view-'+path[1]+' .page-'+path[2]+' .accounts-on-sale').css('display','block');
-						load_accounts_on_sale();
+						load_accounts_on_sale(true);
 						$('.page-buy-account .accounts-on-sale input[name=account-filter]').unbind('keyup').bind('keyup',function(){
 							clearTimeout(market_filter_timer);
 							market_filter_timer=setTimeout(render_accounts_on_sale_rows,200);
@@ -2895,7 +2929,7 @@ function view_account(path,params,title){
 					else{
 						$('.view-'+path[1]+' .page-'+path[2]+' .section').css('display','none');
 						$('.view-'+path[1]+' .page-'+path[2]+' .accounts-on-sale').css('display','block');
-						load_short_accounts_on_sale();
+						load_short_accounts_on_sale(true);
 						$('.page-buy-short-account .accounts-on-sale input[name=account-filter]').unbind('keyup').bind('keyup',function(){
 							clearTimeout(market_filter_timer);
 							market_filter_timer=setTimeout(render_short_accounts_on_sale_rows,200);
@@ -2946,7 +2980,7 @@ function view_account(path,params,title){
 					else{
 						$('.view-'+path[1]+' .page-'+path[2]+' .section').css('display','none');
 						$('.view-'+path[1]+' .page-'+path[2]+' .subaccounts-on-sale').css('display','block');
-						load_subaccounts_on_sale();
+						load_subaccounts_on_sale(true);
 						$('.page-buy-subaccount .subaccounts-on-sale input[name=subaccount-filter]').unbind('keyup').bind('keyup',function(){
 							clearTimeout(market_filter_timer);
 							market_filter_timer=setTimeout(render_subaccounts_on_sale_rows,200);
@@ -8506,6 +8540,10 @@ function app_mouse(e){
 		$('.inactive-paid-subscriptions').css('display','block');
 		load_inactive_paid_subscriptions();
 	}
+	if($(target).hasClass('paid-subscriptions-load-more-action')){ load_paid_subscriptions(false); }
+	if($(target).hasClass('accounts-on-sale-load-more-action')){ load_accounts_on_sale(false); }
+	if($(target).hasClass('short-accounts-on-sale-load-more-action')){ load_short_accounts_on_sale(false); }
+	if($(target).hasClass('subaccounts-on-sale-load-more-action')){ load_subaccounts_on_sale(false); }
 	if($(target).hasClass('nodes-config-action')){
 		$(target).css('display','none');
 		$('.nodes-config').css('display','block');
