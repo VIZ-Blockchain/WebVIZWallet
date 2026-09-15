@@ -185,7 +185,7 @@ var ltmp_en_arr={
 				<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 			</p>
 			<form class="signreq-post-form" method="POST" style="display:none">
-				<input type="hidden" name="vizonator" value="">
+				<input type="hidden" name="response" value="">
 			</form>
 			<div class="addon captions">A link cannot sign you in by itself &mdash; only you can, by clicking the button. The signature is time-limited and one-time (it cannot be reused).</div>
 		</div>`,

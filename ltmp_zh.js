@@ -185,7 +185,7 @@ var ltmp_zh_arr = {
 				<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 			</p>
 			<form class="signreq-post-form" method="POST" style="display:none">
-				<input type="hidden" name="vizonator" value="">
+				<input type="hidden" name="response" value="">
 			</form>
 			<div class="addon captions">链接本身无法为您登录 &mdash; 只有您点击按钮才能完成。签名有时效性且仅能使用一次（无法重复使用）。</div>
 		</div>`,

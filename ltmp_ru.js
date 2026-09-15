@@ -185,7 +185,7 @@ var ltmp_ru_arr={
 				<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 			</p>
 			<form class="signreq-post-form" method="POST" style="display:none">
-				<input type="hidden" name="vizonator" value="">
+				<input type="hidden" name="response" value="">
 			</form>
 			<div class="addon captions">Ссылка не может подписать вход за вас &mdash; только вы, нажатием кнопки. Подпись действует ограниченное время и одноразовая, повторно использовать её нельзя.</div>
 		</div>`,

@@ -1028,12 +1028,13 @@ function view_memo(path,params,title){
 	$('.view-memo').css('display','block');
 }
 
-// ── Sign-in request (vizonator-compatible passwordless auth for third-party sites) ──
-// Deep-link: #/signrequest/?domain=viz://<hub-account>/&return=<https url the hub reads on POST>
+// ── Sign-in request (protocol-neutral passwordless auth for third-party sites) ──
+// Deep-link: #/signrequest/?domain=viz://<hub-account>/&return=<https url the site reads on POST>
 // The wallet signs data=domain:auth:account:regular:ts:nonce with the account's REGULAR key
-// (never active/master — see viz-hub/lib/vizonator.js AUTHORITIES) and does a form POST of
-// vizonator=JSON.stringify({data,signature}) to `return`, exactly the format the hub's own
-// browser extension (Vizonator) produces. Never auto-submits on load — only on explicit click
+// (never active/master — same shape as viz-hub/lib/vizonator.js AUTHORITIES, used here only as a
+// reference implementation) and does a form POST of response=JSON.stringify({data,signature}) to
+// `return`. Field name is ours (protocol we define here), not the receiving site's — the accepting
+// backend decodes it however it wants. Never auto-submits on load — only on explicit click
 // (see DEEPLINKS.md: links may prefill, never submit for the user).
 function signreq_random_hex(n){
 	let b=crypto.getRandomValues(new Uint8Array(n)),s='';
@@ -1135,7 +1136,7 @@ function signreq_confirm_action(){
 		v.find('.success').html(ltmp_arr.signreq_redirecting||'Signed. Redirecting…');
 		let f=v.find('.signreq-post-form');
 		f.attr('action',return_url);
-		f.find('input[name=vizonator]').val(JSON.stringify({data:data,signature:sig}));
+		f.find('input[name=response]').val(JSON.stringify({data:data,signature:sig}));
 		setTimeout(function(){ f.get(0).submit(); },400);
 	}
 
