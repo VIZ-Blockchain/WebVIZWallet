@@ -158,6 +158,38 @@ var ltmp_ru_arr={
 			</div>
 		</div>`,
 
+	preset_view_signrequest_title:`Запрос на вход`,
+	preset_view_signrequest:`
+		<div class="card">
+			<h3>Запрос на вход</h3>
+			<p>Сторонний сайт просит подтвердить, что аккаунт принадлежит вам. Подписывается только обычный (regular) ключ &mdash; мастер- и активный ключи (деньги, смена доступов) в этом не участвуют.</p>
+			<p><span class="input-caption">Сайт:</span> <b class="signreq-domain"></b></p>
+			<p class="signreq-account-row" style="display:none">
+				<label class="input-descr">
+					<span class="input-caption">Войти как:</span>
+					<select name="signreq-account" class="simple-rounded simple-rounded-size"></select>
+				</label>
+			</p>
+			<p class="signreq-key-row" style="display:none">
+				<label class="input-descr">
+					<span class="input-caption">Приватный regular-ключ:</span>
+					<input type="text" name="signreq-regular-key" class="simple-rounded">
+				</label>
+				<br><label class="check">Запомнить ключ в кошельке для этого аккаунта<input type="checkbox" name="signreq-remember-key"><span class="mark"></span></label>
+			</p>
+			<p class="red error"></p>
+			<p class="green success"></p>
+			<p class="signreq-confirm-row" style="display:none">
+				<a class="button signreq-confirm-action">Войти</a>
+				<span class="submit-button-ring"></span>
+				<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+			</p>
+			<form class="signreq-post-form" method="POST" style="display:none">
+				<input type="hidden" name="vizonator" value="">
+			</form>
+			<div class="addon captions">Ссылка не может подписать вход за вас &mdash; только вы, нажатием кнопки. Подпись действует ограниченное время и одноразовая, повторно использовать её нельзя.</div>
+		</div>`,
+
 	preset_view_settings:`
 		<div class="page page-index">
 			<div class="card transparent">
@@ -2846,6 +2878,12 @@ var ltmp_ru_arr={
 	memo_save_key:'Сохранить ключ',
 	memo_update_key:'Установить и сохранить ключ',
 	memo_key_saved:'Ключ успешно сохранен',
+	signreq_title:'Запрос на вход',
+	signreq_bad_request:'Некорректная ссылка запроса на вход.',
+	signreq_no_regular_key:'Введите корректный приватный regular-ключ.',
+	signreq_wrong_key:'Этот ключ не входит в regular-права аккаунта.',
+	signreq_sign_error:'Не удалось подписать запрос.',
+	signreq_redirecting:'Подписано. Переходим на сайт…',
 	memo_key_updated:'Ключ успешно установлен, обязательно сохраните его',
 
 	profile_empty_about:'Отсутствует описание аккаунта',

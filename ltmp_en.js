@@ -158,6 +158,38 @@ var ltmp_en_arr={
 			</div>
 		</div>`,
 
+	preset_view_signrequest_title:`Sign-in request`,
+	preset_view_signrequest:`
+		<div class="card">
+			<h3>Sign-in request</h3>
+			<p>A third-party site is asking you to prove an account is yours. Only the regular key is signed &mdash; master and active keys (money, access changes) are never involved.</p>
+			<p><span class="input-caption">Site:</span> <b class="signreq-domain"></b></p>
+			<p class="signreq-account-row" style="display:none">
+				<label class="input-descr">
+					<span class="input-caption">Sign in as:</span>
+					<select name="signreq-account" class="simple-rounded simple-rounded-size"></select>
+				</label>
+			</p>
+			<p class="signreq-key-row" style="display:none">
+				<label class="input-descr">
+					<span class="input-caption">Private regular key:</span>
+					<input type="text" name="signreq-regular-key" class="simple-rounded">
+				</label>
+				<br><label class="check">Remember this key in the wallet for this account<input type="checkbox" name="signreq-remember-key"><span class="mark"></span></label>
+			</p>
+			<p class="red error"></p>
+			<p class="green success"></p>
+			<p class="signreq-confirm-row" style="display:none">
+				<a class="button signreq-confirm-action">Sign in</a>
+				<span class="submit-button-ring"></span>
+				<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+			</p>
+			<form class="signreq-post-form" method="POST" style="display:none">
+				<input type="hidden" name="vizonator" value="">
+			</form>
+			<div class="addon captions">A link cannot sign you in by itself &mdash; only you can, by clicking the button. The signature is time-limited and one-time (it cannot be reused).</div>
+		</div>`,
+
 	preset_view_settings:`
 		<div class="page page-index">
 			<div class="card transparent">
@@ -2871,6 +2903,12 @@ var ltmp_en_arr={
 	memo_save_key:'Save key',
 	memo_update_key:'Set and save the key',
 	memo_key_saved:'Key saved successfully',
+	signreq_title:'Sign-in request',
+	signreq_bad_request:'Invalid sign-in request link.',
+	signreq_no_regular_key:'Enter a valid private regular key.',
+	signreq_wrong_key:'This key is not part of the account\'s regular authority.',
+	signreq_sign_error:'Failed to sign the request.',
+	signreq_redirecting:'Signed. Redirecting to the site…',
 	memo_key_updated:'The key is successfully set, be sure to save it',
 
 	profile_empty_about:'No account description',

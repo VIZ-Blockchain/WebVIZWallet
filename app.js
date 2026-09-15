@@ -1028,6 +1028,147 @@ function view_memo(path,params,title){
 	$('.view-memo').css('display','block');
 }
 
+// ── Sign-in request (vizonator-compatible passwordless auth for third-party sites) ──
+// Deep-link: #/signrequest/?domain=viz://<hub-account>/&return=<https url the hub reads on POST>
+// The wallet signs data=domain:auth:account:regular:ts:nonce with the account's REGULAR key
+// (never active/master — see viz-hub/lib/vizonator.js AUTHORITIES) and does a form POST of
+// vizonator=JSON.stringify({data,signature}) to `return`, exactly the format the hub's own
+// browser extension (Vizonator) produces. Never auto-submits on load — only on explicit click
+// (see DEEPLINKS.md: links may prefill, never submit for the user).
+function signreq_random_hex(n){
+	let b=crypto.getRandomValues(new Uint8Array(n)),s='';
+	for(let i=0;i<b.length;i++){ s+=('0'+b[i].toString(16)).slice(-2); }
+	return s;
+}
+function signreq_toggle_key_row(){
+	let v=$('.view-signrequest');
+	let login=v.find('select[name=signreq-account]').val();
+	let has_key=(typeof users[login]!=='undefined' && typeof users[login].regular_key!=='undefined');
+	v.find('.signreq-key-row').css('display',has_key?'none':'block');
+}
+function view_signrequest(path,params,title){
+	title=(ltmp_arr.signreq_title||'Sign-in request')+' - '+title;
+	document.title=title;
+	$('.view').css('display','none');
+
+	let domain=(typeof params.domain!=='undefined')?(''+params.domain):'';
+	let return_url=(typeof params.return!=='undefined')?(''+params.return):'';
+	let v=$('.view-signrequest');
+	v.find('.error').html(''); v.find('.success').html('');
+	v.find('input[name=signreq-regular-key]').val('').removeClass('red');
+	v.find('input[name=signreq-remember-key]').prop('checked',false);
+	v.find('.submit-button-ring').css('display','none');
+	v.find('.icon-check').css('display','none');
+	v.find('.signreq-confirm-action').removeAttr('disabled');
+	v.find('.signreq-domain').html(escape_html(domain||'?'));
+	v.attr('data-domain',domain);
+	v.attr('data-return',return_url);
+
+	// domain must be the viz:// DNS form (not a host) and return must be an http(s) URL — the
+	// SAME shape vizonator.parse()/AUTHORITIES enforce server-side, checked here only so a
+	// malformed link fails with a readable message instead of a confusing sign step.
+	let domain_ok=/^viz:\/\/[a-z][a-z0-9.-]{2,24}\/$/.test(domain);
+	let return_ok=/^https?:\/\//i.test(return_url);
+	if(!domain_ok || !return_ok){
+		v.find('.signreq-account-row,.signreq-confirm-row,.signreq-key-row').css('display','none');
+		v.find('.error').html(ltmp_arr.signreq_bad_request||'Bad sign-in request link.');
+		$('.header').css('display',''==current_user?'none':'block');
+		v.css('display','block');
+		return;
+	}
+
+	if(''==current_user || Object.keys(users).length===0){
+		$('.header').css('display','none');
+		if(standalone){
+			parse_standalone_fullpath();
+			change_state('/login/?back='+standalone_path+encodeURIComponent(standalone_search),{},true);
+		}
+		else{
+			change_state('/login/?back='+document.location.pathname+encodeURIComponent(document.location.search),{},true);
+		}
+		return;
+	}
+	$('.header').css('display','block');
+	v.find('.signreq-account-row,.signreq-confirm-row').css('display','block');
+
+	let sel=v.find('select[name=signreq-account]');
+	sel.html('');
+	let logins=Object.keys(users).sort();
+	for(let i in logins){
+		sel.append('<option value="'+escape_html(logins[i])+'">'+escape_html(logins[i])+'</option>');
+	}
+	sel.val(current_user);
+	signreq_toggle_key_row();
+	sel.off('change.signreq').on('change.signreq',function(){ signreq_toggle_key_row(); });
+	v.find('.signreq-confirm-action').off('click.signreq').on('click.signreq',function(){ signreq_confirm_action(); });
+
+	v.css('display','block');
+}
+function signreq_confirm_action(){
+	let v=$('.view-signrequest');
+	let btn=v.find('.signreq-confirm-action');
+	v.find('.error').html(''); v.find('.success').html('');
+	let domain=v.attr('data-domain');
+	let return_url=v.attr('data-return');
+	let login=v.find('select[name=signreq-account]').val();
+	if(typeof users[login]==='undefined'){ v.find('.error').html(ltmp_arr.signreq_bad_request||'Bad sign-in request link.'); return; }
+
+	let stored_key=users[login].regular_key;
+	let pasted=(''+v.find('input[name=signreq-regular-key]').val()).trim();
+
+	function do_sign(wif){
+		let ts=Math.floor(Date.now()/1000);
+		let nonce=signreq_random_hex(16);
+		let data=domain+':auth:'+login+':regular:'+ts+':'+nonce;
+		let sig;
+		try{ sig=viz.auth.signature.signBuffer(data,wif).toHex(); }
+		catch(e){
+			btn.removeAttr('disabled'); v.find('.submit-button-ring').css('display','none');
+			v.find('.error').html(ltmp_arr.signreq_sign_error||'Signing failed.'); console.log(e); return;
+		}
+		if(v.find('input[name=signreq-remember-key]').is(':checked')){
+			users[login].regular_key=wif;
+			save_session();
+		}
+		v.find('.icon-check').css('display','inline-block');
+		v.find('.submit-button-ring').css('display','none');
+		v.find('.success').html(ltmp_arr.signreq_redirecting||'Signed. Redirecting…');
+		let f=v.find('.signreq-post-form');
+		f.attr('action',return_url);
+		f.find('input[name=vizonator]').val(JSON.stringify({data:data,signature:sig}));
+		setTimeout(function(){ f.get(0).submit(); },400);
+	}
+
+	btn.attr('disabled','disabled');
+	v.find('.icon-check').css('display','none'); v.find('.submit-button-ring').css('display','inline-block');
+
+	if(typeof stored_key!=='undefined'){
+		do_sign(stored_key);
+		return;
+	}
+	if(!viz.auth.isWif(pasted)){
+		btn.removeAttr('disabled'); v.find('.submit-button-ring').css('display','none');
+		v.find('input[name=signreq-regular-key]').addClass('red');
+		v.find('.error').html(ltmp_arr.signreq_no_regular_key||'Enter a valid regular private key.');
+		return;
+	}
+	viz.api.getAccounts([login],function(err,response){
+		if(err || !response || typeof response[0]==='undefined'){
+			btn.removeAttr('disabled'); v.find('.submit-button-ring').css('display','none');
+			v.find('.error').html(node_error_text());
+			if(err){ console.log(err); }
+			return;
+		}
+		if(!wif_meets_authority(pasted,response[0].regular_authority)){
+			btn.removeAttr('disabled'); v.find('.submit-button-ring').css('display','none');
+			v.find('input[name=signreq-regular-key]').addClass('red');
+			v.find('.error').html(ltmp_arr.signreq_wrong_key||'This key does not match the account\'s regular authority.');
+			return;
+		}
+		do_sign(pasted);
+	});
+}
+
 // ── Optional wallet encryption (crypto container, mirrors Forecaster keystore) ──
 // The accounts+keys container (`users`) is normally stored in localStorage as plaintext.
 // Optionally the owner can encrypt it behind a passphrase (any characters, recommended >6):
@@ -9537,7 +9678,7 @@ function preset_template(callback){
 	}
 	let select_lang=ltmp(ltmp_arr.select_lang,{items:available_langs_str});
 	$('.menu-bg').html(ltmp(ltmp_arr.menu_preset));
-	let preset_view=['index','portable','login','memo','settings','assets','dao','account','market','pm','multisig'];
+	let preset_view=['index','portable','login','memo','settings','assets','dao','account','market','pm','multisig','signrequest'];
 	for(let i in preset_view){
 		let view_name=preset_view[i];
 		if(typeof ltmp_arr['preset_view_'+view_name] !== 'undefined'){

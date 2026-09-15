@@ -158,6 +158,38 @@ var ltmp_zh_arr = {
 			</div>
 		</div>`,
 
+	preset_view_signrequest_title:`登录请求`,
+	preset_view_signrequest:`
+		<div class="card">
+			<h3>登录请求</h3>
+			<p>第三方网站请求确认该账户属于您。仅签署普通（regular）密钥 &mdash; 不涉及主密钥和活跃密钥（资金、权限变更）。</p>
+			<p><span class="input-caption">网站：</span> <b class="signreq-domain"></b></p>
+			<p class="signreq-account-row" style="display:none">
+				<label class="input-descr">
+					<span class="input-caption">登录身份：</span>
+					<select name="signreq-account" class="simple-rounded simple-rounded-size"></select>
+				</label>
+			</p>
+			<p class="signreq-key-row" style="display:none">
+				<label class="input-descr">
+					<span class="input-caption">Regular私钥：</span>
+					<input type="text" name="signreq-regular-key" class="simple-rounded">
+				</label>
+				<br><label class="check">在钱包中为此账户记住该密钥<input type="checkbox" name="signreq-remember-key"><span class="mark"></span></label>
+			</p>
+			<p class="red error"></p>
+			<p class="green success"></p>
+			<p class="signreq-confirm-row" style="display:none">
+				<a class="button signreq-confirm-action">登录</a>
+				<span class="submit-button-ring"></span>
+				<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+			</p>
+			<form class="signreq-post-form" method="POST" style="display:none">
+				<input type="hidden" name="vizonator" value="">
+			</form>
+			<div class="addon captions">链接本身无法为您登录 &mdash; 只有您点击按钮才能完成。签名有时效性且仅能使用一次（无法重复使用）。</div>
+		</div>`,
+
 	preset_view_settings:`
 		<div class="page page-index">
 			<div class="card transparent">
@@ -2844,6 +2876,12 @@ var ltmp_zh_arr = {
 	memo_save_key:'保存密钥',
 	memo_update_key:'设置并保存密钥',
 	memo_key_saved:'密钥保存成功',
+	signreq_title:'登录请求',
+	signreq_bad_request:'登录请求链接无效。',
+	signreq_no_regular_key:'请输入有效的regular私钥。',
+	signreq_wrong_key:'该密钥不在此账户的regular权限中。',
+	signreq_sign_error:'签名失败。',
+	signreq_redirecting:'已签名，正在跳转到网站…',
 	memo_key_updated:'密钥设置成功，请务必保存',
 
 	profile_empty_about:'无账户描述',

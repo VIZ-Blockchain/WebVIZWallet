@@ -61,6 +61,7 @@
 			<div class="view view-market"></div>
 			<div class="view view-pm"></div>
 			<div class="view view-multisig"></div>
+			<div class="view view-signrequest"></div>
 		</div>
 	</div>
 </main>
