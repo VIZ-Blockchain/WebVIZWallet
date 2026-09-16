@@ -2129,8 +2129,10 @@ function update_balances(el){
 // a thin client (viz-js-lib / node RPC only), that index is gone. But the node itself already
 // keeps cheap ordered indexes for all four listings below (by_account_on_sale/by_subaccount_on_sale/
 // by_creator) — one bounded read (limit<=1000, enforced node-side) per page-open is all it costs,
-// no per-keystroke network traffic. Filtering/sorting the fetched batch happens entirely client-side
-// (no server-side WHERE — that part of the old backend genuinely doesn't have a node equivalent).
+// no per-keystroke network traffic. The name/creator filter now has a node equivalent too (an
+// optional prefix arg the node matches via its account-name index, see market_prefix_ok below);
+// only the descriptive-text filter and the sort stay client-side, because those genuinely have no
+// node counterpart.
 var market_filter_timer=0;
 // Node caps a single listing call at 1000 rows, so "browse everything" is a sequence of pages.
 // The node's `from` is an offset over rows it actually returned (it skips only the ones passing
@@ -2164,13 +2166,70 @@ function market_row_empty(container){
 	container.find('.table-data').html('<div class="columns-view"><div class="column-view column-flex">'+ltmp_arr.default_nothing_found+'</div></div>');
 }
 
+// Raw JSON-RPC so the optional 3rd (prefix) argument can be passed at all: the vendored viz.min.js
+// wrappers have fixed arity and would silently drop it.
+function market_rpc(api,method,params,cb){
+	// `done` matters: without it a throw inside cb would be caught by the .catch below and cb would
+	// run a second time with an error, appending a bogus page on top of a real one.
+	let done=false;
+	let once=function(err,res){ if(done){ return; } done=true; cb(err,res); };
+	fetch(default_api_node,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:'call',params:[api,method,params],id:1})})
+		.then(function(r){ return r.json(); })
+		.then(function(j){ once((j&&j.error)?j.error:null,(j&&typeof j.result!=='undefined')?j.result:null); })
+		.catch(function(e){ once(e||true,null); });
+}
+// Nodes before viz-cpp-node #160 reject the extra prefix arg, nodes after it accept it. Tell them
+// apart once per session by asking for a prefix no account can have: a prefix-aware node seeks its
+// name index and finds nothing, so an empty page means yes. Both checks matter — an old node may
+// reject the third argument outright, but it may equally just ignore it and hand back whatever the
+// first row is, and only the emptiness separates those two. (A node with no listings at all would
+// read as prefix-aware; that only costs a redundant request per keystroke, since the client-side
+// filter stays on as a backstop.)
+// One probe per session covers all four listings: they gained the argument in the same change, so a
+// node has either all of them or none. null = not asked yet; unresolved means client-filter as before.
+var market_prefix_ok=null;
+function market_prefix_probe(cb){
+	if(null!==market_prefix_ok){ cb(market_prefix_ok); return; }
+	market_rpc('database_api','get_accounts_on_sale',[0,1,'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'],function(err,res){
+		market_prefix_ok=!err && 0==(res||[]).length;
+		cb(market_prefix_ok);
+	});
+}
+// One listing page. `prefix` is only appended when the node understands it; otherwise the caller
+// falls back to what it did before — fetch a page and let render_* filter it client-side.
+function market_load_page(container,api,method,prefix,cb){
+	market_prefix_probe(function(ok){
+		// Typing two filters in a row (a pause long enough to fire, then another keystroke) can put
+		// two of these in flight at once; only the newest may touch the container, or the older page
+		// gets appended onto the newer one after both resets and the rows come out mixed.
+		let gen=(container.data('gen')||0)+1;
+		container.data('gen',gen);
+		let params=[container.data('node_offset')||0,market_page_size];
+		if(ok){ params.push(prefix||''); }
+		market_rpc(api,method,params,function(err,response){
+			if(gen!=container.data('gen')){ return; }
+			if(err){ market_row_error(container); console.log(err); return; }
+			cb(response);
+		});
+	});
+}
+// Typing in a name filter: on a prefix-capable node re-query the listing from the start (the node
+// does the matching over its name index, so it sees rows this session never paged to); on an older
+// node re-filter the page already in hand, which is all that was ever possible there.
+function market_refilter(load_fn,render_fn){
+	return function(){
+		clearTimeout(market_filter_timer);
+		market_filter_timer=setTimeout(function(){ market_prefix_ok?load_fn(true):render_fn(); },200);
+	};
+}
+
 function load_paid_subscriptions(reset){
 	let container=$('.page-paid-subscriptions .view-paid-subscriptions');
 	if(reset){ container.data('rows',[]); container.data('node_offset',0); }
 	if(!container.data('rows')){ container.data('rows',[]); }
 	market_row_loading(container);
-	viz.api.getPaidSubscriptions(container.data('node_offset')||0, market_page_size, function(err,response){
-		if(err){ market_row_error(container); console.log(err); return; }
+	let search=container.find('input[name=provider-filter]').val().trim().toLowerCase();
+	market_load_page(container,'paid_subscription_api','get_paid_subscriptions',search,function(response){
 		market_append_page(container,response,response);
 		render_paid_subscriptions_rows();
 	});
@@ -2216,8 +2275,8 @@ function load_accounts_on_sale(reset){
 	if(reset){ container.data('rows',[]); container.data('node_offset',0); }
 	if(!container.data('rows')){ container.data('rows',[]); }
 	market_row_loading(container);
-	viz.api.getAccountsOnSale(container.data('node_offset')||0, market_page_size, function(err,response){
-		if(err){ market_row_error(container); console.log(err); return; }
+	let search=container.find('input[name=account-filter]').val().trim().toLowerCase();
+	market_load_page(container,'database_api','get_accounts_on_sale',search,function(response){
 		market_append_page(container,response,(response||[]).filter(function(r){ return ''==r.target_buyer; }));
 		render_accounts_on_sale_rows();
 	});
@@ -2251,8 +2310,8 @@ function load_short_accounts_on_sale(reset){
 	if(reset){ container.data('rows',[]); container.data('node_offset',0); }
 	if(!container.data('rows')){ container.data('rows',[]); }
 	market_row_loading(container);
-	viz.api.getAccountsOnAuction(container.data('node_offset')||0, market_page_size, function(err,response){
-		if(err){ market_row_error(container); console.log(err); return; }
+	let search=container.find('input[name=account-filter]').val().trim().toLowerCase();
+	market_load_page(container,'database_api','get_accounts_on_auction',search,function(response){
 		market_append_page(container,response,response);
 		render_short_accounts_on_sale_rows();
 	});
@@ -2283,8 +2342,8 @@ function load_subaccounts_on_sale(reset){
 	if(reset){ container.data('rows',[]); container.data('node_offset',0); }
 	if(!container.data('rows')){ container.data('rows',[]); }
 	market_row_loading(container);
-	viz.api.getSubaccountsOnSale(container.data('node_offset')||0, market_page_size, function(err,response){
-		if(err){ market_row_error(container); console.log(err); return; }
+	let search=container.find('input[name=subaccount-filter]').val().trim().toLowerCase();
+	market_load_page(container,'database_api','get_subaccounts_on_sale',search,function(response){
 		market_append_page(container,response,response);
 		render_subaccounts_on_sale_rows();
 	});
@@ -2582,10 +2641,7 @@ function view_market(path,params,title){
 							current_user_active_paid_subscribes=err?[]:response;
 							load_paid_subscriptions(true);
 						});
-						$('.page-paid-subscriptions .view-paid-subscriptions input[name=provider-filter]').unbind('keyup').bind('keyup',function(){
-							clearTimeout(market_filter_timer);
-							market_filter_timer=setTimeout(render_paid_subscriptions_rows,200);
-						});
+						$('.page-paid-subscriptions .view-paid-subscriptions input[name=provider-filter]').unbind('keyup').bind('keyup',market_refilter(load_paid_subscriptions,render_paid_subscriptions_rows));
 						$('.page-paid-subscriptions .view-paid-subscriptions input[name=descr-filter]').unbind('keyup').bind('keyup',function(){
 							clearTimeout(market_filter_timer);
 							market_filter_timer=setTimeout(render_paid_subscriptions_rows,200);
@@ -2887,10 +2943,7 @@ function view_account(path,params,title){
 						$('.view-'+path[1]+' .page-'+path[2]+' .section').css('display','none');
 						$('.view-'+path[1]+' .page-'+path[2]+' .accounts-on-sale').css('display','block');
 						load_accounts_on_sale(true);
-						$('.page-buy-account .accounts-on-sale input[name=account-filter]').unbind('keyup').bind('keyup',function(){
-							clearTimeout(market_filter_timer);
-							market_filter_timer=setTimeout(render_accounts_on_sale_rows,200);
-						});
+						$('.page-buy-account .accounts-on-sale input[name=account-filter]').unbind('keyup').bind('keyup',market_refilter(load_accounts_on_sale,render_accounts_on_sale_rows));
 						$('.page-buy-account .accounts-on-sale select[name=order]').unbind('change').bind('change',render_accounts_on_sale_rows);
 					}
 				}
@@ -2930,10 +2983,7 @@ function view_account(path,params,title){
 						$('.view-'+path[1]+' .page-'+path[2]+' .section').css('display','none');
 						$('.view-'+path[1]+' .page-'+path[2]+' .accounts-on-sale').css('display','block');
 						load_short_accounts_on_sale(true);
-						$('.page-buy-short-account .accounts-on-sale input[name=account-filter]').unbind('keyup').bind('keyup',function(){
-							clearTimeout(market_filter_timer);
-							market_filter_timer=setTimeout(render_short_accounts_on_sale_rows,200);
-						});
+						$('.page-buy-short-account .accounts-on-sale input[name=account-filter]').unbind('keyup').bind('keyup',market_refilter(load_short_accounts_on_sale,render_short_accounts_on_sale_rows));
 					}
 				}
 
@@ -2981,10 +3031,7 @@ function view_account(path,params,title){
 						$('.view-'+path[1]+' .page-'+path[2]+' .section').css('display','none');
 						$('.view-'+path[1]+' .page-'+path[2]+' .subaccounts-on-sale').css('display','block');
 						load_subaccounts_on_sale(true);
-						$('.page-buy-subaccount .subaccounts-on-sale input[name=subaccount-filter]').unbind('keyup').bind('keyup',function(){
-							clearTimeout(market_filter_timer);
-							market_filter_timer=setTimeout(render_subaccounts_on_sale_rows,200);
-						});
+						$('.page-buy-subaccount .subaccounts-on-sale input[name=subaccount-filter]').unbind('keyup').bind('keyup',market_refilter(load_subaccounts_on_sale,render_subaccounts_on_sale_rows));
 						$('.page-buy-subaccount .subaccounts-on-sale select[name=order]').unbind('change').bind('change',render_subaccounts_on_sale_rows);
 					}
 				}
