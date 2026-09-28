@@ -100,7 +100,7 @@ var ltmp_en_arr={
 				<label class="input-descr">
 					<span class="input-caption">Private active key:</span>
 					<input type="password" name="active-key" class="simple-rounded">
-					<span class="input-caption text-small grey captions">(required)</span>
+					<span class="input-caption text-small grey captions">(required &mdash; or the key of an agent &#129302; of this account)</span>
 				</label>
 			</p>
 			<p>
@@ -2896,6 +2896,17 @@ var ltmp_en_arr={
 	login_memo_wif_invalid:'The private memo key is invalid',
 	login_account_not_found:'Account with this login was not found',
 	login_key_weight_not_enough:'The weight of the active key is not enough for this account to process transactions',
+	agent_session_perpetual:'perpetual',
+	agent_session_days_left:'{days} d. left',
+	agent_session_expired:'agent access has expired',
+	agent_session_revoked:'agent access was revoked',
+	agent_session_info:'agent {name}: {ops} &middot; {expiration}',
+	agent_sessions_caption:'Agent sessions',
+	agent_page_hidden:'Not available with an agent key: key export and key or access changes need the account&rsquo;s own keys.',
+	agent_page_denied:'This agent may not do this (needs: {ops}).',
+	agent_op_denied:'This agent may not sign: {ops}',
+	agent_login_expired:'This agent key has expired.',
+	agent_login_no_ops:'This agent has no operations allowed.',
 	login_memo_wif_incorrect:'Memo private key does not match the account',
 	login_master_wif_invalid:'The private master key is invalid',
 	login_master_wif_incorrect:'The private master key does not match the account',

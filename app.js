@@ -823,6 +823,68 @@ function signing_key(){
 	if(current_agent){ return current_agent.key; }
 	return users[current_user]&&users[current_user].active_key;
 }
+// An agent session is stored like any account, in the same (encrypted) users vault, but holds
+// {agent:{name,key,operations,expiration}} instead of the account's own keys. Old vaults load as is.
+function agent_session_of(login){ return users[login]&&users[login].agent?users[login].agent:null; }
+function agent_allows(op){ return !current_agent||-1!=current_agent.operations.indexOf(op); }
+function agent_expiration_text(a){
+	if(!a.expiration||0==a.expiration.indexOf('1970-01-01')){ return ltmp_arr.agent_session_perpetual; }
+	let left=Math.ceil((Date.parse(a.expiration+'Z')-Date.now())/86400000);
+	return left>0?ltmp(ltmp_arr.agent_session_days_left,{days:left}):ltmp_arr.agent_session_expired;
+}
+// Pages whose actions need these operations; an agent without any of them sees the page disabled.
+var agent_page_ops={
+	'assets/transfer':['transfer'],'assets/stake-shares':['transfer_to_vesting'],'assets/unstake-shares':['withdraw_vesting'],
+	'assets/delegate-shares':['delegate_vesting_shares'],'assets/award':['award'],'assets/fixed-award':['fixed_award'],
+	'assets/checks':['create_invite','claim_invite_balance'],
+	'account/create-account':['account_create'],'account/create-subaccount':['account_create'],
+	'account/buy-account':['buy_account'],'account/buy-short-account':['buy_account'],'account/buy-subaccount':['buy_account'],
+	'account/sell-account':['set_account_price'],'account/sell-subaccount':['set_subaccount_price'],
+	'dao/validators':['account_validator_vote'],'dao/validator-params':['versioned_chain_properties_update'],
+	'dao/validator-reward-sharing':['validator_update'],
+	'dao/fund-create-request':['committee_worker_create_request'],'dao/fund-requests':['committee_vote_request'],
+	'market/paid-subscriptions':['paid_subscribe'],'market/create-paid-subscribe':['set_paid_subscription'],
+	'multisig/create':['account_update'],
+};
+// Never for an agent: key export, key/authority changes, the agents page itself.
+var agent_page_hidden=['settings/keys','settings/access','settings/reset-access','settings/security','settings/agents','multisig/create'];
+function agent_page_guard(path){
+	$('.agent-denied').remove();
+	$('.agent-disabled').prop('disabled',false).removeClass('agent-disabled');
+	$('.agent-hidden').css('display','').removeClass('agent-hidden');
+	if(!current_agent||typeof path[2]==='undefined'){ return; }
+	let id=path[1]+'/'+path[2];
+	let page=$('.view-'+path[1]+' .page-'+path[2]);
+	if(-1!=agent_page_hidden.indexOf(id)){
+		page.children().addClass('agent-hidden').css('display','none');
+		page.prepend('<p class="red agent-denied">'+ltmp_arr.agent_page_hidden+'</p>');
+		return;
+	}
+	let need=agent_page_ops[id];
+	if(need&&!need.some(agent_allows)){
+		page.find('input[type=button],input[type=submit],a.button').addClass('agent-disabled').prop('disabled',true);
+		page.prepend('<p class="red agent-denied">'+ltmp(ltmp_arr.agent_page_denied,{ops:need.join(', ')})+'</p>');
+	}
+}
+// Last line of defence: whatever page signs, an agent session never broadcasts an operation its
+// agent may not use (the node would reject it anyway; this gives a readable error instead).
+function agent_broadcast_guard(){
+	if(typeof viz==='undefined'||viz.broadcast.send.agent_guard){ return; }
+	let orig=viz.broadcast.send;
+	viz.broadcast.send=function(tx,keys,callback){
+		if(current_agent&&tx&&tx.operations){
+			let denied=tx.operations.map(function(o){ return o[0]; }).filter(function(n){ return !agent_allows(n); });
+			if(denied.length){
+				let e=new Error(ltmp(ltmp_arr.agent_op_denied,{ops:denied.join(', ')}));
+				if(typeof callback==='function'){ callback(e); return; }
+				return Promise.reject(e);
+			}
+		}
+		return orig.apply(this,arguments);
+	};
+	viz.broadcast.send.agent_guard=true;
+}
+agent_broadcast_guard();
 var current_user='';
 var current_user_active_paid_subscribes=[];
 var current_view='';
@@ -1866,6 +1928,57 @@ $(function(){
 	wallet_update_lock_btn();
 });
 
+function agent_try_login(user_login,key,key_public){
+	let fail=function(text){
+		$('.view-'+current_view+' input[name=active-key]').addClass('red');
+		$('.view-'+current_view+' .error').html(''+text);
+	};
+	if(typeof viz.api.getAgentPermissions!=='function'){ fail(ltmp_arr.login_key_weight_not_enough); return; }
+	viz.api.getAgentPermissions(user_login,function(err,rows){
+		let row=null;
+		if(!err&&rows){
+			for(let r of rows){ if(r.agent_key==key_public){ row=r; } }
+		}
+		if(!row){ fail(ltmp_arr.login_key_weight_not_enough); return; }
+		if(row.expired){ fail(ltmp_arr.agent_login_expired); return; }
+		if(!row.operations.length){ fail(ltmp_arr.agent_login_no_ops); return; }
+		users[user_login]={agent:{name:row.agent_name,key:key,operations:row.operations,expiration:row.expiration}};
+		current_user=user_login;
+		save_session();
+		$('.view-'+current_view+' input[name=login]').val('');
+		$('.view-'+current_view+' input[name=active-key]').val('');
+		$('.view-'+current_view+' input[name=master-key]').val('');
+		$('.view-'+current_view+' input[name=regular-key]').val('');
+		$('.view-'+current_view+' input[name=memo-key]').val('');
+		change_user($('.view-'+current_view+' input[name=back]').val());
+	});
+}
+
+// Re-read the agents of every agent session: refresh the stored operation list and expiration, and
+// mark a session whose agent is gone (revoked, or wiped by a key change / sale) as revoked.
+function agent_sessions_refresh(){
+	Object.keys(users).forEach(function(login){
+		let ag=agent_session_of(login);
+		if(!ag||typeof viz.api.getAgentPermissions!=='function'){ return; }
+		viz.api.getAgentPermissions(login,function(err,rows){
+			if(err){ return; }
+			let row=null;
+			let pub=viz.auth.wifToPublic(ag.key);
+			for(let r of rows){ if(r.agent_key==pub){ row=r; } }
+			let box=$('.agent-info[data-agent-info="'+login+'"]');
+			if(!row||row.expired){
+				ag.revoked=true;
+				box.html('<span class="red">'+(row?ltmp_arr.agent_session_expired:ltmp_arr.agent_session_revoked)+'</span>');
+				if(login==current_user){ current_agent.operations=[]; }
+				return;
+			}
+			ag.operations=row.operations; ag.expiration=row.expiration; ag.revoked=false;
+			box.html(ltmp(ltmp_arr.agent_session_info,{name:escape_html(ag.name),ops:escape_html(ag.operations.join(', ')),expiration:agent_expiration_text(ag)}));
+			save_session();
+		});
+	});
+}
+
 function remove_user(login,location=''){
 	if(login!=current_user){
 		delete users[login];
@@ -1895,15 +2008,25 @@ function logout(user,location){
 function refresh_user_menu(){
 	if(''==current_user){return;}
 	$('.header').css('display','block');
-	$('.header .user-menu .login').html(current_user);
+	$('.header .user-menu .login').html((current_agent?'&#129302; ':'')+current_user);
 	$('.users-drop-down').html('');
 	let user_list=Object.keys(users);
 	user_list.sort();
 	let user_list_html='';
+	let agent_list_html='';
 	for(i in user_list){
 		if(current_user!=user_list[i]){
-			user_list_html+='<a class="select-user" rel="'+user_list[i]+'">'+user_list[i]+'</a>';
+			if(agent_session_of(user_list[i])){
+				agent_list_html+='<a class="select-user" rel="'+user_list[i]+'">&#129302; '+user_list[i]+'</a>';
+			}
+			else{
+				user_list_html+='<a class="select-user" rel="'+user_list[i]+'">'+user_list[i]+'</a>';
+			}
 		}
+	}
+	if(''!=agent_list_html){
+		// agent sessions get their own section below the accounts held with own keys
+		user_list_html+='<span class="grey captions text-small">'+ltmp_arr.agent_sessions_caption+'</span>'+agent_list_html;
 	}
 	$('.users-drop-down').html(user_list_html);
 	app_a11y_enhance();
@@ -1921,6 +2044,8 @@ function refresh_user_menu(){
 
 function change_user(location){
 	location=typeof location==='undefined'?'':location;
+	current_agent=agent_session_of(current_user);
+	if(current_agent){ agent_sessions_refresh(); }
 	if(''!=current_user){
 		refresh_user_menu();
 		if(standalone){
@@ -2018,6 +2143,10 @@ function view_index(path,params,title){
 					else{
 						account_manage+='<span class="select-user bold" rel="'+account.name+'" title="'+ltmp(ltmp_arr.index_login_account_caption,{account:account.name})+'">'+account.name+'</span>';
 					}
+					if(agent_session_of(account.name)){
+						let ag=agent_session_of(account.name);
+						account_manage='&#129302; '+account_manage+'<div class="grey captions text-small agent-info" data-agent-info="'+escape_html(account.name)+'">'+ltmp(ltmp_arr.agent_session_info,{name:escape_html(ag.name),ops:escape_html(ag.operations.join(', ')),expiration:agent_expiration_text(ag)})+'</div>';
+					}
 					account_manage+='<div class="user-actions"><span class="icon icon-circle-cross icon-color-red icon-18px remove-user" rel="'+account.name+'" title="'+ltmp(ltmp_arr.index_logout_account_caption,{account:account.name})+'"></span></div>';
 
 					let last_vote_time=Date.parse(account.last_vote_time);
@@ -2061,6 +2190,7 @@ function view_index(path,params,title){
 				</div>`;
 			}
 			$('.view-index .sessions .table-data').html(data);
+			agent_sessions_refresh();
 			// Per-account PM exposure badges next to the balance: lock icon + amount frozen
 			// on prediction markets. Oracle insurance (get_oracle) and lazy-pool principal
 			// (get_lazy_deposit) are single cheap queries; both throw when the account has
@@ -4145,7 +4275,7 @@ function validator_vote_action(e){
 	let check=$(e.target);
 	let el=$(e.target).closest('.validators-list');
 	check.removeClass('red');
-	viz.broadcast.accountValidatorVote(users[current_user]['active_key'],current_user,check.val(),check.prop('checked'),function(err, result){
+	viz.broadcast.accountValidatorVote(signing_key(),current_user,check.val(),check.prop('checked'),function(err, result){
 		if(!err){
 			update_validators_list();
 		}
@@ -5989,6 +6119,7 @@ function change_state(location,state,save_state){
 	if(typeof window['view_'+path[1]] === 'function'){
 		current_view=path[1];
 		setTimeout(window['view_'+path[1]],1,path,params,title);
+		setTimeout(agent_page_guard,5,path);
 		setTimeout(function(){
 			$('.absolute-view.menu-list').css('display','none');
 			/*
@@ -9687,9 +9818,9 @@ function app_mouse(e){
 							change_user($('.view-'+current_view+' input[name=back]').val());
 						}
 						else{
-							$('.view-'+current_view+' input[name=active-key]').addClass('red');
-							error=ltmp_arr.login_key_weight_not_enough;
-							$('.view-'+current_view+' .error').html(''+error);
+							// Not the account's own active key — maybe one of its agents (HF15): the agent
+							// signs for the account within its operation list, so it gets an agent session.
+							agent_try_login(user_login,active_key,active_key_public);
 							return false;
 						}
 					}

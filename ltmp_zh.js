@@ -100,7 +100,7 @@ var ltmp_zh_arr = {
 				<label class="input-descr">
 					<span class="input-caption">活跃私钥：</span>
 					<input type="password" name="active-key" class="simple-rounded">
-					<span class="input-caption text-small grey captions">（必填）</span>
+					<span class="input-caption text-small grey captions">（必填 &mdash; 或此账户代理 &#129302; 的密钥）</span>
 				</label>
 			</p>
 			<p>
@@ -2869,6 +2869,17 @@ var ltmp_zh_arr = {
 	login_memo_wif_invalid:'备注私钥无效',
 	login_account_not_found:'未找到该登录名的账户',
 	login_key_weight_not_enough:'活跃密钥的权重不足以让此账户处理交易',
+	agent_session_perpetual:'永久',
+	agent_session_days_left:'剩余 {days} 天',
+	agent_session_expired:'代理访问已过期',
+	agent_session_revoked:'代理访问已被撤销',
+	agent_session_info:'代理 {name}：{ops} &middot; {expiration}',
+	agent_sessions_caption:'代理会话',
+	agent_page_hidden:'代理密钥不可用：导出密钥以及更改密钥或权限需要账户自己的密钥。',
+	agent_page_denied:'此代理无权执行（需要：{ops}）。',
+	agent_op_denied:'此代理无权签名：{ops}',
+	agent_login_expired:'此代理密钥已过期。',
+	agent_login_no_ops:'此代理没有允许的操作。',
 	login_memo_wif_incorrect:'备注私钥与账户不匹配',
 	login_master_wif_invalid:'主私钥无效',
 	login_master_wif_incorrect:'主私钥与账户不匹配',

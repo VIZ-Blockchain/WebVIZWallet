@@ -100,7 +100,7 @@ var ltmp_ru_arr={
 				<label class="input-descr">
 					<span class="input-caption">Приватный активный ключ:</span>
 					<input type="password" name="active-key" class="simple-rounded">
-					<span class="input-caption text-small grey captions">(обязательно)</span>
+					<span class="input-caption text-small grey captions">(обязательно &mdash; или ключ агента &#129302; этого аккаунта)</span>
 				</label>
 			</p>
 			<p>
@@ -2871,6 +2871,17 @@ var ltmp_ru_arr={
 	login_memo_wif_invalid:'Приватный ключ заметок невалидный',
 	login_account_not_found:'Аккаунт с таким логином не найден',
 	login_key_weight_not_enough:'Веса активного ключа недостаточно для выполнения операций этим аккаунтом',
+	agent_session_perpetual:'бессрочно',
+	agent_session_days_left:'ещё {days} дн.',
+	agent_session_expired:'срок агентского доступа истёк',
+	agent_session_revoked:'агентский доступ отозван',
+	agent_session_info:'агент {name}: {ops} &middot; {expiration}',
+	agent_sessions_caption:'Агентские сессии',
+	agent_page_hidden:'Недоступно с ключом агента: экспорт ключей и смена ключей или доступа требуют собственных ключей аккаунта.',
+	agent_page_denied:'Этому агенту нельзя (нужно: {ops}).',
+	agent_op_denied:'Этот агент не может подписать: {ops}',
+	agent_login_expired:'Срок этого агентского ключа истёк.',
+	agent_login_no_ops:'У этого агента нет разрешённых операций.',
 	login_memo_wif_incorrect:'Приватный ключ заметок не соответствует аккаунту',
 	login_master_wif_invalid:'Приватный master-ключ невалидный',
 	login_master_wif_incorrect:'Приватный master-ключ не соответствует аккаунту',
