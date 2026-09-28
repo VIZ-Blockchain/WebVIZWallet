@@ -815,6 +815,14 @@ function safe_image(link){
 }
 
 var users={};
+// HF15 agent session (goal #919): when set, the wallet acts for current_user with the agent's key
+// instead of the account's own active key. null = ordinary session. Every signing site goes
+// through signing_key(), so an agent session needs no per-feature changes to sign.
+var current_agent=null;
+function signing_key(){
+	if(current_agent){ return current_agent.key; }
+	return users[current_user]&&users[current_user].active_key;
+}
 var current_user='';
 var current_user_active_paid_subscribes=[];
 var current_view='';
@@ -1701,7 +1709,7 @@ function save_ns(){
 		for(var i=0;i<aRecords.length;i++){ ns.push(['A',aRecords[i]]); }
 		if(''!=ssl){ ns.push(['TXT','ssl='+ssl]); }
 		md.ns=ns; md.ttl=ttl;
-		viz.broadcast.accountMetadata(users[current_user].active_key,current_user,JSON.stringify(md),function(err,result){
+		viz.broadcast.accountMetadata(signing_key(),current_user,JSON.stringify(md),function(err,result){
 			if(result){
 				page.find('.ns-success').html(ltmp_arr.ns_saved||'NS records saved to the blockchain.');
 				page.find('.submit-button-ring').css('display','none');
@@ -1726,7 +1734,7 @@ function remove_ns(){
 		}
 		var md={}; try{ if(''!=response[0].json_metadata){ md=JSON.parse(response[0].json_metadata); } }catch(e){ md={}; }
 		delete md.ns; delete md.ttl;
-		viz.broadcast.accountMetadata(users[current_user].active_key,current_user,JSON.stringify(md),function(err,result){
+		viz.broadcast.accountMetadata(signing_key(),current_user,JSON.stringify(md),function(err,result){
 			if(result){
 				page.find('.ns-a-list').html(''); ns_add_a_row('');
 				page.find('input[name=ns-ssl]').val(''); page.find('input[name=ns-ttl]').val('28800');
@@ -1798,7 +1806,7 @@ function agents_gen_key(){
 function agents_broadcast(op,done){
 	var page=$('.view-settings .page-agents');
 	try{
-		viz.broadcast.send({extensions:[],operations:[['set_agent_permission',op]]},[users[current_user].active_key],done);
+		viz.broadcast.send({extensions:[],operations:[['set_agent_permission',op]]},[signing_key()],done);
 	}catch(e){
 		// the vendored viz.min.js predates op 105 until the next viz-js-lib release is vendored
 		console.log(e); page.find('.agents-error').html(ltmp_arr.agents_lib_old); done(e,null,true);
@@ -4484,7 +4492,7 @@ function pm_pool_deposit_action(box,wallet_free){
 	if(!(amount>0)){ box.find('.pm-pool-error').html(ltmp_arr.pm_pool_amount_invalid||'Enter a valid amount.'); return; }
 	if(amount>wallet_free){ box.find('.pm-pool-error').html((ltmp_arr.pm_pool_available||'Available')+': '+wallet_free.toFixed(3)+' VIZ'); return; }
 	let btn=box.find('.pm-pool-deposit-action'); btn.attr('disabled','disabled');
-	viz.broadcast.pmLazyDeposit(users[current_user].active_key,current_user,amount.toFixed(3)+' VIZ',[],function(err,result){
+	viz.broadcast.pmLazyDeposit(signing_key(),current_user,amount.toFixed(3)+' VIZ',[],function(err,result){
 		btn.removeAttr('disabled');
 		if(err){ pm_pool_err(box,err); return; }
 		box.find('.pm-pool-success').html(ltmp_arr.pm_pool_deposit_ok||'Deposited into the pool.');
@@ -4495,7 +4503,7 @@ function pm_pool_withdraw_action(box){
 	box.find('.pm-pool-error').html(''); box.find('.pm-pool-success').html('');
 	let sh=Math.max(0,Math.round((parseFloat((''+box.find('input[name=pm-pool-wd-shares]').val()).replace(',','.').trim())||0)*1000)); // display → raw ×1000; 0 = all
 	let btn=box.find('.pm-pool-withdraw-action'); btn.attr('disabled','disabled');
-	viz.broadcast.pmLazyWithdraw(users[current_user].active_key,current_user,sh,false,[],function(err,result){
+	viz.broadcast.pmLazyWithdraw(signing_key(),current_user,sh,false,[],function(err,result){
 		btn.removeAttr('disabled');
 		if(err){ pm_pool_err(box,err); return; }
 		box.find('.pm-pool-success').html(ltmp_arr.pm_pool_withdraw_ok||'Withdrawal submitted.');
@@ -4507,7 +4515,7 @@ function pm_pool_emergency_action(box){
 	box.find('.pm-pool-error').html(''); box.find('.pm-pool-success').html('');
 	let sh=Math.max(0,Math.round((parseFloat((''+box.find('input[name=pm-pool-em-shares]').val()).replace(',','.').trim())||0)*1000)); // display → raw ×1000; 0 = all
 	let btn=box.find('.pm-pool-emergency-action'); btn.attr('disabled','disabled');
-	viz.broadcast.pmLazyWithdraw(users[current_user].active_key,current_user,sh,true,[],function(err,result){
+	viz.broadcast.pmLazyWithdraw(signing_key(),current_user,sh,true,[],function(err,result){
 		btn.removeAttr('disabled');
 		if(err){ pm_pool_err(box,err); return; }
 		box.find('.pm-pool-success').html(ltmp_arr.pm_pool_withdraw_ok||'Withdrawal submitted.');
@@ -4697,7 +4705,7 @@ function pm_place_bet_action(btn){
 	if(!(amount>0)){ box.find('.pm-bet-error').html(ltmp_arr.pm_bet_amount_invalid||'Enter a valid amount.'); return; }
 	let amount_str=amount.toFixed(3)+' VIZ';
 	box.find('.pm-bet-btn').attr('disabled','disabled');
-	viz.broadcast.pmPlaceBet(users[current_user].active_key,current_user,market_id,side,oindex,amount_str,0,0,[],function(err,result){
+	viz.broadcast.pmPlaceBet(signing_key(),current_user,market_id,side,oindex,amount_str,0,0,[],function(err,result){
 		box.find('.pm-bet-btn').removeAttr('disabled');
 		if(err){ box.find('.pm-bet-error').html((ltmp_arr.pm_bet_error||'Bet failed')+': '+escape_html((''+(err.message||JSON.stringify(err))).slice(0,160))); console.log(err); return; }
 		box.find('.pm-bet-success').html(ltmp_arr.pm_bet_success||'Bet placed!');
@@ -4771,7 +4779,7 @@ function pm_transfer_action(btn){
 	if(!to||!(amount>0)){ f.find('.pm-xfer-error').html(ltmp_arr.pm_transfer_fill||'Enter recipient and shares.'); return; }
 	btn.attr('disabled','disabled');
 	f.find('.icon-check').css('display','none'); f.find('.submit-button-ring').css('display','inline-block');
-	viz.broadcast.pmTransferPosition(users[current_user].active_key,current_user,bet_id,to,amount,memo,[],function(err,result){
+	viz.broadcast.pmTransferPosition(signing_key(),current_user,bet_id,to,amount,memo,[],function(err,result){
 		btn.removeAttr('disabled'); f.find('.submit-button-ring').css('display','none');
 		if(err){ f.find('.pm-xfer-error').html((ltmp_arr.pm_transfer_error||'Transfer failed')+': '+escape_html((''+(err.message||JSON.stringify(err))).slice(0,160))); console.log(err); return; }
 		f.find('.icon-check').css('display','inline-block');
@@ -4815,7 +4823,7 @@ function pm_dispute_create_action(btn){
 	let reason=(''+f.find('textarea[name=pm-dispute-reason]').val());
 	btn.attr('disabled','disabled');
 	f.find('.icon-check').css('display','none'); f.find('.submit-button-ring').css('display','inline-block');
-	viz.broadcast.pmDisputeCreate(users[current_user].active_key,current_user,market_id,oc,reason,[],function(err,result){
+	viz.broadcast.pmDisputeCreate(signing_key(),current_user,market_id,oc,reason,[],function(err,result){
 		btn.removeAttr('disabled'); f.find('.submit-button-ring').css('display','none');
 		if(err){ f.find('.pm-dispute-error').html((ltmp_arr.pm_dispute_error||'Dispute failed')+': '+escape_html((''+(err.message||JSON.stringify(err))).slice(0,160))); console.log(err); return; }
 		f.find('.icon-check').css('display','inline-block');
@@ -4870,7 +4878,7 @@ function pm_dispute_vote_action(btn){
 	if(!(pct>0)){ f.find('.pm-dvote-error').html(ltmp_arr.pm_dispute_vote_bad||'Enter a valid weight.'); return; }
 	btn.attr('disabled','disabled');
 	f.find('.icon-check').css('display','none'); f.find('.submit-button-ring').css('display','inline-block');
-	viz.broadcast.pmDisputeVote(users[current_user].active_key,current_user,market_id,oc,pct,[],function(err,result){
+	viz.broadcast.pmDisputeVote(signing_key(),current_user,market_id,oc,pct,[],function(err,result){
 		btn.removeAttr('disabled'); f.find('.submit-button-ring').css('display','none');
 		if(err){ f.find('.pm-dvote-error').html((ltmp_arr.pm_dispute_vote_error||'Vote failed')+': '+escape_html((''+(err.message||JSON.stringify(err))).slice(0,160))); console.log(err); return; }
 		f.find('.icon-check').css('display','inline-block');
@@ -5586,7 +5594,7 @@ function ms_flag(ctx,cls){ return '1'==(''+ctx.page.find('.'+cls).val()); }
 function ms_approve_account_action(){
 	let ctx=ms_detail_ctx();
 	if(!ctx.author||!ctx.title){ return; }
-	let wif=users[current_user]&&users[current_user].active_key;
+	let wif=signing_key();
 	if(!wif){ ctx.err.html(ltmp_arr.ms_bad_wif); return; }
 	// Add the current account to whatever authority level the proposal requires it at (and
 	// hasn't signed yet). Signed with the stored login key — a master-level login satisfies
@@ -5602,7 +5610,7 @@ function ms_approve_account_action(){
 function ms_revoke_action(){
 	let ctx=ms_detail_ctx();
 	if(!ctx.author||!ctx.title){ return; }
-	let wif=users[current_user]&&users[current_user].active_key;
+	let wif=signing_key();
 	if(!wif){ ctx.err.html(ltmp_arr.ms_bad_wif); return; }
 	// Remove the current account from every level it has currently approved at.
 	let me=[current_user];
@@ -5627,7 +5635,7 @@ function ms_delete_action(){
 	let ctx=ms_detail_ctx();
 	if(!ctx.author||!ctx.title){ return; }
 	if(!confirm(ltmp_arr.ms_delete_confirm)){ return; }
-	let wif=users[current_user]&&users[current_user].active_key;
+	let wif=signing_key();
 	if(!wif){ ctx.err.html(ltmp_arr.ms_bad_wif); return; }
 	ctx.err.html(''); ctx.ok.html(''); ctx.page.find('.submit-button-ring').css('display','inline-block');
 	viz.broadcast.proposalDelete(wif,ctx.author,ctx.title,current_user,[],ms_after(ltmp_arr.ms_delete_ok,ctx));
@@ -5698,7 +5706,7 @@ function ms_create_action(){
 	let page=$('.view-multisig .page-create');
 	let err=page.find('.ms-create-error'), ok=page.find('.ms-create-success');
 	err.html(''); ok.html('');
-	let wif=users[current_user]&&users[current_user].active_key;
+	let wif=signing_key();
 	if(!wif){ err.html(ltmp_arr.ms_bad_wif); return; }
 	let ptitle=(''+page.find('input[name=ms-title]').val()).trim();
 	let pmemo=(''+page.find('input[name=ms-memo]').val()).trim();
@@ -6004,7 +6012,7 @@ function claim_invite(receiver,code,el){
 	page.find('.invites-claim-error').html('');
 	page.find('.invites-claim-success').html('');
 	if(viz.auth.isWif(code)){
-		viz.broadcast.claimInviteBalance(users[current_user].active_key,current_user,receiver,code,function(err,result){
+		viz.broadcast.claimInviteBalance(signing_key(),current_user,receiver,code,function(err,result){
 			if(!err){
 				page.find('.invites-claim-success').html(ltmp(ltmp_arr.invites_claim_success,{account:receiver}));
 
@@ -6057,7 +6065,7 @@ function use_invite(receiver,code,el){
 	page.find('.invites-claim-error').html('');
 	page.find('.invites-claim-success').html('');
 	if(viz.auth.isWif(code)){
-		viz.broadcast.useInviteBalance(users[current_user].active_key,current_user,receiver,code,function(err,result){
+		viz.broadcast.useInviteBalance(signing_key(),current_user,receiver,code,function(err,result){
 			if(!err){
 				page.find('.invites-claim-success').html(ltmp(ltmp_arr.invites_claim_success,{account:receiver}));
 
@@ -6103,7 +6111,7 @@ function cancel_fund_request(req_id,el){
 	let page=$(el).closest('.page');
 	var ask=confirm(ltmp_arr.fund_cancel_request_confirmation);
 	if(true==ask){
-		viz.broadcast.committeeWorkerCancelRequest(users[current_user].active_key,current_user,parseInt(req_id),function(err,result){
+		viz.broadcast.committeeWorkerCancelRequest(signing_key(),current_user,parseInt(req_id),function(err,result){
 			if(!err){
 				page.find('.fund-vote-request-success').html(ltmp_arr.fund_request_canceled_successfully);
 
@@ -6136,7 +6144,7 @@ function fund_vote_request(req_id,percent,el){
 	if(percent<-10000){
 		percent=-10000;
 	}
-	viz.broadcast.committeeVoteRequest(users[current_user].active_key,current_user,req_id,percent,function(err,result){
+	viz.broadcast.committeeVoteRequest(signing_key(),current_user,req_id,percent,function(err,result){
 		if(!err){
 			page.find('.fund-vote-request-success').html(ltmp_arr.fund_request_vote);
 
@@ -6177,7 +6185,7 @@ function set_paid_subscribe(provider,level,amount,period,auto_renewal,agreement,
 		page.find('.submit-button-ring').css('display','none');
 		return;
 	}
-	viz.broadcast.paidSubscribe(users[current_user].active_key,current_user,provider,level,amount,period,auto_renewal,function(err,result){
+	viz.broadcast.paidSubscribe(signing_key(),current_user,provider,level,amount,period,auto_renewal,function(err,result){
 		if(!err){
 			page.find('.paid-subscribe-success').html(ltmp_arr.default_successful_operation);
 
@@ -6301,7 +6309,7 @@ function create_paid_subscribe(url_summary,levels,amount,period,agreement,el){
 	}
 	let fixed_amount=parseFloat(amount).toFixed(3);
 	fixed_amount=fixed_amount+' VIZ';
-	viz.broadcast.setPaidSubscription(users[current_user].active_key,current_user,url_summary,levels,fixed_amount,period,function(err,result){
+	viz.broadcast.setPaidSubscription(signing_key(),current_user,url_summary,levels,fixed_amount,period,function(err,result){
 		if(!err){
 			if(agreement){
 				page.find('.create-paid-subscribe-success').html(ltmp_arr.ps_agreement_sign_success);
@@ -6405,7 +6413,7 @@ function award(account,energy,memo,encode,el){
 				}
 			}
 			let beneficiaries_list=[];
-			viz.broadcast.award(users[current_user].active_key,current_user,account,energy,0,memo,beneficiaries_list,function(err,result){
+			viz.broadcast.award(signing_key(),current_user,account,energy,0,memo,beneficiaries_list,function(err,result){
 				if(!err){
 					page.find('.award-success').html(ltmp(ltmp_arr.award_info_success,{account:account,energy:(energy/100)}));
 
@@ -6531,7 +6539,7 @@ function fixed_award(account,amount,max_energy,memo,encode,el){
 				}
 			}
 			let beneficiaries_list=[];
-			viz.broadcast.fixedAward(users[current_user].active_key,current_user,account,reward_amount,max_energy_int,0,memo,beneficiaries_list,function(err,result){
+			viz.broadcast.fixedAward(signing_key(),current_user,account,reward_amount,max_energy_int,0,memo,beneficiaries_list,function(err,result){
 				if(!err){
 					page.find('.fixed-award-success').html(ltmp(ltmp_arr.fixed_award_info_success,{account:account,amount:reward.toFixed(3)}));
 
@@ -6618,7 +6626,7 @@ function create_invite(amount,el){
 	}
 	let private_key=pass_gen(100,true);
 	let public_key=viz.auth.wifToPublic(private_key);
-	viz.broadcast.createInvite(users[current_user].active_key,current_user,fixed_tokens_amount,public_key,function(err,result){
+	viz.broadcast.createInvite(signing_key(),current_user,fixed_tokens_amount,public_key,function(err,result){
 		if(!err){
 			page.find('.invites-create-success').html(ltmp(ltmp_arr.invite_amount_success,{amount:show_balance_in_tokens(fixed_tokens_amount,true)}));
 
@@ -6797,7 +6805,7 @@ function fund_create_request(url,worker,min,max,duration,el){
 		fixed_max='0.000 VIZ';
 	}
 	duration=duration*3600*24;
-	viz.broadcast.committeeWorkerCreateRequest(users[current_user].active_key,current_user,url,worker,fixed_min,fixed_max,duration,function(err,result) {
+	viz.broadcast.committeeWorkerCreateRequest(signing_key(),current_user,url,worker,fixed_min,fixed_max,duration,function(err,result) {
 		if(!err){
 			page.find('.fund-create-request-success').html(ltmp_arr.fund_request_success);
 			page.find('.fund-create-request-action').removeAttr('disabled');
@@ -6987,7 +6995,7 @@ function transfer(account,amount,memo,encode,el){
 					return;
 				}
 			}
-			viz.broadcast.transfer(users[current_user].active_key,current_user,account,fixed_tokens_amount,memo,function(err,result){
+			viz.broadcast.transfer(signing_key(),current_user,account,fixed_tokens_amount,memo,function(err,result){
 				if(!err){
 					page.find('.transfer-success').html(ltmp(ltmp_arr.transfer_amount_success,{amount:show_amount_in_tokens(fixed_tokens_amount,true)}));
 
@@ -7073,7 +7081,7 @@ function validator_set_props(el){
 			}
 			//variant by node hardfork: pm fields present → HF14 (v5); distribution_epoch_length → hf13 (v4); else hf9 (v3)
 			let props_version=(typeof props.pm_max_outcomes !== 'undefined')?5:((typeof props.distribution_epoch_length !== 'undefined')?4:3);
-			viz.broadcast.versionedChainPropertiesUpdate(users[current_user].active_key,current_user,[props_version,props],function(err,result){
+			viz.broadcast.versionedChainPropertiesUpdate(signing_key(),current_user,[props_version,props],function(err,result){
 				if(!err){
 					page.find('.validator-set-props-success').html(ltmp_arr.validator_set_props_success);
 					page.find('.validator-set-props-action').removeAttr('disabled');
@@ -7138,7 +7146,7 @@ function validator_setup(url,public_key,private_key,el){
 		public_key='VIZ1111111111111111111111111111111114T1Anm';
 		deactivation=true;
 	}
-	viz.broadcast.validatorUpdate(users[current_user].active_key,current_user,url,public_key,function(err,result){
+	viz.broadcast.validatorUpdate(signing_key(),current_user,url,public_key,function(err,result){
 		if(!err){
 			page.find('.validator-setup-success').html(ltmp_arr.default_successful_operation+(''!=private_key?ltmp_arr.validator_save_signing_key+private_key:'')+(deactivation?ltmp_arr.validator_was_disabled:''));
 
@@ -7173,7 +7181,7 @@ function validator_reward_sharing(el){
 	if(sharing_rate>10000) sharing_rate=10000;
 	if(0>sharing_rate) sharing_rate=0;
 
-	viz.broadcast.setRewardSharing(users[current_user].active_key,current_user,sharing_rate,function(err,result){
+	viz.broadcast.setRewardSharing(signing_key(),current_user,sharing_rate,function(err,result){
 		if(!err){
 			page.find('.validator-reward-sharing-success').html(ltmp_arr.validator_reward_sharing_success);
 			page.find('.validator-reward-sharing-action').removeAttr('disabled');
@@ -7195,7 +7203,7 @@ function validator_proxy(proxy_account){
 	$('.page-validators .submit-button-ring[rel=proxy]').css('display','inline-block');
 	$('.page-validators .icon-check[rel=proxy]').css('display','none');
 
-	viz.broadcast.accountValidatorProxy(users[current_user].active_key,current_user,proxy_account,function(err,result){
+	viz.broadcast.accountValidatorProxy(signing_key(),current_user,proxy_account,function(err,result){
 		console.log('validator_proxy',proxy_account,err,result);
 		$('.page-validators .submit-button-ring[rel=proxy]').css('display','none');
 		if(err){
@@ -7212,7 +7220,7 @@ function validator_proxy(proxy_account){
 }
 function undelegate_shares(account,el){
 	$(el).closest('.columns-view').css('box-shadow','inset 0px 0px 4px 1px #7af');
-	viz.broadcast.delegateVestingShares(users[current_user].active_key,current_user,account,'0.000000 SHARES',function(err,result){
+	viz.broadcast.delegateVestingShares(signing_key(),current_user,account,'0.000000 SHARES',function(err,result){
 		if(!err){
 			$(el).closest('.columns-view').remove();
 
@@ -7256,7 +7264,7 @@ function delegate_shares(account,amount,el){
 	if(''==amount){
 		fixed_shares_amount='0.000000 SHARES';
 	}
-	viz.broadcast.delegateVestingShares(users[current_user].active_key,current_user,account,fixed_shares_amount,function(err,result){
+	viz.broadcast.delegateVestingShares(signing_key(),current_user,account,fixed_shares_amount,function(err,result){
 		if(!err){
 			page.find('.delegate-shares-success').html(ltmp_arr.delegation_success);
 
@@ -7304,7 +7312,7 @@ function stop_unstake_shares(el){
 	page.find('.submit-button-ring[rel=stop]').css('display','inline-block');
 
 	page.find('.stop-unstake-shares-error').html('');
-	viz.broadcast.withdrawVesting(users[current_user].active_key,current_user,'0.000000 SHARES',function(err,result){
+	viz.broadcast.withdrawVesting(signing_key(),current_user,'0.000000 SHARES',function(err,result){
 		if(!err){
 			page.find('.account-withdraw-status').addClass('hidden');
 			el.removeAttr('disabled');
@@ -7332,7 +7340,7 @@ function unstake_shares(tokens_amount,el){
 	if(''==tokens_amount){
 		fixed_shares_amount='0.000000 SHARES';
 	}
-	viz.broadcast.withdrawVesting(users[current_user].active_key,current_user,fixed_shares_amount,function(err,result){
+	viz.broadcast.withdrawVesting(signing_key(),current_user,fixed_shares_amount,function(err,result){
 		if(!err){
 			page.find('.unstake-shares-success').html(ltmp_arr.withdraw_success);
 
@@ -7363,7 +7371,7 @@ function stake_shares(tokens_amount,el){
 	if(''==tokens_amount){
 		fixed_tokens_amount='0.000 VIZ';
 	}
-	viz.broadcast.transferToVesting(users[current_user].active_key,current_user,current_user,fixed_tokens_amount,function(err,result){
+	viz.broadcast.transferToVesting(signing_key(),current_user,current_user,fixed_tokens_amount,function(err,result){
 		if(!err){
 			page.find('.stake-shares-success').html(ltmp_arr.transfer_success);
 
@@ -7654,7 +7662,7 @@ function create_account(account_login,token_amount,shares_amount,login_el){
 			page.find('.create-account-error').html($('.page-create-account .create-account-error').html()+': '+err.cause.data.stack[0].format);
 		}
 	}
-	viz.broadcast.accountCreate(users[current_user].active_key,fixed_token_amount,fixed_shares_amount,current_user,account_login,master,active,regular,memo_key,json_metadata,referrer,[],function(err,result){
+	viz.broadcast.accountCreate(signing_key(),fixed_token_amount,fixed_shares_amount,current_user,account_login,master,active,regular,memo_key,json_metadata,referrer,[],function(err,result){
 		if(!err){
 			account_success(result);
 		}
@@ -7677,7 +7685,7 @@ function buy_account(account_login,offer_price,tokens_amount,el){
 	let public_key=viz.auth.wifToPublic(private_key);
 	viz.api.getRecoveryRequest(account_login,function(err,response){
 		if(null===response){
-			viz.broadcast.buyAccount(users[current_user].active_key,current_user,account_login,offer_price,public_key,fixed_tokens_amount,function(err,result){
+			viz.broadcast.buyAccount(signing_key(),current_user,account_login,offer_price,public_key,fixed_tokens_amount,function(err,result){
 				if(!err){
 					el.find('.submit-button-ring').css('display','none');
 					el.find('.icon-check').css('display','inline-block');
@@ -7722,7 +7730,7 @@ function buy_short_account(account_login,offer_price,tokens_amount,el){
 	let public_key=viz.auth.wifToPublic(private_key);
 	viz.api.getRecoveryRequest(account_login,function(err,response){
 		if(null===response){
-			viz.broadcast.buyAccount(users[current_user].active_key,current_user,account_login,offer_price,public_key,fixed_tokens_amount,function(err,result){
+			viz.broadcast.buyAccount(signing_key(),current_user,account_login,offer_price,public_key,fixed_tokens_amount,function(err,result){
 				if(!err){
 					el.find('.submit-button-ring').css('display','none');
 					el.find('.icon-check').css('display','inline-block');
@@ -8239,7 +8247,7 @@ function save_profile(el){
 					let new_json_metadata=JSON.stringify(json_metadata);
 
 					console.log(new_json_metadata);
-					viz.broadcast.accountMetadata(users[current_user].active_key,current_user,new_json_metadata,function(err,result){
+					viz.broadcast.accountMetadata(signing_key(),current_user,new_json_metadata,function(err,result){
 						if(result){
 							el.find('.manage-profile-success').html(ltmp_arr.save_profile_success);
 							el.find('.manage-profile-error').html('');
@@ -8415,7 +8423,7 @@ function buy_subaccount(account_login,offer_price,tokens_amount,el){
 		else{
 			viz.api.getRecoveryRequest(account_login,function(err,response){
 				if(null===response){
-					viz.broadcast.buyAccount(users[current_user].active_key,current_user,account_login,offer_price,public_key,fixed_tokens_amount,function(err,result){
+					viz.broadcast.buyAccount(signing_key(),current_user,account_login,offer_price,public_key,fixed_tokens_amount,function(err,result){
 						if(!err){
 							el.find('.submit-button-ring').css('display','none');
 							el.find('.icon-check').css('display','inline-block');
@@ -8536,7 +8544,7 @@ function create_subaccount(account_login,token_amount,shares_amount,login_el){
 			page.find('.create-subaccount-error').html(page.find('.create-subaccount-error').html()+': '+err.cause.data.stack[0].format);
 		}
 	}
-	viz.broadcast.accountCreate(users[current_user].active_key,fixed_token_amount,fixed_shares_amount,current_user,account_login,master,active,regular,memo_key,json_metadata,referrer,[],function(err,result){
+	viz.broadcast.accountCreate(signing_key(),fixed_token_amount,fixed_shares_amount,current_user,account_login,master,active,regular,memo_key,json_metadata,referrer,[],function(err,result){
 		if(!err){
 			account_success(result);
 		}
@@ -9465,7 +9473,7 @@ function app_mouse(e){
 						html_to_show+='<p class="captions">Memo private key: <strong>'+memo_key+'</strong></p>';
 						txt_to_save=txt_to_save.trim();
 
-						viz.broadcast.accountUpdate(users[current_user].active_key,current_user,undefined,undefined,undefined,memo_key_public,json_metadata,function(err,result){
+						viz.broadcast.accountUpdate(signing_key(),current_user,undefined,undefined,undefined,memo_key_public,json_metadata,function(err,result){
 							if(result){
 								$('.view-'+current_view+' .success').html(ltmp_arr.memo_key_updated);
 
