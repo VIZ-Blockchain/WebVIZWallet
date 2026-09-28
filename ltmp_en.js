@@ -209,6 +209,7 @@ var ltmp_en_arr={
 						<div class="wide-buttons captions">
 							<a class="wide-button" data-href="/settings/reset-access/">Reset keys</a>
 							<a class="wide-button" data-href="/settings/access/">Manage access</a>
+							<a class="wide-button agents-link" data-href="/settings/agents/" style="display:none">Agents</a>
 								<a class="wide-button" data-href="/settings/security/">Encryption</a>
 								<a class="wide-button" data-href="/settings/keys/">Export/import keys</a>
 						</div>
@@ -540,6 +541,50 @@ var ltmp_en_arr={
 					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 				</p>
 				<p><a class="inline-button grey ns-remove-action captions">Remove all NS records</a></p>
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-agents" data-title="Agents">
+			<div class="card">
+				<h3>Agents (agent access)</h3>
+				<p class="grey">An agent is a separate key that may sign the operations you tick on behalf of your account. Your own keys are not shared; you can revoke an agent at any time. All agents are removed when you change the active or master key, recover or sell the account.</p>
+				<p class="red agents-unsupported" style="display:none"></p>
+				<div class="agents-form">
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Agent name (a-z, 0-9, _ and -):</span>
+						<input type="text" name="agents-name" class="simple-rounded">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Agent public key:</span>
+						<input type="text" name="agents-key" placeholder="VIZ..." class="simple-rounded wide">
+					</label>
+				</p>
+				<p><a class="inline-button agents-gen-key captions">Generate a key</a></p>
+				<p class="agents-new-key" style="display:none"></p>
+				<p><span class="input-caption">Allowed operations:</span></p>
+				<div class="agents-ops"></div>
+				<p><span class="input-caption">Expiration:</span></p>
+				<p><label><input type="radio" name="agents-exp" value="0" checked> Perpetual</label></p>
+				<p><label><input type="radio" name="agents-exp" value="1"> Until the date (UTC):</label> <input type="date" name="agents-exp-date" class="simple-rounded simple-rounded-size"></p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Addons, comma separated (e.g. vizhub):</span>
+						<input type="text" name="agents-addons" placeholder="vizhub" class="simple-rounded wide">
+					</label>
+				</p>
+				<p class="red agents-error"></p>
+				<p class="green agents-success"></p>
+				<p>
+					<input class="agents-save-action blue-button captions" type="button" value="Save agent">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				</div>
+				<h4>Your agents</h4>
+				<div class="agents-list"></div>
 				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -2570,6 +2615,21 @@ var ltmp_en_arr={
 	ns_saved:'NS records saved to the blockchain.',
 	ns_removed:'NS records removed.',
 	ns_remove_confirm:'Remove all NS records from your account metadata?',
+	agents_unsupported:'This node does not support agent access yet (HF15).',
+	agents_bad_name:'Agent name: only a-z, 0-9, _ and -.',
+	agents_bad_key:'Invalid public key.',
+	agents_no_scope:'Tick at least one operation or add an addon.',
+	agents_bad_addons:'Addons: at most 10, each shorter than 64 characters, no empty items.',
+	agents_bad_date:'Choose a future expiration date.',
+	agents_saved:'Agent saved.',
+	agents_revoked:'Agent revoked.',
+	agents_revoke:'revoke',
+	agents_revoke_confirm:'Revoke agent {name}?',
+	agents_empty:'No agents yet.',
+	agents_expired:'expired',
+	agents_perpetual:'perpetual',
+	agents_new_key:'Private key of the agent (shown once, save it now — the wallet does not keep it):',
+	agents_lib_old:'The wallet library does not know this operation yet; it will be available after the update.',
 
 	/* Access */
 	access_remove_caption:'remove',

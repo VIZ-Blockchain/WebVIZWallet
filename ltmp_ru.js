@@ -209,6 +209,7 @@ var ltmp_ru_arr={
 						<div class="wide-buttons captions">
 							<a class="wide-button" data-href="/settings/reset-access/">Сброс ключей</a>
 							<a class="wide-button" data-href="/settings/access/">Управление доступами</a>
+							<a class="wide-button agents-link" data-href="/settings/agents/" style="display:none">Агенты</a>
 								<a class="wide-button" data-href="/settings/security/">Шифрование</a>
 								<a class="wide-button" data-href="/settings/keys/">Экспорт/импорт ключей</a>
 						</div>
@@ -540,6 +541,50 @@ var ltmp_ru_arr={
 					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 				</p>
 				<p><a class="inline-button grey ns-remove-action captions">Удалить все NS-записи</a></p>
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-agents" data-title="Агенты">
+			<div class="card">
+				<h3>Агенты (агент-доступ)</h3>
+				<p class="grey">Агент — отдельный ключ, которому разрешено подписывать отмеченные операции от имени вашего аккаунта. Ваши ключи никому не передаются, агента можно отозвать в любой момент. Все агенты удаляются при смене active- или master-ключа, восстановлении и продаже аккаунта.</p>
+				<p class="red agents-unsupported" style="display:none"></p>
+				<div class="agents-form">
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Имя агента (a-z, 0-9, _ и -):</span>
+						<input type="text" name="agents-name" class="simple-rounded">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Публичный ключ агента:</span>
+						<input type="text" name="agents-key" placeholder="VIZ..." class="simple-rounded wide">
+					</label>
+				</p>
+				<p><a class="inline-button agents-gen-key captions">Сгенерировать ключ</a></p>
+				<p class="agents-new-key" style="display:none"></p>
+				<p><span class="input-caption">Разрешённые операции:</span></p>
+				<div class="agents-ops"></div>
+				<p><span class="input-caption">Срок действия:</span></p>
+				<p><label><input type="radio" name="agents-exp" value="0" checked> Бессрочно</label></p>
+				<p><label><input type="radio" name="agents-exp" value="1"> До даты (UTC):</label> <input type="date" name="agents-exp-date" class="simple-rounded simple-rounded-size"></p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Addons через запятую (напр. vizhub):</span>
+						<input type="text" name="agents-addons" placeholder="vizhub" class="simple-rounded wide">
+					</label>
+				</p>
+				<p class="red agents-error"></p>
+				<p class="green agents-success"></p>
+				<p>
+					<input class="agents-save-action blue-button captions" type="button" value="Сохранить агента">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				</div>
+				<h4>Ваши агенты</h4>
+				<div class="agents-list"></div>
 				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -2543,6 +2588,21 @@ var ltmp_ru_arr={
 	ns_saved:'NS-записи сохранены в блокчейне.',
 	ns_removed:'NS-записи удалены.',
 	ns_remove_confirm:'Удалить все NS-записи из метаданных аккаунта?',
+	agents_unsupported:'Эта нода пока не поддерживает агент-доступ (HF15).',
+	agents_bad_name:'Имя агента: только a-z, 0-9, _ и -.',
+	agents_bad_key:'Некорректный публичный ключ.',
+	agents_no_scope:'Отметьте хотя бы одну операцию или добавьте addon.',
+	agents_bad_addons:'Addons: не больше 10, каждый короче 64 символов, без пустых.',
+	agents_bad_date:'Выберите дату в будущем.',
+	agents_saved:'Агент сохранён.',
+	agents_revoked:'Агент отозван.',
+	agents_revoke:'отозвать',
+	agents_revoke_confirm:'Отозвать агента {name}?',
+	agents_empty:'Агентов пока нет.',
+	agents_expired:'истёк',
+	agents_perpetual:'бессрочно',
+	agents_new_key:'Приватный ключ агента (показан один раз, сохраните сейчас — кошелёк его не хранит):',
+	agents_lib_old:'Библиотека кошелька пока не знает эту операцию; она заработает после обновления.',
 
 	/* Access */
 	access_remove_caption:'удалить',

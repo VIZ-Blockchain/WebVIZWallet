@@ -210,6 +210,7 @@ var ltmp_zh_arr = {
 						<div class="wide-buttons captions">
 							<a class="wide-button" data-href="/settings/reset-access/">重置密钥</a>
 							<a class="wide-button" data-href="/settings/access/">管理访问权限</a>
+							<a class="wide-button agents-link" data-href="/settings/agents/" style="display:none">代理</a>
 								<a class="wide-button" data-href="/settings/security/">加密</a>
 								<a class="wide-button" data-href="/settings/keys/">导出/导入密钥</a>
 						</div>
@@ -541,6 +542,50 @@ var ltmp_zh_arr = {
 					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
 				</p>
 				<p><a class="inline-button grey ns-remove-action captions">删除所有 NS 记录</a></p>
+				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
+			</div>
+		</div>
+		<div class="page page-agents" data-title="代理">
+			<div class="card">
+				<h3>代理（代理访问）</h3>
+				<p class="grey">代理是一个独立的密钥，可以代表您的账户签署您勾选的操作。您自己的密钥不会被共享，您可以随时撤销代理。更换 active 或 master 密钥、恢复或出售账户时，所有代理都会被删除。</p>
+				<p class="red agents-unsupported" style="display:none"></p>
+				<div class="agents-form">
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">代理名称（a-z、0-9、_ 和 -）：</span>
+						<input type="text" name="agents-name" class="simple-rounded">
+					</label>
+				</p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">代理公钥：</span>
+						<input type="text" name="agents-key" placeholder="VIZ..." class="simple-rounded wide">
+					</label>
+				</p>
+				<p><a class="inline-button agents-gen-key captions">生成密钥</a></p>
+				<p class="agents-new-key" style="display:none"></p>
+				<p><span class="input-caption">允许的操作：</span></p>
+				<div class="agents-ops"></div>
+				<p><span class="input-caption">有效期：</span></p>
+				<p><label><input type="radio" name="agents-exp" value="0" checked> 永久</label></p>
+				<p><label><input type="radio" name="agents-exp" value="1"> 截止日期（UTC）：</label> <input type="date" name="agents-exp-date" class="simple-rounded simple-rounded-size"></p>
+				<p>
+					<label class="input-descr">
+						<span class="input-caption">Addons，用逗号分隔（例如 vizhub）：</span>
+						<input type="text" name="agents-addons" placeholder="vizhub" class="simple-rounded wide">
+					</label>
+				</p>
+				<p class="red agents-error"></p>
+				<p class="green agents-success"></p>
+				<p>
+					<input class="agents-save-action blue-button captions" type="button" value="保存代理">
+					<span class="submit-button-ring"></span>
+					<span class="icon icon-margin hidden icon-color-blue icon-check"></span>
+				</p>
+				</div>
+				<h4>您的代理</h4>
+				<div class="agents-list"></div>
 				<p><hr><a data-href="/settings/">%%default_return_link%%</a></p>
 			</div>
 		</div>
@@ -2543,6 +2588,21 @@ var ltmp_zh_arr = {
 	ns_saved:'NS 记录已保存到区块链。',
 	ns_removed:'NS 记录已删除。',
 	ns_remove_confirm:'从您的账户元数据中删除所有 NS 记录？',
+	agents_unsupported:'此节点尚不支持代理访问（HF15）。',
+	agents_bad_name:'代理名称：仅限 a-z、0-9、_ 和 -。',
+	agents_bad_key:'公钥无效。',
+	agents_no_scope:'请至少勾选一个操作或添加一个 addon。',
+	agents_bad_addons:'Addons：最多 10 个，每个少于 64 个字符，不能为空。',
+	agents_bad_date:'请选择未来的日期。',
+	agents_saved:'代理已保存。',
+	agents_revoked:'代理已撤销。',
+	agents_revoke:'撤销',
+	agents_revoke_confirm:'撤销代理 {name}？',
+	agents_empty:'暂无代理。',
+	agents_expired:'已过期',
+	agents_perpetual:'永久',
+	agents_new_key:'代理私钥（仅显示一次，请立即保存——钱包不会保存它）：',
+	agents_lib_old:'钱包库尚不认识此操作；更新后即可使用。',
 
 	/* Access */
 	access_remove_caption:'移除',

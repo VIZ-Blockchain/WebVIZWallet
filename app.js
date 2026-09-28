@@ -1735,6 +1735,119 @@ function remove_ns(){
 		});
 	});
 }
+// HF15 agent access. Operations a principal may delegate: the node's operation variant minus virtual
+// operations, the never-delegable set (set_agent_permission, proposal_*, account_update, recover_account,
+// change_recovery_account, set_account_price, set_subaccount_price, target_account_sale) and the retired
+// content/vote ones.
+var agents_ops=['transfer','transfer_to_vesting','withdraw_vesting','delegate_vesting_shares','set_withdraw_vesting_route','award','fixed_award','custom','account_metadata','account_create','create_invite','claim_invite_balance','use_invite_balance','invite_registration','escrow_transfer','escrow_approve','escrow_dispute','escrow_release','request_account_recovery','validator_update','chain_properties_update','versioned_chain_properties_update','account_validator_vote','account_validator_proxy','set_reward_sharing','committee_worker_create_request','committee_worker_cancel_request','committee_vote_request','set_paid_subscription','paid_subscribe','buy_account','pm_place_bet','pm_commit_bet','pm_reveal_bet','pm_cancel_bet','pm_transfer_position','pm_add_liquidity','pm_withdraw_liquidity','pm_lazy_deposit','pm_lazy_withdraw','pm_leverage_open','pm_leverage_close','pm_leverage_convert','pm_create_market','pm_oracle_register','pm_oracle_update','pm_oracle_accept_market','pm_resolve_market','pm_no_contest','pm_dispute_create','pm_dispute_vote','pm_dispute_resolve','pm_dispute_oracle_respond','pm_unban'];
+// null = not asked yet. The node answers get_agent_permissions only with the agent-access code (q1720=A:
+// the UI ships now and stays hidden until then).
+var agents_supported=null;
+function agents_probe(cb){
+	if(null!==agents_supported||''==current_user){ if(cb){ cb(!!agents_supported); } return; }
+	market_rpc('database_api','get_agent_permissions',[current_user],function(err,res){
+		agents_supported=!err&&Array.isArray(res);
+		$('.view-settings .agents-link').css('display',agents_supported?'':'none');
+		if(cb){ cb(agents_supported); }
+	});
+}
+function agents_render_list(){
+	var page=$('.view-settings .page-agents');
+	market_rpc('database_api','get_agent_permissions',[current_user],function(err,res){
+		if(err||!Array.isArray(res)){ page.find('.agents-list').html(''); return; }
+		if(0==res.length){ page.find('.agents-list').html('<p class="grey">'+ltmp_arr.agents_empty+'</p>'); return; }
+		var html='';
+		for(var i=0;i<res.length;i++){
+			var a=res[i];
+			var exp=('1970-01-01T00:00:00'==a.expiration)?ltmp_arr.agents_perpetual:a.expiration.replace('T',' ')+' UTC';
+			html+='<div class="shadow grid"><p><strong>'+escape_html(a.agent_name)+'</strong>'+(a.expired?' <span class="red">('+ltmp_arr.agents_expired+')</span>':'')+
+				' <a class="inline-button grey small agents-revoke-action captions" data-name="'+escape_html(a.agent_name)+'">'+ltmp_arr.agents_revoke+'</a></p>'+
+				'<p class="grey">'+escape_html(a.agent_key)+'</p>'+
+				'<p>'+escape_html(a.operations.join(', '))+'</p>'+
+				(a.addons&&a.addons.length?'<p>addons: '+escape_html(a.addons.join(', '))+'</p>':'')+
+				'<p class="grey">'+exp+'</p></div>';
+		}
+		page.find('.agents-list').html(html);
+	});
+}
+function setup_agents(){
+	var page=$('.view-settings .page-agents'); if(!page.length){ return; }
+	page.find('input[name=agents-name],input[name=agents-key],input[name=agents-addons],input[name=agents-exp-date]').val('');
+	page.find('input[name=agents-exp][value=0]').prop('checked',true);
+	page.find('.agents-error,.agents-success,.agents-new-key').html('');
+	page.find('.agents-new-key').css('display','none');
+	page.find('.icon-check,.submit-button-ring').css('display','none');
+	var ops='';
+	for(var i=0;i<agents_ops.length;i++){
+		ops+='<label class="captions" style="display:inline-block;margin-right:12px"><input type="checkbox" class="agents-op" value="'+agents_ops[i]+'"> '+agents_ops[i]+'</label>';
+	}
+	page.find('.agents-ops').html(ops);
+	page.find('.agents-list').html('');
+	agents_probe(function(ok){
+		page.find('.agents-unsupported').html(ok?'':ltmp_arr.agents_unsupported).css('display',ok?'none':'block');
+		page.find('.agents-form').css('display',ok?'block':'none');
+		if(ok){ agents_render_list(); }
+	});
+}
+function agents_gen_key(){
+	var page=$('.view-settings .page-agents');
+	var wif=pass_gen(100,true);
+	page.find('input[name=agents-key]').val(viz.auth.wifToPublic(wif));
+	page.find('.agents-new-key').html(ltmp_arr.agents_new_key+'<br><strong>'+escape_html(wif)+'</strong>').css('display','block');
+}
+function agents_broadcast(op,done){
+	var page=$('.view-settings .page-agents');
+	try{
+		viz.broadcast.send({extensions:[],operations:[['set_agent_permission',op]]},[users[current_user].active_key],done);
+	}catch(e){
+		// the vendored viz.min.js predates op 105 until the next viz-js-lib release is vendored
+		console.log(e); page.find('.agents-error').html(ltmp_arr.agents_lib_old); done(e,null,true);
+	}
+}
+function save_agent(){
+	var page=$('.view-settings .page-agents');
+	page.find('.agents-error,.agents-success').html('');
+	var name=(''+page.find('input[name=agents-name]').val()).trim();
+	if(!/^[a-z0-9_-]+$/.test(name)){ page.find('.agents-error').html(ltmp_arr.agents_bad_name); return; }
+	var key=(''+page.find('input[name=agents-key]').val()).trim();
+	if(!viz.auth.isPubkey(key)){ page.find('.agents-error').html(ltmp_arr.agents_bad_key); return; }
+	var ops=[]; page.find('.agents-op:checked').each(function(){ ops.push($(this).val()); });
+	var addons=[], bad=false;
+	(''+page.find('input[name=agents-addons]').val()).split(',').forEach(function(a){ a=a.trim(); if(''==a){ return; } if(a.length>63){ bad=true; } if(-1==addons.indexOf(a)){ addons.push(a); } });
+	if(bad||addons.length>10){ page.find('.agents-error').html(ltmp_arr.agents_bad_addons); return; }
+	if(0==ops.length&&0==addons.length){ page.find('.agents-error').html(ltmp_arr.agents_no_scope); return; }
+	var expiration='1970-01-01T00:00:00';
+	if('1'==page.find('input[name=agents-exp]:checked').val()){
+		var d=''+page.find('input[name=agents-exp-date]').val();
+		if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||Date.parse(d+'T00:00:00Z')<=Date.now()){ page.find('.agents-error').html(ltmp_arr.agents_bad_date); return; }
+		expiration=d+'T00:00:00';
+	}
+	ops.sort(); addons.sort();
+	page.find('.agents-save-action').attr('disabled','disabled');
+	page.find('.icon-check').css('display','none');
+	page.find('.submit-button-ring').css('display','inline-block');
+	agents_broadcast({account:current_user,agent_name:name,agent_key:key,operations:ops,expiration:expiration,addons:addons,extensions:[]},function(err,result,shown){
+		page.find('.submit-button-ring').css('display','none');
+		page.find('.agents-save-action').removeAttr('disabled');
+		if(result){
+			page.find('.agents-success').html(ltmp_arr.agents_saved);
+			page.find('.icon-check').css('display','inline-block');
+			agents_render_list();
+		}else{
+			if(!shown){ page.find('.agents-error').html(ltmp_arr.default_operation_error||'Operation error.'); }
+			console.log(err);
+		}
+	});
+}
+function revoke_agent(name){
+	var page=$('.view-settings .page-agents');
+	if(!confirm(ltmp_arr.agents_revoke_confirm.replace('{name}',name))){ return; }
+	page.find('.agents-error,.agents-success').html('');
+	agents_broadcast({account:current_user,agent_name:name,agent_key:'VIZ1111111111111111111111111111111114T1Anm',operations:[],expiration:'1970-01-01T00:00:00',addons:[],extensions:[]},function(err,result,shown){
+		if(result){ page.find('.agents-success').html(ltmp_arr.agents_revoked); agents_render_list(); }
+		else{ if(!shown){ page.find('.agents-error').html(ltmp_arr.default_operation_error||'Operation error.'); } console.log(err); }
+	});
+}
 // one-time setup: track activity + poll for idle auto-lock; wire the header quick-lock button
 $(function(){
 	$(document).on('mousemove.walllock keydown.walllock click.walllock touchstart.walllock', wallet_mark_activity);
@@ -3242,6 +3355,7 @@ function view_settings(path,params,title){
 	if(0<$('.view-'+path[1]).length){
 		$('.view-'+path[1]).css('display','block');
 		$('.view-'+path[1]+' .page').css('display','none');
+		if('settings'==path[1]){ agents_probe(); }
 		if(typeof path[2] != 'undefined'){
 			if(0<$('.view-'+path[1]+' .page-'+path[2]).length){
 				$('.view-'+path[1]+' .page-'+path[2]).css('display','block');
@@ -3255,6 +3369,7 @@ function view_settings(path,params,title){
 				if('security'==path[2]){ setup_wallet_security(); }
 				if('keys'==path[2]){ setup_keys_backup(); }
 				if('ns'==path[2]){ setup_ns(); }
+				if('agents'==path[2]){ setup_agents(); }
 					if('reset-access'==path[2]){
 						let rp=$('.page-reset-access');
 						rp.find('input[name=reset-access-login]').val(current_user);
@@ -8987,6 +9102,9 @@ function app_mouse(e){
 	if($(target).hasClass('ns-a-del')){ $(target).closest('.ns-a-row').remove(); }
 	if($(target).hasClass('ns-save-action')){ save_ns(); }
 	if($(target).hasClass('ns-remove-action')){ remove_ns(); }
+	if($(target).hasClass('agents-gen-key')){ agents_gen_key(); }
+	if($(target).hasClass('agents-save-action')){ save_agent(); }
+	if($(target).hasClass('agents-revoke-action')){ revoke_agent($(target).attr('data-name')); }
 	if($(target).hasClass('ms-create-action')){ ms_create_action(); }
 	if($(target).hasClass('ms-auth-add')){ ms_auth_add('',''); }
 	if($(target).hasClass('ms-auth-del')){ $(target).closest('.ms-auth-row').remove(); }
