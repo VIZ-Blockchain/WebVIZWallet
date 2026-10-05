@@ -1821,6 +1821,14 @@ function agents_probe(cb){
 		if(cb){ cb(agents_supported); }
 	});
 }
+// Бродкаст асинхронный: колбэк срабатывает ДО включения tx в блок, поэтому одиночная перерисовка
+// сразу после сохранения показывает СПИСОК ДО ТРАНЗАКЦИИ — новый агент в нём не виден, и это
+// читается как «не сохранилось». Перечитываем цепь ещё пару раз с задержкой: дешёво, и список
+// приходит в согласие сам, без ухода со страницы.
+function agents_refresh_soon(){
+	setTimeout(agents_render_list,3000);
+	setTimeout(agents_render_list,8000);
+}
 function agents_render_list(){
 	var page=$('.view-settings .page-agents');
 	market_rpc('database_api','get_agent_permissions',[current_user],function(err,res){
@@ -1906,7 +1914,7 @@ function save_agent(){
 		if(result){
 			page.find('.agents-success').html(ltmp_arr.agents_saved);
 			page.find('.icon-check').css('display','inline-block');
-			agents_render_list();
+			agents_render_list(); agents_refresh_soon();
 		}else{
 			if(!shown){ page.find('.agents-error').html(ltmp_arr.default_operation_error||'Operation error.'); }
 			console.log(err);
@@ -1918,7 +1926,7 @@ function revoke_agent(name){
 	if(!confirm(ltmp_arr.agents_revoke_confirm.replace('{name}',name))){ return; }
 	page.find('.agents-error,.agents-success').html('');
 	agents_broadcast({account:current_user,agent_name:name,agent_key:'VIZ1111111111111111111111111111111114T1Anm',operations:[],expiration:'1970-01-01T00:00:00',addons:[],extensions:[]},function(err,result,shown){
-		if(result){ page.find('.agents-success').html(ltmp_arr.agents_revoked); agents_render_list(); }
+		if(result){ page.find('.agents-success').html(ltmp_arr.agents_revoked); agents_render_list(); agents_refresh_soon(); }
 		else{ if(!shown){ page.find('.agents-error').html(ltmp_arr.default_operation_error||'Operation error.'); } console.log(err); }
 	});
 }
