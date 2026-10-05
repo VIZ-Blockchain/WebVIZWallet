@@ -1843,7 +1843,11 @@ function agents_render_list(){
 function setup_agents(){
 	var page=$('.view-settings .page-agents'); if(!page.length){ return; }
 	page.find('input[name=agents-name],input[name=agents-key],input[name=agents-addons],input[name=agents-exp-date]').val('');
-	page.find('input[name=agents-exp][value=0]').prop('checked',true);
+	// value="0" ОБЯЗАН быть в кавычках: значение атрибута, начинающееся с цифры, — не CSS-идентификатор,
+	// и нативный querySelectorAll (cash.js) его отвергает. Sizzle это прощал, отсюда и регресс после
+	// перехода на cash. Без кавычек setup_agents() бросал исключение ДО заполнения .agents-ops —
+	// форма выдачи агента открывалась без единой галочки операции.
+	page.find('input[name=agents-exp][value="0"]').prop('checked',true);
 	page.find('.agents-error,.agents-success,.agents-new-key').html('');
 	page.find('.agents-new-key').css('display','none');
 	page.find('.icon-check,.submit-button-ring').css('display','none');
